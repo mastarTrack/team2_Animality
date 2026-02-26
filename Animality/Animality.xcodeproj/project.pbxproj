@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		16BF3D722F50511900F24E09 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 16BF3D712F50511900F24E09 /* SnapKit */; };
 		16BF3D752F50582600F24E09 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 16BF3D742F50582600F24E09 /* Alamofire */; };
-		16BF3D772F50582600F24E09 /* AlamofireDynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 16BF3D762F50582600F24E09 /* AlamofireDynamic */; };
 		16BF3D7A2F5058B800F24E09 /* Then in Frameworks */ = {isa = PBXBuildFile; productRef = 16BF3D792F5058B800F24E09 /* Then */; };
 /* End PBXBuildFile section */
 
@@ -44,7 +43,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				16BF3D722F50511900F24E09 /* SnapKit in Frameworks */,
-				16BF3D772F50582600F24E09 /* AlamofireDynamic in Frameworks */,
 				16BF3D752F50582600F24E09 /* Alamofire in Frameworks */,
 				16BF3D7A2F5058B800F24E09 /* Then in Frameworks */,
 			);
@@ -91,7 +89,6 @@
 			packageProductDependencies = (
 				16BF3D712F50511900F24E09 /* SnapKit */,
 				16BF3D742F50582600F24E09 /* Alamofire */,
-				16BF3D762F50582600F24E09 /* AlamofireDynamic */,
 				16BF3D792F5058B800F24E09 /* Then */,
 			);
 			productName = Animality;
@@ -407,11 +404,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 16BF3D732F50582600F24E09 /* XCRemoteSwiftPackageReference "Alamofire" */;
 			productName = Alamofire;
-		};
-		16BF3D762F50582600F24E09 /* AlamofireDynamic */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 16BF3D732F50582600F24E09 /* XCRemoteSwiftPackageReference "Alamofire" */;
-			productName = AlamofireDynamic;
 		};
 		16BF3D792F5058B800F24E09 /* Then */ = {
 			isa = XCSwiftPackageProductDependency;
