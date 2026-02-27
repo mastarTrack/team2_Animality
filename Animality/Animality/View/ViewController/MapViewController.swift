@@ -13,6 +13,9 @@ class MapViewController: UIViewController {
     let mapView = NMFMapView(frame: .zero)
     let locationManager = CLLocationManager()
     
+    var currentLng: Double? // 현재 경도
+    var currentLat: Double? // 현재 위도
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setMapView()
@@ -39,6 +42,10 @@ extension MapViewController {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
     }
+    
+//    private func getCurrentLocation() -> NMGLatLng {
+//        
+//    }
 }
 
 extension MapViewController: CLLocationManagerDelegate {
@@ -55,14 +62,11 @@ extension MapViewController: CLLocationManagerDelegate {
     }
     // startUpdatingLocation이 호출되었을 때 호출되는 함수
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        var longitude = CLLocationDegrees() // 경도
-        var latitude = CLLocationDegrees() // 위도
-        
         if let location = locations.first {
-            longitude = location.coordinate.longitude
-            latitude = location.coordinate.latitude            
+            currentLng = Double(location.coordinate.longitude)
+            currentLat = Double(location.coordinate.latitude)
         }
-        print("위도: \(latitude), 경도: \(longitude)")
+        print("위도: \(currentLat), 경도: \(currentLng)")
         locationManager.stopUpdatingLocation()
     }
 }

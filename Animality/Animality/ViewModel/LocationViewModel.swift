@@ -1,0 +1,16 @@
+//
+//  LocationViewModel.swift
+//  Animality
+//
+//  Created by t2025-m0143 on 2/27/26.
+//
+
+class LocationViewModel: ViewModelProtocol {
+    enum Action {
+        
+    }
+    
+    enum State {
+        
+    }
+}
