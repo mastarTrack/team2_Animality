@@ -22,7 +22,7 @@ class CoreDataManager {
                 // 수정: fatalError 대신 에러를 콘솔에 출력, 및 앱을 계속 가동시킴
                 print("CoreData 로드 실페: \(error.localizedDescription)")
                 
-                // Alert로 사용자에 알림창으로 알림하는 로직 추가 예정
+                // Alert로 사용자에 알림창으로 에러 알림하는 로직 추가 예정
             }
         })
         return container
@@ -36,15 +36,10 @@ class CoreDataManager {
     
     // MARK: - Core Data Saving support
     // 변경 사항이 있을 경우 데이터 저장
-    func saveContext () {
+    func saveContext () throws {
         let context = persistentContainer.viewContext
         if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
+            try context.save()
         }
     }
     
@@ -67,8 +62,7 @@ class CoreDataManager {
         newEntity.longitude = longitude // 경도
         newEntity.pricePerHour = price
         
-        // context에 변경된 내용 저장하기
-        self.saveContext()
+        doCatchSaveContext()
     }
     
     // READ
@@ -113,7 +107,7 @@ class CoreDataManager {
         if let longitude = newLongitude { entity.longitude = longitude }
         if let price = newPrice { entity.pricePerHour = price }
         
-        self.saveContext()
+        doCatchSaveContext()
     }
     
     
@@ -122,6 +116,17 @@ class CoreDataManager {
     func deleteAnimalEntity(entity: AnimalEntity) {
         self.context.delete(entity)
         
-        self.saveContext()
+        doCatchSaveContext()
+    }
+    
+    // saveContext - 메서드
+    func doCatchSaveContext() {
+        do {
+            try self.saveContext()
+            print("데이터 저장 성공")
+        } catch {
+            print("데이터 저장 실패 \(error.localizedDescription)")
+            // Alert로 사용자에 알림창으로 에러 알림하는 로직 추가 예정
+        }
     }
 }
