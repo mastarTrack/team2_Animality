@@ -46,7 +46,7 @@ class MainViewController: UITabBarController {
 //MARK: - METHOD: TAB BAR METHOD
 extension MainViewController {
     /// 탭바 설정 메소드
-    func configureTabBar(tabitems: [TabItem]){
+    private func configureTabBar(tabitems: [TabItem]){
         let controllers  = tabitems.compactMap { item in
             let vc = item.viewControllerType.init()
             vc.tabBarItem = UITabBarItem().then {
@@ -63,7 +63,7 @@ extension MainViewController {
 //MARK: - METHOD: Configure UI
 extension MainViewController {
     /// 매인 UI 초기 설정 메소드
-    func configureUI() {
+    private func configureUI() {
         configureTabBar(tabitems: tabItems)
     }
 }
