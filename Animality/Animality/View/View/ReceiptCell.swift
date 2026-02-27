@@ -12,9 +12,9 @@ import UIKit
 class ReceiptCell: UICollectionViewCell {
 
     enum rentStates {
-        case Completed
-        case Renting
-        case Cancel
+        case completed
+        case renting
+        case cancel
     }
 
     //MARK: - Components
