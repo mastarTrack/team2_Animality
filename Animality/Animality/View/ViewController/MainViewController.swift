@@ -52,7 +52,7 @@ extension MainViewController {
             vc.tabBarItem = UITabBarItem().then {
                 $0.title = item.title
                 $0.image = UIImage(systemName: item.imageName)
-                $0.selectedImage = UIImage(systemName: item.imageName)
+                $0.selectedImage = UIImage(systemName: item.selectedImageName ?? item.imageName)
             }
             return vc
         }
