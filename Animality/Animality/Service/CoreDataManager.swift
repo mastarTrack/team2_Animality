@@ -15,7 +15,7 @@ struct CreateAnimalModel {
     var size: String
     var latitude: Double
     var longitude: Double
-    var price: Int32
+    var pricePerHour: Int32
     var status: String
 }
 
@@ -27,7 +27,7 @@ struct UpdateAnimalModel {
     var size: String?
     var latitude: Double?
     var longitude: Double?
-    var price: Int32?
+    var pricePerHour: Int32?
     var status: String?
 }
 
@@ -94,7 +94,7 @@ class CoreDataManager {
         newEntity.size = payload.size
         newEntity.latitude = payload.latitude // 위도
         newEntity.longitude = payload.longitude // 경도
-        newEntity.pricePerHour = payload.price
+        newEntity.pricePerHour = payload.pricePerHour
         newEntity.status = payload.status
         
         doCatchSaveContext()
@@ -141,7 +141,7 @@ class CoreDataManager {
         if let size = payload.size { entity.size = size }
         if let latitude = payload.latitude { entity.latitude = latitude }
         if let longitude = payload.longitude { entity.longitude = longitude }
-        if let price = payload.price { entity.pricePerHour = price }
+        if let pricePerHour = payload.pricePerHour { entity.pricePerHour = pricePerHour }
         if let status = payload.status { entity.status = status }
         
         doCatchSaveContext()
