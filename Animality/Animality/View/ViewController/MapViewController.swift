@@ -36,7 +36,7 @@ class MapViewController: UIViewController {
                 let cameraUpdate = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
                 mapView.moveCamera(cameraUpdate)
             case .none:
-                print("none")
+                break
             }
         }
     }
@@ -62,7 +62,6 @@ extension MapViewController {
 extension MapViewController: CLLocationManagerDelegate {
     // 위치 정보 권한 상태 확인
     private func checkAuthorizationStatus() {
-        print(locationManager.authorizationStatus == .authorizedAlways || locationManager.authorizationStatus == .authorizedWhenInUse)
         if locationManager.authorizationStatus == .authorizedAlways
             || locationManager.authorizationStatus == .authorizedWhenInUse { // 위치 권한 허용시(항상 || 앱을 사용하는 동안)
             locationManager.requestLocation() // 현재 위치 정보
