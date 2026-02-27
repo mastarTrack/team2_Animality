@@ -26,7 +26,7 @@ extension AnimalEntity {
     @NSManaged public var longitude: Double // 경도
     @NSManaged public var size: String?
     @NSManaged public var pricePerHour: Int32
-
+    @NSManaged public var status: String
 }
 
 extension AnimalEntity : Identifiable {
