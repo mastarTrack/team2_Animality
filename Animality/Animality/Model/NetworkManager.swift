@@ -8,7 +8,7 @@ import Alamofire
 import Foundation
 
 class NetworkManager {
-    private var clientId: String?
+    private(set) var clientId: String?
     private var secretId: String?
     
     init() {
