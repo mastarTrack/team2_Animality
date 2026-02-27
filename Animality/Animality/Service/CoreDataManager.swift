@@ -45,4 +45,80 @@ class CoreDataManager {
         }
     }
     
+    
+    // MARK: -- CRUD
+    
+    // CREATE
+    // 개체 등록 - 개체등록 뷰에서 완료 버튼 누르면 호출할 함수
+    func createAnimalEntity(name: String, category: String, type: String, size: String, latitude: Double, longitude: Double, price: Int32){
+        let context = self.context
+        
+        let newEntity = AnimalEntity(context: context)
+        
+        newEntity.id = UUID()
+        newEntity.name = name
+        newEntity.category = category
+        newEntity.type = type
+        newEntity.size = size
+        newEntity.latitude = latitude // 위도
+        newEntity.longitude = longitude // 경도
+        newEntity.pricePerHour = price
+        
+        // context에 변경된 내용 저장하기
+        self.saveContext()
+    }
+    
+    // READ
+    // 1. 저장한 모든 개체 불러오기
+    func fetchAllAnimalEntities() -> [AnimalEntity] {
+        // AnimalEntity 데이터 요청
+        let request: NSFetchRequest<AnimalEntity> = AnimalEntity.fetchRequest()
+        
+        do {
+            let entities = try context.fetch(request)
+            return entities
+        } catch {
+            print("데이터를 불러오는데 실패했습니다.: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    // 2. 특정 개체 불러오기
+    func fetchOneAnimalEntity(id: UUID) -> AnimalEntity? {
+        let request: NSFetchRequest<AnimalEntity> = AnimalEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        
+        do {
+            let results = try context.fetch(request)
+            return results.first // 일치하는 첫번째 데이터 반환
+        } catch {
+            print("데이터를 불러오는데 실패했습니다.: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    
+    // UPDATE
+    // 등록한 개체를 상세 정보 뷰에서 수정하기
+    func updateAnimalEntity(entity: AnimalEntity, newName: String?, newCategory: String?, newType: String?, newSize: String?, newLatitude: Double?, newLongitude: Double?, newPrice: Int32?){
+        
+        if let name = newName { entity.name = name }
+        if let category = newCategory { entity.category = category }
+        if let type = newType { entity.type = type }
+        if let size = newSize { entity.size = size }
+        if let latitude = newLatitude { entity.latitude = latitude }
+        if let longitude = newLongitude { entity.longitude = longitude }
+        if let price = newPrice { entity.pricePerHour = price }
+        
+        self.saveContext()
+    }
+    
+    
+    // DELETE
+    // 등록한 개체를 상세 정보 뷰에서 삭제하기
+    func deleteAnimalEntity(entity: AnimalEntity) {
+        self.context.delete(entity)
+        
+        self.saveContext()
+    }
 }
