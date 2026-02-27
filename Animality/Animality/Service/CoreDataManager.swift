@@ -19,7 +19,10 @@ class CoreDataManager {
         let container = NSPersistentContainer(name: "Animality")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                fatalError("Unresolved error \(error), \(error.userInfo)")
+                // 수정: fatalError 대신 에러를 콘솔에 출력, 및 앱을 계속 가동시킴
+                print("CoreData 로드 실페: \(error.localizedDescription)")
+                
+                // Alert로 사용자에 알림창으로 알림하는 로직 추가 예정
             }
         })
         return container
