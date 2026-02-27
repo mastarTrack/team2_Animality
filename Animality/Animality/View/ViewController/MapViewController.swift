@@ -12,18 +12,33 @@ import CoreLocation
 class MapViewController: UIViewController {
     let mapView = NMFMapView(frame: .zero)
     let locationManager = CLLocationManager()
-    
-    var currentLng: Double? // 현재 경도
-    var currentLat: Double? // 현재 위도
+    let viewModel = LocationViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindingData()
+        
         setMapView()
         setLayout()
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
         checkAuthorizationStatus()
+    }
+    
+    private func bindingData() {
+        viewModel.stateChanged = { [weak self] state in
+            guard let self else { return }
+            
+            switch state {                
+            case let .locationChanged(lat, lng):
+                let cameraUpdate = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
+                mapView.moveCamera(cameraUpdate)
+            case .none:
+                print("none")
+            }
+        }
     }
 }
 
@@ -42,31 +57,39 @@ extension MapViewController {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
     }
-    
-//    private func getCurrentLocation() -> NMGLatLng {
-//        
-//    }
 }
 
 extension MapViewController: CLLocationManagerDelegate {
     // 위치 정보 권한 상태 확인
     private func checkAuthorizationStatus() {
+        print(locationManager.authorizationStatus == .authorizedAlways || locationManager.authorizationStatus == .authorizedWhenInUse)
         if locationManager.authorizationStatus == .authorizedAlways
             || locationManager.authorizationStatus == .authorizedWhenInUse { // 위치 권한 허용시(항상 || 앱을 사용하는 동안)
-            locationManager.startUpdatingLocation() // 위치 정보 받기 시작
+            locationManager.requestLocation() // 현재 위치 정보
         } else if locationManager.authorizationStatus == .notDetermined { // 위치 권한 미지정시
             locationManager.requestWhenInUseAuthorization() // 권한 요청
         } else if locationManager.authorizationStatus == .denied {
             print("위치 권한 거절 상태")
         }
     }
-    // startUpdatingLocation이 호출되었을 때 호출되는 함수
+    
+    // startUpdatingLocation, requestLocation이 호출되었을 때 호출되는 함수
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        var lat: Double? // 현재 위도
+        var lng: Double? // 현재 경도
+        
         if let location = locations.first {
-            currentLng = Double(location.coordinate.longitude)
-            currentLat = Double(location.coordinate.latitude)
+            lat = Double(location.coordinate.latitude)
+            lng = Double(location.coordinate.longitude)
         }
-        print("위도: \(currentLat), 경도: \(currentLng)")
+        
+        guard let lng, let lat else { return }
+        viewModel.action(.didUpdateLocations(lat: lat, lng: lng))
+
         locationManager.stopUpdatingLocation()
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        print("error")
     }
 }
