@@ -9,6 +9,6 @@ import Alamofire
 class NetworkManager {
     
     private func fetchKeys() {
-        let path = 
+        
     }
 }
