@@ -27,6 +27,8 @@ class LocationViewModel: ViewModelProtocol {
     
     var stateChanged: ((State) -> Void)? // 상태가 변화할 때 실행할 동작
     
+    // 프로퍼티 선언
+
     func action(_ action: Action) {
         switch action {
         case let .didUpdateLocations(lat, lng):
