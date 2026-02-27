@@ -17,6 +17,7 @@ struct CreateAnimalModel {
     var longitude: Double
     var pricePerHour: Int32
     var status: String
+    var flightCapability: String
 }
 
 // MARK: Animal 수정 모델 구조체
@@ -29,6 +30,7 @@ struct UpdateAnimalModel {
     var longitude: Double?
     var pricePerHour: Int32?
     var status: String?
+    var flightCapability: String?
 }
 
 
@@ -96,6 +98,7 @@ class CoreDataManager {
         newEntity.longitude = payload.longitude // 경도
         newEntity.pricePerHour = payload.pricePerHour
         newEntity.status = payload.status
+        newEntity.flightCapability = payload.flightCapability
         
         doCatchSaveContext()
     }
@@ -143,6 +146,7 @@ class CoreDataManager {
         if let longitude = payload.longitude { entity.longitude = longitude }
         if let pricePerHour = payload.pricePerHour { entity.pricePerHour = pricePerHour }
         if let status = payload.status { entity.status = status }
+        if let flightCapability = payload.flightCapability { entity.flightCapability = flightCapability }
         
         doCatchSaveContext()
     }
