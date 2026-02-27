@@ -46,10 +46,9 @@ class NetworkManager {
         }
     }
     
-    private func fetchMapData() {
-        var urlComp = URLComponents(string: "https://maps.apigw.ntruss.com")
-        
-        let staticMapPath = "map-static/v2"
-        let geocodingMapPath = "map-geocode/v2"
-    }
+//    private func fetchMapData() {
+//        var urlComp = URLComponents(string: "https://maps.apigw.ntruss.com")
+//        
+//        let geocodingMapPath = "map-geocode/v2"
+//    }
 }
