@@ -35,6 +35,8 @@ class MapViewController: UIViewController {
             case let .locationChanged(lat, lng):
                 let cameraUpdate = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
                 mapView.moveCamera(cameraUpdate)
+            case let .fetchMarkers(arr):
+                setMarkers(of: arr)
             case .none:
                 break
             }
@@ -48,6 +50,8 @@ extension MapViewController {
         mapView.mapType = .basic // 지도 유형 설정
         mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
         mapView.allowsTilting = false // 기울임 설정
+        
+        viewModel.action(.fetchMarkers)
     }
     
     private func setLayout() {
@@ -55,6 +59,14 @@ extension MapViewController {
         
         mapView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+    
+    private func setMarkers(of points: [(lat: Double, lng: Double)]) {
+        points.forEach {
+            let marker = NMFMarker()
+            marker.position = NMGLatLng(lat: $0.lat, lng: $0.lng)
+            marker.mapView = mapView
         }
     }
 }
