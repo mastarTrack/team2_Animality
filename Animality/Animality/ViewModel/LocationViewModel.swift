@@ -51,7 +51,8 @@ class LocationViewModel: ViewModelProtocol {
     let coreDataManager = TestCoreDataManager()
     
     private func fetchMarkers() -> [(type: String, lat: Double, lng: Double)] {
-        let animals = coreDataManager.fetchAllAnimalEntities()
+            let animals = coreDataManager.fetchAllAnimalEntities()
+        
         return animals.reduce(into: [(type: String, lat: Double, lng: Double)]()) {
             guard let type = $1.type else { return }
             $0.append((type: type, lat: $1.latitude, lng: $1.longitude))

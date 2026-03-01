@@ -34,9 +34,14 @@ class MapViewController: UIViewController {
             guard let self else { return }
             
             switch state {
-            case let .initialized(lat, lng, markers): // 초기 설정
+            case let .initialized(lat, lng, data): // 초기 설정
                 setMapView(lat: lat, lng: lng)
-                setMarkers(of: markers)
+//                setMarkers(of: markers)
+                
+                Task {
+                    let markers = await self.makeMarkers(data)
+                    self.displayMarkers(markers)
+                }
                 
             case let .locationChanged(lat, lng): // 위치 이동 시
                 moveCameraPosition(lat: lat, lng: lng)
@@ -74,15 +79,29 @@ extension MapViewController {
         }
     }
     
-    private func setMarkers(of points: [(type: String, lat: Double, lng: Double)]) {
-        points.forEach {
+    //MARK: 마커의 생성과 배치
+    /*
+     네이버 지도의 오버레이 객체는 아무 스레드에서 생성할 수 있으나 오버레이의 속성은 스레드 안전성이 보장되지 않으므로 여러 스레드에서 동시에 접근해서는 안됩니다.
+     특히, 지도에 추가된 오버레이의 속성은 메인 스레드에서만 접근해야합니다. (그렇지 않으면 크래시 발생)
+     
+     대량의 오버레이를 다룰 경우 객체를 생성하고 초기 옵션을 지정하는 작업은 백그라운드 스레드에서 수행하고,
+     지도에 추가하는 작업만 메인스레드에서 수행하면 메인스레드를 효율적으로 사용 가능합니다.
+     
+     현재 프로젝트에서는 대량의 오버레이 객체를 다루지는 않지만 async await의 적용을 위해 두 작업을 나누어보았습니다.
+     */
+    
+    // 마커 생성
+    @globalActor actor BackgroundActor: GlobalActor {
+        static let shared = BackgroundActor()
+    }
+    
+    @BackgroundActor
+    private func makeMarkers(_ markers: [(type: String, lat: Double, lng: Double)]) async -> [NMFMarker] {
+        return markers.reduce(into: [NMFMarker]()) {
             let marker = NMFMarker()
-            marker.position = NMGLatLng(lat: $0.lat, lng: $0.lng) // 좌표 지정
-            marker.mapView = mapView // 맵뷰에 추가
+            marker.position = NMGLatLng(lat: $1.lat, lng: $1.lng)
             
-            
-            // 아이콘 이미지 설정
-            switch $0.type {
+            switch $1.type {
             case "강아지":
                 marker.iconImage = NMFOverlayImage(image: .dogPin)
             case "고양이":
@@ -104,8 +123,23 @@ extension MapViewController {
                 print("lat: \(marker.position.lat), lng: \(marker.position.lng)")
                 return true // 이벤트를 지도로 전달하지 않음 (마커에서 이벤트를 소비)
             }
+            
+            $0.append(marker)
         }
     }
+    
+    // 마커 배치
+    @MainActor
+    private func displayMarkers(_ markers: [NMFMarker]) {
+        markers.forEach {
+            $0.mapView = mapView
+        }
+    }
+    
+    private func deleteMarker() {
+        
+    }
+    
 }
 
 
