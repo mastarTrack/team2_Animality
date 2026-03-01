@@ -11,32 +11,39 @@ import CoreLocation
 
 class MapViewController: UIViewController {
     let mapView = NMFMapView(frame: .zero)
+//    private var mapView: NMFMapView?
     let locationManager = CLLocationManager()
     let viewModel = LocationViewModel()
+    
+    private var didInitialized = false // 초기화 여부
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         bindingData()
         
-        setMapView()
-        setLayout()
-        
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
+        
         checkAuthorizationStatus()
+        setLayout()
     }
     
     private func bindingData() {
         viewModel.stateChanged = { [weak self] state in
             guard let self else { return }
             
-            switch state {                
-            case let .locationChanged(lat, lng):
-                let cameraUpdate = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
-                mapView.moveCamera(cameraUpdate)
-            case let .fetchMarkers(arr):
-                setMarkers(of: arr)
+            switch state {
+            case let .initialized(lat, lng, markers): // 초기 설정
+                setMapView(lat: lat, lng: lng)
+                setMarkers(of: markers)
+                
+            case let .locationChanged(lat, lng): // 위치 이동 시
+                moveCameraPosition(lat: lat, lng: lng)
+                
+//            case let .fetchMarkers(arr):
+//                setMarkers(of: arr)
+                
             case .none:
                 break
             }
@@ -46,12 +53,17 @@ class MapViewController: UIViewController {
 
 //MARK: Set MapView
 extension MapViewController {
-    private func setMapView() {
+    private func setMapView(lat: Double, lng: Double) {
         mapView.mapType = .basic // 지도 유형 설정
         mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
         mapView.allowsTilting = false // 기울임 설정
         
-        viewModel.action(.fetchMarkers)
+        moveCameraPosition(lat: lat, lng: lng) // 카메라 포지션 변경 - 현재 위치를 비추도록
+        
+        // 현 위치 표시
+        let locationOverlay = mapView.locationOverlay
+        locationOverlay.hidden = false
+        mapView.positionMode = .direction
     }
     
     private func setLayout() {
@@ -62,17 +74,12 @@ extension MapViewController {
         }
     }
     
-//    private func setCurrentLocation(lat: Double, lng: Double) {
-//        let cameraUpdate = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
-//        mapView.moveCamera(cameraUpdate)
-//        
-//    }
-    
     private func setMarkers(of points: [(type: String, lat: Double, lng: Double)]) {
         points.forEach {
             let marker = NMFMarker()
             marker.position = NMGLatLng(lat: $0.lat, lng: $0.lng) // 좌표 지정
             marker.mapView = mapView // 맵뷰에 추가
+            
             
             // 아이콘 이미지 설정
             switch $0.type {
@@ -95,12 +102,19 @@ extension MapViewController {
             
             marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
                 print("lat: \(marker.position.lat), lng: \(marker.position.lng)")
-                return true
+                return true // 이벤트를 지도로 전달하지 않음 (마커에서 이벤트를 소비)
             }
         }
     }
 }
 
+
+extension MapViewController {
+    private func moveCameraPosition(lat: Double, lng: Double) {
+        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
+        mapView.moveCamera(cameraPosition)
+    }
+}
 extension MapViewController: CLLocationManagerDelegate {
     // 위치 정보 권한 상태 확인
     private func checkAuthorizationStatus() {
@@ -127,7 +141,13 @@ extension MapViewController: CLLocationManagerDelegate {
         }
         
         guard let lng, let lat else { return }
-        viewModel.action(.didUpdateLocations(lat: lat, lng: lng))
+        if didInitialized { // 맵뷰 초기 설정 이후일 경우
+            viewModel.action(.didUpdateLocations(lat: lat, lng: lng))
+        } else { // 맵뷰 초기 설정 이전일 경우
+            viewModel.action(.initialized(lat: lat, lng: lng))
+            didInitialized = true // 초기화 여부 변경
+        }
+        
 
         locationManager.stopUpdatingLocation()
     }

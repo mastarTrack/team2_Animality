@@ -11,15 +11,17 @@ import CoreLocation
 class LocationViewModel: ViewModelProtocol {
     // 액션 열거형
     enum Action {
+        case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
-        case fetchMarkers
+//        case fetchMarkers
     }
     
     // 상태 열거형
     enum State {
         case none
+        case initialized(lat: Double, lng: Double, markers: [(type: String, lat: Double, lng: Double)])
         case locationChanged(lat: Double, lng: Double)
-        case fetchMarkers([(type: String, lat: Double, lng: Double)])
+//        case fetchMarkers([(type: String, lat: Double, lng: Double)])
     }
     
     var state: State = .none {
@@ -31,11 +33,16 @@ class LocationViewModel: ViewModelProtocol {
     
     func action(_ action: Action) {
         switch action {
+        case let .initialized(lat, lng):
+            let markers = fetchMarkers()
+            self.state = .initialized(lat: lat, lng: lng, markers: markers)
+            
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
-        case .fetchMarkers:
-            let targets = fetchMarkers()
-            self.state = .fetchMarkers(targets)
+            
+//        case .fetchMarkers:
+//            let markers = fetchMarkers()
+//            self.state = .fetchMarkers(markers)
         }
     }
 
