@@ -13,7 +13,6 @@ class LocationViewModel: ViewModelProtocol {
     enum Action {
         case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
-//        case fetchMarkers
     }
     
     // 상태 열거형
@@ -21,7 +20,6 @@ class LocationViewModel: ViewModelProtocol {
         case none
         case initialized(lat: Double, lng: Double, markers: [(type: String, lat: Double, lng: Double)])
         case locationChanged(lat: Double, lng: Double)
-//        case fetchMarkers([(type: String, lat: Double, lng: Double)])
     }
     
     var state: State = .none {
@@ -35,25 +33,22 @@ class LocationViewModel: ViewModelProtocol {
         switch action {
         case let .initialized(lat, lng):
             coordinates = categorizeAnimalByCoordinate()
+            
             let markers = fetchMarkers()
             self.state = .initialized(lat: lat, lng: lng, markers: markers)
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
-            
-//        case .fetchMarkers:
-//            let markers = fetchMarkers()
-//            self.state = .fetchMarkers(markers)
         }
     }
 
     
     // 프로퍼티 선언
     let coreDataManager = TestCoreDataManager()
-    
-//    private var animals = [AnimalEntity]() // 동물 배열
+
     private var coordinates = [Coordinate: [AnimalEntity]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     
+    // 좌표별 동물 분류 메서드
     private func categorizeAnimalByCoordinate() -> [Coordinate: [AnimalEntity]]{
         let animals = coreDataManager.fetchAllAnimalEntities()
 
@@ -63,18 +58,22 @@ class LocationViewModel: ViewModelProtocol {
         }
     }
     
+    // 마커를 생성할 좌표와 동물 타입을 반환하는 메서드 [(type: 동물 타입 - 아이콘 결정, lat: 위도, lng: 경도)]
+    //TODO: 화면에 보이는 지도 범위 내의 마커들만 생성해도 되지 않을까?
     private func fetchMarkers() -> [(type: String, lat: Double, lng: Double)] {
         return coordinates.reduce(into: [(type: String, lat: Double, lng: Double)]()) { arr, point in
             let types = point.value.compactMap { $0.type }.sorted()
             
             guard !types.isEmpty else { return }
             
-            if types.count == 1 {
+            if types.count == 1 { // 동물 타입이 한가지일 경우
                 arr.append((type: types.first!, lat: point.key.latitude, lng: point.key.longtitude))
             } else {
-                var typeCount = [String: Int]()
+                var typeCount = [String: Int]() // [동물 타입: 수]
                 for t in types {
                     typeCount[t, default: 0] += 1
+                    
+                    // 가장 수가 많은 동물 타입 (동일할 경우 알파벳이 빠른 순서)
                     let type = typeCount.sorted(by: { $0.value > $1.value }).first!.key
                     arr.append((type: type, lat: point.key.latitude, lng: point.key.longtitude))
                 }

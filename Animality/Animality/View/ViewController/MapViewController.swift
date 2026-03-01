@@ -10,11 +10,11 @@ import NMapsMap
 import CoreLocation
 
 class MapViewController: UIViewController {
-    let mapView = NMFMapView(frame: .zero)
-//    private var mapView: NMFMapView?
-    let locationManager = CLLocationManager()
-    let viewModel = LocationViewModel()
+    private let locationManager = CLLocationManager()
+    private let viewModel = LocationViewModel()
     
+    private let mapView = NMFMapView(frame: .zero)
+
     private var didInitialized = false // 초기화 여부
     
     override func viewDidLoad() {
@@ -25,7 +25,7 @@ class MapViewController: UIViewController {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
         
-        checkAuthorizationStatus()
+        currentLocation()
         setLayout()
     }
     
@@ -36,7 +36,6 @@ class MapViewController: UIViewController {
             switch state {
             case let .initialized(lat, lng, data): // 초기 설정
                 setMapView(lat: lat, lng: lng)
-//                setMarkers(of: markers)
                 
                 Task {
                     let markers = await self.makeMarkers(data)
@@ -45,9 +44,6 @@ class MapViewController: UIViewController {
                 
             case let .locationChanged(lat, lng): // 위치 이동 시
                 moveCameraPosition(lat: lat, lng: lng)
-                
-//            case let .fetchMarkers(arr):
-//                setMarkers(of: arr)
                 
             case .none:
                 break
@@ -73,7 +69,7 @@ extension MapViewController {
     
     private func setLayout() {
         view.addSubview(mapView)
-        
+
         mapView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
@@ -135,13 +131,7 @@ extension MapViewController {
             $0.mapView = mapView
         }
     }
-    
-    private func deleteMarker() {
-        
-    }
-    
 }
-
 
 extension MapViewController {
     private func moveCameraPosition(lat: Double, lng: Double) {
@@ -151,7 +141,7 @@ extension MapViewController {
 }
 extension MapViewController: CLLocationManagerDelegate {
     // 위치 정보 권한 상태 확인
-    private func checkAuthorizationStatus() {
+    private func currentLocation() {
         if locationManager.authorizationStatus == .authorizedAlways
             || locationManager.authorizationStatus == .authorizedWhenInUse { // 위치 권한 허용시(항상 || 앱을 사용하는 동안)
             locationManager.requestLocation() // 현재 위치 정보
@@ -182,11 +172,11 @@ extension MapViewController: CLLocationManagerDelegate {
             didInitialized = true // 초기화 여부 변경
         }
         
-
         locationManager.stopUpdatingLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        print("Location manager failed with error: \(error.localizedDescription)")
+        let alert = UIAlertController(status: .invalidLocation)
+        present(alert, animated: true)
     }
 }
