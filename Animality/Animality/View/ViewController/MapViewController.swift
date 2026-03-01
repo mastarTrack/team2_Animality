@@ -37,6 +37,7 @@ class MapViewController: UIViewController {
             case let .initialized(lat, lng, data): // 초기 설정
                 setMapView(lat: lat, lng: lng)
                 
+                // 비동기 함수(마커 생성 함수)를 처리하기 위한 Task
                 Task {
                     let markers = await self.makeMarkers(data)
                     self.displayMarkers(markers)
@@ -62,9 +63,9 @@ extension MapViewController {
         moveCameraPosition(lat: lat, lng: lng) // 카메라 포지션 변경 - 현재 위치를 비추도록
         
         // 현 위치 표시
-        let locationOverlay = mapView.locationOverlay
-        locationOverlay.hidden = false
-        mapView.positionMode = .direction
+        let locationOverlay = mapView.locationOverlay // 지도의 위치 오버레이
+        locationOverlay.hidden = false // 오버레이 표시
+        mapView.positionMode = .direction // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
     }
     
     private func setLayout() {
@@ -86,17 +87,19 @@ extension MapViewController {
      현재 프로젝트에서는 대량의 오버레이 객체를 다루지는 않지만 async await의 적용을 위해 두 작업을 나누어보았습니다.
      */
     
-    // 마커 생성
+    // BackgroundActor 정의
     @globalActor actor BackgroundActor: GlobalActor {
         static let shared = BackgroundActor()
     }
     
+    // 마커 생성 - 백그라운드 스레드에서 비동기적으로 동작
     @BackgroundActor
     private func makeMarkers(_ markers: [(type: String, lat: Double, lng: Double)]) async -> [NMFMarker] {
         return markers.reduce(into: [NMFMarker]()) {
             let marker = NMFMarker()
-            marker.position = NMGLatLng(lat: $1.lat, lng: $1.lng)
+            marker.position = NMGLatLng(lat: $1.lat, lng: $1.lng) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
             
+            // 마커 아이콘 설정
             switch $1.type {
             case "강아지":
                 marker.iconImage = NMFOverlayImage(image: .dogPin)
@@ -112,19 +115,20 @@ extension MapViewController {
                 break
             }
             
-            marker.width = 30 // 마커 사이즈
+            // 마커 사이즈
+            marker.width = 30
             marker.height = 44
             
             marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
                 print("lat: \(marker.position.lat), lng: \(marker.position.lng)")
-                return true // 이벤트를 지도로 전달하지 않음 (마커에서 이벤트를 소비)
+                return true // true값일 시, 이벤트를 지도로 전달하지 않음 (마커에서 이벤트를 소비)
             }
             
             $0.append(marker)
         }
     }
     
-    // 마커 배치
+    // 마커 배치 - 반드시 메인 스레드에서 이뤄져야함
     @MainActor
     private func displayMarkers(_ markers: [NMFMarker]) {
         markers.forEach {
@@ -134,9 +138,10 @@ extension MapViewController {
 }
 
 extension MapViewController {
+    // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
     private func moveCameraPosition(lat: Double, lng: Double) {
         let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
-        mapView.moveCamera(cameraPosition)
+        mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
 }
 extension MapViewController: CLLocationManagerDelegate {
@@ -148,7 +153,8 @@ extension MapViewController: CLLocationManagerDelegate {
         } else if locationManager.authorizationStatus == .notDetermined { // 위치 권한 미지정시
             locationManager.requestWhenInUseAuthorization() // 권한 요청
         } else if locationManager.authorizationStatus == .denied {
-            print("위치 권한 거절 상태")
+            let alert = UIAlertController(status: .deniedAuth)
+            present(alert, animated: true)
         }
     }
     

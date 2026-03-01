@@ -13,6 +13,7 @@ enum NetworkingError: Error {
 }
 
 enum UIError: String, Error {
+    case deniedAuth = "위치 권한이 거절된 상태이므로 현재 위치를 찾을 수 없습니다.\n설정에서 Animality 앱의 위치 권한을 허용해 주세요."
     case invalidLocation = "현재 위치를 찾을 수 없습니다."
 }
 

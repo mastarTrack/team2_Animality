@@ -32,9 +32,9 @@ class LocationViewModel: ViewModelProtocol {
     func action(_ action: Action) {
         switch action {
         case let .initialized(lat, lng):
-            coordinates = categorizeAnimalByCoordinate()
+            coordinates = categorizeAnimalByCoordinate() // 좌표 별로 동물 객체를 분류
             
-            let markers = fetchMarkers()
+            let markers = fetchMarkers() // 생성할 마커 배열
             self.state = .initialized(lat: lat, lng: lng, markers: markers)
             
         case let .didUpdateLocations(lat, lng):
@@ -58,8 +58,8 @@ class LocationViewModel: ViewModelProtocol {
         }
     }
     
-    // 마커를 생성할 좌표와 동물 타입을 반환하는 메서드 [(type: 동물 타입 - 아이콘 결정, lat: 위도, lng: 경도)]
-    //TODO: 화면에 보이는 지도 범위 내의 마커들만 생성해도 되지 않을까?
+    // 마커를 생성할 좌표와 동물 타입을 반환하는 메서드 [(type: 동물 타입, lat: 위도, lng: 경도)]
+    //TODO: 화면에 보이는 지도 범위 내의 마커들만 생성해도 되지 않을까? - VC에서 설정해야할 것 같긴 함
     private func fetchMarkers() -> [(type: String, lat: Double, lng: Double)] {
         return coordinates.reduce(into: [(type: String, lat: Double, lng: Double)]()) { arr, point in
             let types = point.value.compactMap { $0.type }.sorted()
