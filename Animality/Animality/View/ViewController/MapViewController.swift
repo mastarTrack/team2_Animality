@@ -62,6 +62,12 @@ extension MapViewController {
         }
     }
     
+//    private func setCurrentLocation(lat: Double, lng: Double) {
+//        let cameraUpdate = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
+//        mapView.moveCamera(cameraUpdate)
+//        
+//    }
+    
     private func setMarkers(of points: [(type: String, lat: Double, lng: Double)]) {
         points.forEach {
             let marker = NMFMarker()
@@ -86,6 +92,11 @@ extension MapViewController {
             
             marker.width = 30 // 마커 사이즈
             marker.height = 44
+            
+            marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
+                print("lat: \(marker.position.lat), lng: \(marker.position.lng)")
+                return true
+            }
         }
     }
 }
@@ -104,6 +115,8 @@ extension MapViewController: CLLocationManagerDelegate {
     }
     
     // startUpdatingLocation, requestLocation이 호출되었을 때 호출되는 함수
+    //  - startUpdatingLocation: 현재 위치를 실시간으로 업데이트 하는 함수
+    //  - requestLocation: 현재 위치를 1회성으로 업데이트 하는 함수
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         var lat: Double? // 현재 위도
         var lng: Double? // 현재 경도
