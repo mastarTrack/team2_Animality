@@ -62,11 +62,30 @@ extension MapViewController {
         }
     }
     
-    private func setMarkers(of points: [(lat: Double, lng: Double)]) {
+    private func setMarkers(of points: [(type: String, lat: Double, lng: Double)]) {
         points.forEach {
             let marker = NMFMarker()
-            marker.position = NMGLatLng(lat: $0.lat, lng: $0.lng)
-            marker.mapView = mapView
+            marker.position = NMGLatLng(lat: $0.lat, lng: $0.lng) // 좌표 지정
+            marker.mapView = mapView // 맵뷰에 추가
+            
+            // 아이콘 이미지 설정
+            switch $0.type {
+            case "강아지":
+                marker.iconImage = NMFOverlayImage(image: .dogPin)
+            case "고양이":
+                marker.iconImage = NMFOverlayImage(image: .catPin)
+            case "페가수스":
+                marker.iconImage = NMFOverlayImage(image: .pegasusPin)
+            case "유니콘":
+                marker.iconImage = NMFOverlayImage(image: .unicornPin)
+            case "초코보":
+                marker.iconImage = NMFOverlayImage(image: .chocoboPin)
+            default:
+                break
+            }
+            
+            marker.width = 30 // 마커 사이즈
+            marker.height = 44
         }
     }
 }

@@ -19,7 +19,7 @@ class LocationViewModel: ViewModelProtocol {
     enum State {
         case none
         case locationChanged(lat: Double, lng: Double)
-        case fetchMarkers([(lat: Double, lng: Double)])
+        case fetchMarkers([(type: String, lat: Double, lng: Double)])
     }
     
     var state: State = .none {
@@ -34,8 +34,8 @@ class LocationViewModel: ViewModelProtocol {
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
         case .fetchMarkers:
-            let points = fetchMarkers()
-            self.state = .fetchMarkers(points)
+            let targets = fetchMarkers()
+            self.state = .fetchMarkers(targets)
         }
     }
 
@@ -43,10 +43,11 @@ class LocationViewModel: ViewModelProtocol {
     // 프로퍼티 선언
     let coreDataManager = TestCoreDataManager()
     
-    private func fetchMarkers() -> [(lat: Double, lng: Double)] {
+    private func fetchMarkers() -> [(type: String, lat: Double, lng: Double)] {
         let animals = coreDataManager.fetchAllAnimalEntities()
-        return animals.reduce(into: [(lat: Double, lng: Double)]()) {
-            $0.append((lat: $1.latitude, lng: $1.longitude))
+        return animals.reduce(into: [(type: String, lat: Double, lng: Double)]()) {
+            guard let type = $1.type else { return }
+            $0.append((type: type, lat: $1.latitude, lng: $1.longitude))
         }
     }
 

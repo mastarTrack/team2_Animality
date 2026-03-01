@@ -31,7 +31,7 @@ class TestCoreDataManager {
                 AnimalEntity(
                     name: "콩이",
                     category: "조류",
-                    type: "앵무새",
+                    type: "페가수스",
                     latitude: 36.1268,
                     longitude: 128.3339,
                     size: "Medium",
@@ -40,8 +40,8 @@ class TestCoreDataManager {
                 ),
                 AnimalEntity(
                     name: "마루",
-                    category: "포유류",
-                    type: "토끼",
+                    category: "",
+                    type: "유니콘",
                     latitude: 36.1247,
                     longitude: 128.3365,
                     size: "Small",
@@ -51,7 +51,7 @@ class TestCoreDataManager {
                 AnimalEntity(
                     name: "레오",
                     category: "파충류",
-                    type: "도마뱀",
+                    type: "초코보",
                     latitude: 36.1283,
                     longitude: 128.3344,
                     size: "Medium",
