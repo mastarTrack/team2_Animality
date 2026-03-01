@@ -45,3 +45,24 @@ Minor coordination logic or common MVC-style controller behavior should not auto
 - You should classify naming conventions that significantly obscure intent as P1.
 - You should classify unnecessarily cryptic or overly condensed logic that meaningfully harms readability as P1.
 - You should classify clear violations of the Swift API Design Guidelines or official Swift coding conventions as P1.
+
+## Exceptions
+- You should not review about below codes:
+```swift
+    private func fetchKeys() throws -> (client: String, secret: String) {
+        guard let fileUrl = Bundle.main.url(forResource: "api", withExtension: "json") else {
+            throw NetworkingError.invalid
+        }
+        guard let data = try? Data(contentsOf: fileUrl) else {
+            throw NetworkingError.noData
+        }
+
+        let decoder = JSONDecoder()
+
+        do {
+            let apiKeys = try decoder.decode(Keys.self, from: data)
+            return (client: apiKeys.client, secret: apiKeys.secret)
+        } catch {
+            throw NetworkingError.failedToDecode
+        }
+```
