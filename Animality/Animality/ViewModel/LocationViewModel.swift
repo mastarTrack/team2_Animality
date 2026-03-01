@@ -34,14 +34,13 @@ class LocationViewModel: ViewModelProtocol {
         case let .initialized(lat, lng):
             coordinates = categorizeAnimalByCoordinate() // 좌표 별로 동물 객체를 분류
             
-            let markers = fetchMarkers() // 생성할 마커 배열
+            let markers = fetchMarkers(of: coordinates) // 생성할 마커 배열
             self.state = .initialized(lat: lat, lng: lng, markers: markers)
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
         }
     }
-
     
     // 프로퍼티 선언
     let coreDataManager = TestCoreDataManager()
@@ -53,21 +52,21 @@ class LocationViewModel: ViewModelProtocol {
         let animals = coreDataManager.fetchAllAnimalEntities()
 
         return animals.reduce(into: [Coordinate: [AnimalEntity]]()) { dic, animal in
-            let point = Coordinate(latitude: animal.latitude, longtitude: animal.longitude)
+            let point = Coordinate(latitude: animal.latitude, longitude: animal.longitude)
             dic[point, default: []].append(animal)
         }
     }
     
     // 마커를 생성할 좌표와 동물 타입을 반환하는 메서드 [(type: 동물 타입, lat: 위도, lng: 경도)]
     //TODO: 화면에 보이는 지도 범위 내의 마커들만 생성해도 되지 않을까? - VC에서 설정해야할 것 같긴 함
-    private func fetchMarkers() -> [(type: String, lat: Double, lng: Double)] {
-        return coordinates.reduce(into: [(type: String, lat: Double, lng: Double)]()) { arr, point in
+    private func fetchMarkers(of data: [Coordinate: [AnimalEntity]]) -> [(type: String, lat: Double, lng: Double)] {
+        return data.reduce(into: [(type: String, lat: Double, lng: Double)]()) { arr, point in
             let types = point.value.compactMap { $0.type }.sorted()
             
             guard !types.isEmpty else { return }
             
             if types.count == 1 { // 동물 타입이 한가지일 경우
-                arr.append((type: types.first!, lat: point.key.latitude, lng: point.key.longtitude))
+                arr.append((type: types.first!, lat: point.key.latitude, lng: point.key.longitude))
             } else {
                 var typeCount = [String: Int]() // [동물 타입: 수]
                 for t in types {
@@ -75,7 +74,7 @@ class LocationViewModel: ViewModelProtocol {
                     
                     // 가장 수가 많은 동물 타입 (동일할 경우 알파벳이 빠른 순서)
                     let type = typeCount.sorted(by: { $0.value > $1.value }).first!.key
-                    arr.append((type: type, lat: point.key.latitude, lng: point.key.longtitude))
+                    arr.append((type: type, lat: point.key.latitude, lng: point.key.longitude))
                 }
             }
         }
@@ -85,5 +84,5 @@ class LocationViewModel: ViewModelProtocol {
 
 struct Coordinate: Hashable {
     var latitude: Double
-    var longtitude: Double
+    var longitude: Double
 }
