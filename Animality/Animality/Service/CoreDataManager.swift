@@ -47,7 +47,6 @@ class CoreDataManager {
         let container = NSPersistentContainer(name: "Animality")
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                // 수정: fatalError 대신 에러를 콘솔에 출력하여 에러시에도 앱 중단 X
                 print("CoreData 로드 실페: \(error.localizedDescription)")
                 // Alert로 사용자에 알림창으로 에러 알림하는 로직 추가 예정
             }
@@ -60,33 +59,21 @@ class CoreDataManager {
         return persistentContainer.viewContext
     }
     
+    
     // MARK: - Core Data Saving support
     // 변경 사항이 있을 경우 데이터 저장
     private func saveContext () throws {
-        let context = persistentContainer.viewContext
         if context.hasChanges {
             try context.save()
         }
     }
     
-    // saveContext - 메서드
-    func doCatchSaveContext() {
-        do {
-            try self.saveContext()
-            print("데이터 저장 성공")
-        } catch {
-            print("데이터 저장 실패 \(error.localizedDescription)")
-            // Alert로 사용자에 알림창으로 에러 알림하는 로직 추가 예정
-        }
-    }
     
     // MARK: -- CRUD
     
     // MARK: CREATE
     // 개체 등록 - 개체등록 뷰에서 완료 버튼 누르면 호출할 함수
-    func createAnimalEntity(with payload: CreateAnimalModel){
-        let context = self.context
-        
+    func createAnimalEntity(with payload: CreateAnimalModel) throws {
         let newEntity = AnimalEntity(context: context)
         
         newEntity.id = UUID() // ID는 자동 생성됨
@@ -100,43 +87,30 @@ class CoreDataManager {
         newEntity.status = payload.status
         newEntity.flightCapability = payload.flightCapability
         
-        doCatchSaveContext()
+        try saveContext()
     }
     
     
     // MARK: READ
 
     // 1. 저장한 모든 개체 불러오기
-    func fetchAllAnimalEntities() -> [AnimalEntity] {
+    func fetchAllAnimalEntities() throws -> [AnimalEntity] {
         // AnimalEntity 데이터 요청
         let request: NSFetchRequest<AnimalEntity> = AnimalEntity.fetchRequest()
-        
-        do {
-            let entities = try context.fetch(request)
-            return entities
-        } catch {
-            print("데이터를 불러오는데 실패했습니다.: \(error.localizedDescription)")
-            return []
-        }
+            return try context.fetch(request)
     }
 
     // 2. 특정 개체 불러오기
-    func fetchOneAnimalEntity(id: UUID) -> AnimalEntity? {
+    func fetchOneAnimalEntity(id: UUID) throws -> AnimalEntity? {
         let request: NSFetchRequest<AnimalEntity> = AnimalEntity.fetchRequest()
         request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         
-        do {
-            let results = try context.fetch(request)
-            return results.first // 일치하는 첫번째 데이터 반환
-        } catch {
-            print("데이터를 불러오는데 실패했습니다.: \(error.localizedDescription)")
-            return nil
-        }
+        return try context.fetch(request).first
     }
     
     
     // MARK: UPDATE
-    func updateAnimalEntity(entity: AnimalEntity, with payload: UpdateAnimalModel) {
+    func updateAnimalEntity(entity: AnimalEntity, with payload: UpdateAnimalModel) throws {
         
         if let name = payload.name { entity.name = name }
         if let category = payload.category { entity.category = category }
@@ -148,16 +122,15 @@ class CoreDataManager {
         if let status = payload.status { entity.status = status }
         if let flightCapability = payload.flightCapability { entity.flightCapability = flightCapability }
         
-        doCatchSaveContext()
+        try saveContext()
     }
     
     
     // MARK: DELETE
     // 등록한 개체를 상세 정보 뷰에서 삭제하기
-    func deleteAnimalEntity(entity: AnimalEntity) {
+    func deleteAnimalEntity(entity: AnimalEntity) throws {
         self.context.delete(entity)
-        
-        doCatchSaveContext()
+        try saveContext()
     }
     
 }
