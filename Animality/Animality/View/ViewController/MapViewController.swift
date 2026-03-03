@@ -84,8 +84,8 @@ extension MapViewController {
     
     private func setButton() {
         var config = UIButton.Configuration.filled()
-        config.baseBackgroundColor = .deepRose
-        config.baseForegroundColor = .deepSerenity
+        config.baseBackgroundColor = .coralText
+        config.baseForegroundColor = .white
         config.cornerStyle = .capsule
         
         currentLocationButton.configuration = config
@@ -93,7 +93,9 @@ extension MapViewController {
         currentLocationButton.configurationUpdateHandler = { button in
             switch button.state {
             case .normal:
-                button.configuration?.image = UIImage(systemName: "location")
+                let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
+                button.configuration?.image = UIImage(systemName: "location", withConfiguration: imageConfig)
+            
             case .highlighted:
                 button.configuration?.image = UIImage(systemName: "location.fill")
                 
@@ -107,7 +109,10 @@ extension MapViewController {
         searchBar.searchBarStyle = .minimal
         searchBar.backgroundColor = .clear
         searchBar.placeholder = "검색할 장소를 입력해주세요."
-        searchBar.searchTextField.backgroundColor = .rose.withAlphaComponent(0.5)
+
+        searchBar.searchTextField.layer.borderColor = UIColor(resource: .deepRose).cgColor
+        searchBar.searchTextField.layer.borderWidth = 2
+        searchBar.searchTextField.backgroundColor = .white.withAlphaComponent(0.5)
         searchBar.searchTextField.textColor = .secondaryText
     }
     
