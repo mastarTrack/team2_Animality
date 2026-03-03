@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 import Then
 
-final class RegisterViewTest: UIView {
+final class RegisterView: UIView {
     
     // MARK: - View → VC 클로저
     
