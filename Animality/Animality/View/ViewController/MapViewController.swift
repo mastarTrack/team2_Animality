@@ -83,7 +83,6 @@ extension MapViewController {
     }
     
     private func setButton() {
-        // configuration
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .deepRose
         config.baseForegroundColor = .deepSerenity
@@ -97,16 +96,11 @@ extension MapViewController {
                 button.configuration?.image = UIImage(systemName: "location")
             case .highlighted:
                 button.configuration?.image = UIImage(systemName: "location.fill")
+                
             default:
                 break
             }
         }
-        
-        // action
-        let move = UIAction { [weak self] _ in
-            self?.currentLocation()
-        }
-        currentLocationButton.addAction(move, for: .touchUpInside)
     }
     
     private func setSearchBar() {
@@ -122,7 +116,7 @@ extension MapViewController {
         mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
         mapView.allowsTilting = false // 기울임 설정
         
-        moveCameraPosition(lat: lat, lng: lng) // 카메라 포지션 설정 - 현재 위치를 비추도록
+        moveCameraPosition(lat: lat, lng: lng) // 카메라 포지션 변경 - 현재 위치를 비추도록
         
         // 현 위치 표시
         let locationOverlay = mapView.locationOverlay // 지도의 위치 오버레이
@@ -136,9 +130,7 @@ extension MapViewController {
 extension MapViewController {
     // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
     private func moveCameraPosition(lat: Double, lng: Double) {
-        let cameraPosition = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat, lng: lng))
-        cameraPosition.animation = didInitialized ? .fly : .none // 초기화 되었을 경우 애니메이션 적용, 초기화 시점일 경우 애니메이션 적용
-
+        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
         mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
     
@@ -230,8 +222,7 @@ extension MapViewController: CLLocationManagerDelegate {
             lng = Double(location.coordinate.longitude)
         }
         
-        print("lat: \(lat), lng: \(lng)")
-        guard let lat, let lng else { return }
+        guard let lng, let lat else { return }
         if didInitialized { // 맵뷰 초기 설정 이후일 경우
             viewModel.action(.didUpdateLocations(lat: lat, lng: lng))
         } else { // 맵뷰 초기 설정 이전일 경우
