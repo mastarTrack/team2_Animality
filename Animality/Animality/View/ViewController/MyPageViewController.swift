@@ -116,7 +116,7 @@ extension MyPageViewController {
             field.backgroundColor = isEditing ? .secondarySystemBackground : .clear
         }
 
-        modifyCencelButton.isHidden = !isEditing
+        modifyCancelButton.isHidden = !isEditing
         rentRegistListButton.isHidden = isEditing
 
         if !isEditing { view.endEditing(true) }
@@ -181,10 +181,10 @@ extension MyPageViewController {
             }
             }, for: .touchUpInside )
         
-        modifyCencelButton.addAction( UIAction { [weak self] _ in
+        modifyCancelButton.addAction( UIAction { [weak self] _ in
             guard let self else { return }
             self.setEditingMode(false)
-            self.cencelModifyClosure?()
+            self.cancelModifyClosure?()
         }, for: .touchUpInside )
         
         rentRegistListButton.addAction( UIAction { [weak self] _ in
@@ -194,7 +194,7 @@ extension MyPageViewController {
         
         view.addSubview(modifyButton)
         view.addSubview(rentRegistListButton)
-        view.addSubview(modifyCencelButton)
+        view.addSubview(modifyCancelButton)
         
         titleView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(15)
@@ -245,7 +245,7 @@ extension MyPageViewController {
             $0.trailing.equalToSuperview().inset(30)
         }
         
-        modifyCencelButton.snp.makeConstraints {
+        modifyCancelButton.snp.makeConstraints {
             $0.height.equalTo(50)
             $0.top.equalTo(modifyButton.snp.bottom).offset(15)
             $0.leading.equalToSuperview().offset(30)
