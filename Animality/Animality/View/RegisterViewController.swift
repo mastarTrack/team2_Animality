@@ -35,35 +35,31 @@ class RegisterViewController: UIViewController {
         
         // View → ViewModel
         registerView.onNameEntered = { [weak self] text in
-            self?.registerViewModel.action?(.enterName(text ?? ""))
-        }
-        
-        registerView.onCategorySelected = { [weak self] category in
-            self?.registerViewModel.action?(.categorySelected(category))
+            self?.registerViewModel.action(.enterName(text ?? ""))
         }
         
         registerView.onTypeSelected = { [weak self] type in
-            self?.registerViewModel.action?(.typeSelected(type))
+            self?.registerViewModel.action(.typeSelected(type))
         }
         
         registerView.onSizeSelected = { [weak self] size in
-            self?.registerViewModel.action?(.sizeSelected(size))
+            self?.registerViewModel.action(.sizeSelected(size))
         }
         
-        registerView.onPriceSelected = { [weak self] price in
-            self?.registerViewModel.action?(.pricePerHour(price))
+        registerView.onPriceEntered = { [weak self] price in
+            self?.registerViewModel.action(.pricePerHour(price ?? ""))
         }
         
-        registerView.onFlightSelected = { [weak self] isSelected in
-            self?.registerViewModel.action?(.flightCapability(isSelected))
+        registerView.onFlightSelected = { [weak self] flight in
+            self?.registerViewModel.action(.flightCapabilitySelected(flight))
         }
         
         registerView.onLocationSelected = { [weak self] lat, lon in
-            self?.registerViewModel.action?(.locationSelected(lat, lon))
+            self?.registerViewModel.action(.locationSelected(lat, lon))
         }
         
         registerView.onRegisterTapped = { [weak self] in
-            self?.registerViewModel.action?(.registerTapped)
+            self?.registerViewModel.action(.registerTapped)
         }
         
         // ViewModel → View
@@ -88,12 +84,13 @@ class RegisterViewController: UIViewController {
             registerView.updateRegisterButton(isEnabled)
             
         case .showAlert(let message):
-            // showErrorAlert(message: message)
-            print(message)
+            let alert = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "확인", style: .default))
+            present(alert, animated: true)
             
         case .registerSuccess:
             registerView.showSuccess()
-            self.navigationController?.popViewController(animated: true)
+            self.navigationController?.popViewController(animated: true) // 저장 성공시 이전 화면으로 이동학
         }
     }
 }
@@ -103,3 +100,4 @@ private extension RegisterViewController {
         // 버튼 활성화 처리하기
     }
 }
+
