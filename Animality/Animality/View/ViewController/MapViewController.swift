@@ -53,6 +53,18 @@ class MapViewController: UIViewController {
     }
 }
 
+//MARK: Set Layout & Attributes
+extension MapViewController {
+    private func setLayout() {
+        view.addSubview(mapView)
+
+        mapView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+}
+
+
 //MARK: Set MapView
 extension MapViewController {
     private func setMapView(lat: Double, lng: Double) {
@@ -68,12 +80,10 @@ extension MapViewController {
         mapView.positionMode = .direction // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
     }
     
-    private func setLayout() {
-        view.addSubview(mapView)
-
-        mapView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
-        }
+    // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
+    private func moveCameraPosition(lat: Double, lng: Double) {
+        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
+        mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
     
     //MARK: 마커의 생성과 배치
@@ -137,13 +147,7 @@ extension MapViewController {
     }
 }
 
-extension MapViewController {
-    // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
-    private func moveCameraPosition(lat: Double, lng: Double) {
-        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
-        mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
-    }
-}
+//MARK: CLLocationManagerDelegate
 extension MapViewController: CLLocationManagerDelegate {
     // 위치 정보 권한 상태 확인
     private func currentLocation() {
