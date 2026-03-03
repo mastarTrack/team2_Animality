@@ -14,7 +14,9 @@ class MapViewController: UIViewController {
     private let viewModel = LocationViewModel()
     
     private let mapView = NMFMapView(frame: .zero)
-
+    private let searchBar = UISearchBar()
+    private let currentLocationButton = UIButton()
+    
     private var didInitialized = false // 초기화 여부
     
     override func viewDidLoad() {
@@ -25,7 +27,7 @@ class MapViewController: UIViewController {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
         
-        currentLocation()
+        setAttributes()
         setLayout()
     }
     
@@ -53,8 +55,61 @@ class MapViewController: UIViewController {
     }
 }
 
-//MARK: Set MapView
+//MARK: Set Layout & Attributes
 extension MapViewController {
+    private func setLayout() {
+        view.addSubview(mapView)
+        view.addSubview(searchBar)
+        view.addSubview(currentLocationButton)
+        
+        mapView.snp.makeConstraints {
+            $0.edges.equalToSuperview()
+        }
+        
+        searchBar.snp.makeConstraints {
+            $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
+        }
+        
+        currentLocationButton.snp.makeConstraints {
+            $0.bottom.trailing.equalTo(view.safeAreaLayoutGuide).inset(10)
+            $0.width.height.equalTo(56)
+        }
+    }
+    
+    private func setAttributes() {
+        setSearchBar()
+        setButton()
+        currentLocation()
+    }
+    
+    private func setButton() {
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = .coralText
+        config.baseForegroundColor = .white
+        config.cornerStyle = .capsule
+        
+        currentLocationButton.configuration = config
+        
+        currentLocationButton.configurationUpdateHandler = { button in
+            let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
+            
+            button.configuration?.image =
+            button.isHighlighted ? UIImage(systemName: "location.fill")
+            : UIImage(systemName: "location", withConfiguration: imageConfig)
+        }
+    }
+    
+    private func setSearchBar() {
+        searchBar.searchBarStyle = .minimal
+        searchBar.backgroundColor = .clear
+        searchBar.placeholder = "검색할 장소를 입력해주세요."
+
+        searchBar.searchTextField.layer.borderColor = UIColor(resource: .deepRose).cgColor
+        searchBar.searchTextField.layer.borderWidth = 2
+        searchBar.searchTextField.backgroundColor = .white.withAlphaComponent(0.5)
+        searchBar.searchTextField.textColor = .secondaryText
+    }
+    
     private func setMapView(lat: Double, lng: Double) {
         mapView.mapType = .basic // 지도 유형 설정
         mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
@@ -67,13 +122,15 @@ extension MapViewController {
         locationOverlay.hidden = false // 오버레이 표시
         mapView.positionMode = .direction // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
     }
-    
-    private func setLayout() {
-        view.addSubview(mapView)
+}
 
-        mapView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
-        }
+
+//MARK: MapView
+extension MapViewController {
+    // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
+    private func moveCameraPosition(lat: Double, lng: Double) {
+        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
+        mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
     
     //MARK: 마커의 생성과 배치
@@ -137,13 +194,7 @@ extension MapViewController {
     }
 }
 
-extension MapViewController {
-    // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
-    private func moveCameraPosition(lat: Double, lng: Double) {
-        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
-        mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
-    }
-}
+//MARK: CLLocationManagerDelegate
 extension MapViewController: CLLocationManagerDelegate {
     // 위치 정보 권한 상태 확인
     private func currentLocation() {
@@ -179,6 +230,10 @@ extension MapViewController: CLLocationManagerDelegate {
         }
         
         locationManager.stopUpdatingLocation()
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        currentLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
