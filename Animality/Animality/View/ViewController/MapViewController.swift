@@ -14,6 +14,7 @@ class MapViewController: UIViewController {
     private let viewModel = LocationViewModel()
     
     private let mapView = NMFMapView(frame: .zero)
+    private let searchBar = UISearchBar()
     private let currentLocationButton = UIButton()
     
     private var didInitialized = false // 초기화 여부
@@ -58,10 +59,15 @@ class MapViewController: UIViewController {
 extension MapViewController {
     private func setLayout() {
         view.addSubview(mapView)
+        view.addSubview(searchBar)
         view.addSubview(currentLocationButton)
         
         mapView.snp.makeConstraints {
             $0.edges.equalToSuperview()
+        }
+        
+        searchBar.snp.makeConstraints {
+            $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
         }
         
         currentLocationButton.snp.makeConstraints {
@@ -71,6 +77,7 @@ extension MapViewController {
     }
     
     private func setAttributes() {
+        setSearchBar()
         setButton()
         currentLocation()
     }
@@ -92,6 +99,14 @@ extension MapViewController {
                 break
             }
         }
+    }
+    
+    private func setSearchBar() {
+        searchBar.searchBarStyle = .minimal
+        searchBar.backgroundColor = .clear
+        searchBar.placeholder = "검색할 장소를 입력해주세요."
+        searchBar.searchTextField.backgroundColor = .rose.withAlphaComponent(0.5)
+        searchBar.searchTextField.textColor = .secondaryText
     }
     
     private func setMapView(lat: Double, lng: Double) {
