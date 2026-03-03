@@ -14,7 +14,8 @@ class MapViewController: UIViewController {
     private let viewModel = LocationViewModel()
     
     private let mapView = NMFMapView(frame: .zero)
-
+    private let currentLocationButton = UIButton()
+    
     private var didInitialized = false // 초기화 여부
     
     override func viewDidLoad() {
@@ -25,7 +26,7 @@ class MapViewController: UIViewController {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
         
-        currentLocation()
+        setAttributes()
         setLayout()
     }
     
@@ -57,16 +58,42 @@ class MapViewController: UIViewController {
 extension MapViewController {
     private func setLayout() {
         view.addSubview(mapView)
-
+        mapView.addSubview(currentLocationButton)
+        
         mapView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
+        
+        currentLocationButton.snp.makeConstraints {
+            $0.bottom.trailing.equalTo(view.safeAreaLayoutGuide).inset(10)
+            $0.width.height.equalTo(56)
+        }
     }
-}
-
-
-//MARK: Set MapView
-extension MapViewController {
+    
+    private func setAttributes() {
+        setButton()
+        currentLocation()
+    }
+    
+    private func setButton() {
+        currentLocationButton.configuration = UIButton.Configuration.filled()
+        currentLocationButton.configuration?.baseBackgroundColor = .deepRose
+        currentLocationButton.configuration?.baseForegroundColor = .deepSerenity
+        currentLocationButton.configuration?.cornerStyle = .capsule
+        
+        currentLocationButton.configurationUpdateHandler = { button in
+            switch button.state {
+            case .normal:
+                button.configuration?.image = UIImage(systemName: "location")
+            case .highlighted:
+                button.configuration?.image = UIImage(systemName: "location.fill")
+                
+            default:
+                break
+            }
+        }
+    }
+    
     private func setMapView(lat: Double, lng: Double) {
         mapView.mapType = .basic // 지도 유형 설정
         mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
@@ -79,7 +106,11 @@ extension MapViewController {
         locationOverlay.hidden = false // 오버레이 표시
         mapView.positionMode = .direction // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
     }
-    
+}
+
+
+//MARK: MapView
+extension MapViewController {
     // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
     private func moveCameraPosition(lat: Double, lng: Double) {
         let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
@@ -183,6 +214,10 @@ extension MapViewController: CLLocationManagerDelegate {
         }
         
         locationManager.stopUpdatingLocation()
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        currentLocation()
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
