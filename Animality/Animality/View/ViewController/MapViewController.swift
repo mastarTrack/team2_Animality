@@ -83,10 +83,12 @@ extension MapViewController {
     }
     
     private func setButton() {
-        currentLocationButton.configuration = UIButton.Configuration.filled()
-        currentLocationButton.configuration?.baseBackgroundColor = .deepRose
-        currentLocationButton.configuration?.baseForegroundColor = .deepSerenity
-        currentLocationButton.configuration?.cornerStyle = .capsule
+        var config = UIButton.Configuration.filled()
+        config.baseBackgroundColor = .deepRose
+        config.baseForegroundColor = .deepSerenity
+        config.cornerStyle = .capsule
+        
+        currentLocationButton.configuration = config
         
         currentLocationButton.configurationUpdateHandler = { button in
             switch button.state {
