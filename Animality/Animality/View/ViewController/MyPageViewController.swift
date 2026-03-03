@@ -69,7 +69,7 @@ class MyPageViewController : UIViewController {
         $0.layer.borderColor = UIColor.systemGray.cgColor
     }
     /// 수정 취소 버튼
-    private let modifyCencelButton = UIButton().then {
+    private let modifyCancelButton = UIButton().then {
         $0.setTitle("수정 취소", for: .normal)
         $0.backgroundColor = .white
         $0.setTitleColor(.systemGray, for: .normal)
@@ -83,7 +83,7 @@ class MyPageViewController : UIViewController {
     /// 수정 완료 클로저
     var approveModifyClosure: (()->Void)?
     /// 수정 취소 클로져
-    var cencelModifyClosure: (()->Void)?
+    var cancelModifyClosure: (()->Void)?
     
     //MARK: - Init
     override func viewDidLoad() {
@@ -139,7 +139,7 @@ extension MyPageViewController {
         
         let ui = [idLabel, nameField, emailField, registLabel, rentCountLabel]
         
-        let titleLabels = ["아이디", "이름", "이메일", "가입 날자", "렌탈 횟수"].map{
+        let titleLabels = ["아이디", "이름", "이메일", "가입 날짜", "렌탈 횟수"].map{
             title -> UILabel in
             let label = UILabel().then {
                 $0.text = title
