@@ -569,6 +569,3 @@ extension RegisterViewTest {
         print("저장에 성공했습니다.")
     }
 }
-#Preview {
-    RegisterViewController()
-}
