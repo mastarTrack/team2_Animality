@@ -35,25 +35,21 @@ struct UpdateAnimalModel {
 
 
 // MARK: -- 코어데이터 매니저
-class CoreDataManager {
-    
-    static let shared = CoreDataManager()
-    private init() {}
-    
-    
+final class CoreDataManager {
+
     // MARK: - Core Data stack
     // persistentContainer 설정
-    private lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "Animality")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                print("CoreData 로드 실페: \(error.localizedDescription)")
-                // Alert로 사용자에 알림창으로 에러 알림하는 로직 추가 예정
+    private let persistentContainer: NSPersistentContainer
+        
+        init(modelName: String = "Animality") {
+            persistentContainer = NSPersistentContainer(name: modelName)
+            persistentContainer.loadPersistentStores { _, error in
+                if let error = error {
+                    print("CoreData 로드 실패: \(error.localizedDescription)")
+                }
             }
-        })
-        return container
-    }()
-    
+        }
+
     // context로 데이터 추출
     private var context: NSManagedObjectContext {
         return persistentContainer.viewContext
