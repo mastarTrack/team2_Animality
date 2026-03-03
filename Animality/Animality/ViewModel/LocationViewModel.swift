@@ -87,9 +87,8 @@ class LocationViewModel: ViewModelProtocol {
     //TODO: 화면에 보이는 지도 범위 내의 마커들만 생성해도 되지 않을까? - VC에서 설정해야할 것 같긴 함
     private func fetchMarkers(of data: [Coordinate: [Animal]]) -> [(type: AnimalType, coordinate: Coordinate)] {
         return data.reduce(into: [(type: AnimalType, coordinate: Coordinate)]()) { arr, point in
-            // 타겟 좌표의 동물 타입들을 가나다 순 정렬
-            let types = point.value.map { $0.type }.sorted(by: { $0.rawValue < $1.rawValue })
-            
+            // 타겟 좌표의 동물 타입 배열
+            let types = point.value.map { $0.type }
             guard !types.isEmpty else { return }
             
             if types.count == 1 { // 동물 타입이 한가지일 경우
@@ -100,7 +99,14 @@ class LocationViewModel: ViewModelProtocol {
                     typeCount[t, default: 0] += 1
                     
                     // 가장 수가 많은 동물 타입 (동일할 경우 가나다순)
-                    let type = typeCount.sorted(by: { $0.value > $1.value }).first!.key
+                    let type = typeCount.sorted(by: {
+                        if $0.value != $1.value {
+                            return $0.value > $1.value
+                        } else {
+                            return $0.key.rawValue < $1.key.rawValue
+                        }
+                    }).first!.key
+                    
                     arr.append((type: type, coordinate: point.key))
                 }
             }
