@@ -2,6 +2,10 @@ import Foundation
 
 class RegisterViewModel: ViewModelProtocol {
     
+    let coreDataManager = CoreDataManager()
+    
+    
+    
     // MARK: -- Action, State
     
     enum Action {
@@ -18,54 +22,14 @@ class RegisterViewModel: ViewModelProtocol {
         case none
         case validationChanged(Bool)    // 버튼 활성화 여부
         case showAlert(String)
-        case registerSuccess
+        case registerSuccess            // 저장 완료
     }
     
     // VC가 이 클로저 이용해서 상태 변화 감지
     var stateChanged: ((State) -> Void)?
-    
-    var state: State = .none {
+    private(set) var state: State = .none {
         didSet {
             stateChanged?(state)
-        }
-    }
-    
-    lazy var action: ((Action) -> Void)? = { [weak self] action in
-        guard let self else { return }
-        
-        switch action {
-            
-        case .enterName(let name):
-            self.name = name
-            self.validate()         // 유효성 검사
-
-        case .sizeSelected(let size):
-            self.size = size
-            self.validate()
-            
-        case .typeSelected(let type):
-            self.type = type
-            self.validate()
-            
-        case .flightCapabilitySelected(let flight):
-            self.flightCapability = flight
-            self.validate()
-            
-        case .pricePerHour(let price):
-            if let priceValue = Int32(price) {
-                self.pricePerHour = priceValue
-            } else {
-                self.pricePerHour = nil
-            }
-            self.validate()
-            
-        case .locationSelected(let lat, let lon):
-            self.latitude = lat
-            self.longitude = lon
-            self.validate()
-            
-        case .registerTapped:
-            self.register() // 저장 로직 실행
         }
     }
     
@@ -77,15 +41,43 @@ class RegisterViewModel: ViewModelProtocol {
     private var type: AnimalType?
     private var size: AnimalSize?
     private var flightCapability: FlightCapability?
-    private var pricePerHour: Int32?
-    private var latitude: Double?
-    private var longitude: Double?
+    private var pricePerHour: Int?
+    private var latitude: Double? = 37.5665 // 예시 위경도 값
+    private var longitude: Double? = 123.432
     
+    // VC가 호출할 Action함수
+    func action(_ action: Action) {
+        switch action {
+            
+        case .enterName(let name):
+            self.name = name
+            
+        case .sizeSelected(let size):
+            self.size = size
+            
+        case .typeSelected(let type):
+            self.type = type
+            
+        case .flightCapabilitySelected(let flight):
+            self.flightCapability = flight
+            
+        case .pricePerHour(let price):
+            self.pricePerHour = Int(price)
+            
+        case .locationSelected(let lat, let lon):
+            self.latitude = lat
+            self.longitude = lon
+            
+        case .registerTapped:
+            self.register() // 저장 로직 실행
+            return
+        }
+        validate() // 값이 들어올때마다 검사하기
+    }
     
     // MARK: -- 유효성 검사 Validation
     
     private func validate() {
-        
         // 모든 프로퍼티가 nil값이 아닌지
         let isValid =
         !(name?.isEmpty ?? true) &&
@@ -139,14 +131,15 @@ class RegisterViewModel: ViewModelProtocol {
             size: animal.size.rawValue,
             latitude: animal.currentLocation.latitude,
             longitude: animal.currentLocation.longitude,
-            pricePerHour: Int32(animal.pricePerHour),
+            price: Int32(animal.pricePerHour),
             status: animal.status.rawValue,
-            flightCapability: animal.flightCapability == .canFly ? "가능" : "불가"
+            flight: animal.flightCapability.rawValue
         )
-        
-        CoreDataManager.shared.createAnimalEntity(with: payload)
+
+        coreDataManager.createAnimalEntity(with: payload)
         
         // 저장 완료 상태 저장
         state = .registerSuccess
     }
 }
+
