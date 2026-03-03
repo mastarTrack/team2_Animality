@@ -122,6 +122,11 @@ extension MapViewController {
         locationOverlay.hidden = false // 오버레이 표시
         mapView.positionMode = .direction // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
     }
+    
+    private func convert() {
+//        let tm128 = NMGTm128(x: <#T##Double#>, y: <#T##Double#>).toLatLng()
+        
+    }
 }
 
 
@@ -227,6 +232,7 @@ extension MapViewController: CLLocationManagerDelegate {
             didInitialized = true // 초기화 여부 변경
         }
         
+        print(NMGWebMercatorCoord(from: NMGLatLng(lat: lat, lng: lng)))
         locationManager.stopUpdatingLocation()
     }
     

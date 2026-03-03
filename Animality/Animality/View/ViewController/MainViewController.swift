@@ -11,7 +11,7 @@ import Then
 
 /// 메인 화면 ViewController
 class MainViewController: UITabBarController {
-    
+    let networkManager = NetworkManager()
     // MARK: - Mockup Data
     /// 임시 탭바에 넣은 탭바아이템 목업 데이터
     private let tabItems: [TabItem] = [
@@ -40,8 +40,19 @@ class MainViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        Task {
+            await search()
+        }
     }
     
+    func search() async {
+        do {
+            let result = try await networkManager.searchLocationData(of: "서울시청")
+            print(result)
+        } catch {
+            print("\(error)검색 실패")
+        }
+    }
 }
 
 //MARK: - METHOD: TAB BAR METHOD

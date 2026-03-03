@@ -8,4 +8,6 @@
 struct Keys: Codable {
     var client: String
     var secret: String
+    var searchClient: String
+    var searchSecret: String
 }
