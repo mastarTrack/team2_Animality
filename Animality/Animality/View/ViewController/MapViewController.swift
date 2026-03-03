@@ -58,10 +58,10 @@ class MapViewController: UIViewController {
 extension MapViewController {
     private func setLayout() {
         view.addSubview(mapView)
-        mapView.addSubview(currentLocationButton)
+        view.addSubview(currentLocationButton)
         
         mapView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
+            $0.edges.equalToSuperview()
         }
         
         currentLocationButton.snp.makeConstraints {
