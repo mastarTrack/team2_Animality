@@ -7,12 +7,24 @@
 
 struct SearchResponse: Codable {
     let items: [Items]
+    
+    enum CodingKeys: CodingKey {
+        case items
+    }
 }
 
 struct Items: Codable {
     let title: String?
     let roadAddress: String?
     let telephone: String?
-    let mapx: Int?
-    let mapy: Int?
+    let mapx: String?
+    let mapy: String?
+    
+    enum CodingKeys: CodingKey {
+        case title
+        case roadAddress
+        case telephone
+        case mapx
+        case mapy
+    }
 }
