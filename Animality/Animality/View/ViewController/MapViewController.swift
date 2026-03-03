@@ -14,7 +14,8 @@ class MapViewController: UIViewController {
     private let viewModel = LocationViewModel()
     
     private let mapView = NMFMapView(frame: .zero)
-
+    private let searchBar = UISearchBar()
+    
     private var didInitialized = false // 초기화 여부
     
     override func viewDidLoad() {
@@ -25,7 +26,7 @@ class MapViewController: UIViewController {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
         
-        currentLocation()
+        setAttributes()
         setLayout()
     }
     
@@ -53,6 +54,34 @@ class MapViewController: UIViewController {
     }
 }
 
+extension MapViewController {
+    private func setLayout() {
+        view.addSubview(mapView)
+        mapView.addSubview(searchBar)
+        
+        mapView.snp.makeConstraints {
+            $0.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        
+        searchBar.snp.makeConstraints {
+            $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
+        }
+    }
+    
+    private func setAttributes() {
+        setSearchBar()
+        currentLocation()
+    }
+    
+    private func setSearchBar() {
+        searchBar.searchBarStyle = .minimal
+        searchBar.backgroundColor = .clear
+        searchBar.placeholder = "검색할 장소를 입력해주세요."
+        searchBar.searchTextField.backgroundColor = .rose.withAlphaComponent(0.5)
+        searchBar.searchTextField.textColor = .secondaryText
+    }
+}
+
 //MARK: Set MapView
 extension MapViewController {
     private func setMapView(lat: Double, lng: Double) {
@@ -68,13 +97,7 @@ extension MapViewController {
         mapView.positionMode = .direction // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
     }
     
-    private func setLayout() {
-        view.addSubview(mapView)
-
-        mapView.snp.makeConstraints {
-            $0.edges.equalTo(view.safeAreaLayoutGuide)
-        }
-    }
+    
     
     //MARK: 마커의 생성과 배치
     /*
