@@ -94,25 +94,23 @@ extension MapViewController {
     
     // 마커 생성 - 백그라운드 스레드에서 비동기적으로 동작
     @BackgroundActor
-    private func makeMarkers(_ markers: [(type: String, lat: Double, lng: Double)]) async -> [NMFMarker] {
-        return markers.reduce(into: [NMFMarker]()) {
+    private func makeMarkers(_ data: [(type: AnimalType, coordinate: Coordinate)]) async -> [NMFMarker] {
+        return data.reduce(into: [NMFMarker]()) {
             let marker = NMFMarker()
-            marker.position = NMGLatLng(lat: $1.lat, lng: $1.lng) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
+            marker.position = NMGLatLng(lat: $1.coordinate.latitude, lng: $1.coordinate.longitude) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
             
             // 마커 아이콘 설정
             switch $1.type {
-            case "강아지":
+            case .dog:
                 marker.iconImage = NMFOverlayImage(image: .dogPin)
-            case "고양이":
+            case .cat:
                 marker.iconImage = NMFOverlayImage(image: .catPin)
-            case "페가수스":
+            case .pegasus:
                 marker.iconImage = NMFOverlayImage(image: .pegasusPin)
-            case "유니콘":
+            case .unicorn:
                 marker.iconImage = NMFOverlayImage(image: .unicornPin)
-            case "초코보":
+            case .chocobo:
                 marker.iconImage = NMFOverlayImage(image: .chocoboPin)
-            default:
-                break
             }
             
             // 마커 사이즈
