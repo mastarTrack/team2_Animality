@@ -19,7 +19,8 @@ class MainViewController: UITabBarController {
             title: "Home",
             imageName: "house",
             selectedImageName: "house.fill",
-            viewControllerType: UIViewController.self,
+//            viewControllerType: UIViewController.self,
+            viewControllerType: MapViewController.self,
         ),
         TabItem(
             title: "Setting",
