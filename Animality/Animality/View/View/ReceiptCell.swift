@@ -84,19 +84,19 @@ extension ReceiptCell {
         locationLabel.text = location
         rentStartTimeLabel.text = startTime.formatted()
         rentEndTimeLabel.text = endTime.formatted()
-        totalAmountLabel.text = String(amount)
+        totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
         
         switch state {
-        case .Completed:
+        case .completed:
             stateLabel.backgroundColor = UIColor(hexCode: "#DCFCE7")
             stateLabel.textColor = UIColor(hexCode: "#008236")
             stateLabel.text = "Completed"
-        case .Renting:
+        case .renting:
             stateLabel.backgroundColor = UIColor(hexCode: "#DBEAFE")
             stateLabel.textColor = UIColor(hexCode: "#1D4ED8")
             stateLabel.text = "Renting"
 
-        case .Cancel:
+        case .cancel:
             stateLabel.backgroundColor = UIColor(hexCode: "#FEE2E2")
             stateLabel.textColor = UIColor(hexCode: "#DC2626")
             stateLabel.text = "Cancel"
@@ -235,7 +235,7 @@ extension ReceiptCell {
     cell.frame = CGRect(x: 0, y: 0, width: 300, height: 150)
     cell.updateUI(
         name: "황금 유니콘",
-        state: .Completed,
+        state: .completed,
         location: "강남",
         startTime: Date(),
         endTime: Date(),
