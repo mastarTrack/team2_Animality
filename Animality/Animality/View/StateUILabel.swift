@@ -10,7 +10,7 @@ import UIKit
 /// 상태 UILabel
 class StateUILabel: UILabel {
     
-    enum states {
+    enum state {
         case completed
         case renting
         case cancel
@@ -28,7 +28,7 @@ class StateUILabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateUI(state: states, _ inputFont: UIFont?) {
+    func updateUI(state: state, _ inputFont: UIFont?) {
         switch state {
         case .completed:
             backgroundColor = UIColor(hexCode: "#DCFCE7")

@@ -25,7 +25,7 @@ class ReceiptDetailViewController: UIViewController {
     
     //MARK: - Closures
     /// 마이페이지(이용내역) 클로저
-    var maypageClosure: (()->Void)?
+    var myPageClosure: (()->Void)?
     
     //MARK: - Components
     /// 렌트 상태 라벨
@@ -129,7 +129,7 @@ extension ReceiptDetailViewController {
 
 //MARK: - METHOD: Button Action
 extension ReceiptDetailViewController {
-    func returnPage(){
+    private func returnPage(){
         navigationController?.popViewController(animated: true)
     }
 }
@@ -138,7 +138,7 @@ extension ReceiptDetailViewController {
 
 //MARK: - METHOD: Configure UI
 extension ReceiptDetailViewController {
-    func ConfigureUI(type: pageType) {
+    private func ConfigureUI(type: pageType) {
         
         let reciptView = UIView().then {
             $0.backgroundColor = .deepRose
@@ -298,7 +298,7 @@ extension ReceiptDetailViewController {
                 $0.height.equalTo(45)
             }
             mypageButton.addAction(UIAction { [weak self] _ in
-                self?.maypageClosure?()
+                self?.myPageClosure?()
             }, for: .touchUpInside)
         }
         returnButton.addAction(UIAction { [weak self] _ in
