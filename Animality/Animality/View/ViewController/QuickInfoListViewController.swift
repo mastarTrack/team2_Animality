@@ -39,7 +39,7 @@ class QuickInfoListViewController: UIViewController {
 extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        var count = 0
+        let count = 0
         return count
     }
     
@@ -51,15 +51,15 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
 
 //MARK: - METHOD: Compositional Layout
 extension QuickInfoListViewController {
-    func getSection() -> NSCollectionLayoutSection {
-    
+    private  func getSection() -> NSCollectionLayoutSection {
+        
         let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .estimated(313), heightDimension: .estimated(196)))
         
         let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .estimated(313), heightDimension: .estimated(196)), subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
         section.contentInsets = .init(top: 9, leading: 0, bottom: 9, trailing: 0)
-
+        
         return section
     }
     
@@ -67,7 +67,7 @@ extension QuickInfoListViewController {
 
 //MARK: - CONFIGURE UI
 extension QuickInfoListViewController {
-    func configureUI() {
+    private func configureUI() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(section: getSection()))
         
         guard let collectionView else {return}
@@ -81,13 +81,11 @@ extension QuickInfoListViewController {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(10)
             $0.leading.equalToSuperview().offset(10)
             $0.bottom.trailing.equalToSuperview().inset(10)
-            $0.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints {
             $0.top.equalTo(view.safeAreaLayoutGuide).offset(10)
             $0.leading.equalToSuperview().offset(10)
             $0.bottom.trailing.equalToSuperview().inset(10)
-            $0.center.equalToSuperview()
         }
     }
     
