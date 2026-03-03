@@ -99,13 +99,13 @@ class LocationViewModel: ViewModelProtocol {
                     typeCount[t, default: 0] += 1
                     
                     // 가장 수가 많은 동물 타입 (동일할 경우 가나다순)
-                    let type = typeCount.sorted(by: {
+                    let type = typeCount.sorted {
                         if $0.value != $1.value {
                             return $0.value > $1.value
                         } else {
                             return $0.key.rawValue < $1.key.rawValue
                         }
-                    }).first!.key
+                    }.first!.key
                     
                     arr.append((type: type, coordinate: point.key))
                 }
