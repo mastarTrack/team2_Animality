@@ -38,11 +38,7 @@ class RegisterViewModel: ViewModelProtocol {
         case .enterName(let name):
             self.name = name
             self.validate()         // 유효성 검사
-            
-        case .categorySelected(let category):
-            self.category = category
-            self.validate()
-            
+
         case .sizeSelected(let size):
             self.size = size
             self.validate()
@@ -51,7 +47,7 @@ class RegisterViewModel: ViewModelProtocol {
             self.type = type
             self.validate()
             
-        case .flightCapability(let flight):
+        case .flightCapabilitySelected(let flight):
             self.flightCapability = flight
             self.validate()
             
