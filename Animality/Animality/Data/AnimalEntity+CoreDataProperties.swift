@@ -27,6 +27,7 @@ extension AnimalEntity {
     @NSManaged public var size: String?
     @NSManaged public var pricePerHour: Int32
     @NSManaged public var status: String
+    @NSManaged public var flightCapability: String?
 }
 
 extension AnimalEntity : Identifiable {
