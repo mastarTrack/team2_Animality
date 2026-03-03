@@ -103,7 +103,7 @@ enum AnimalSize: String {
 }
 
 // MARK: 비행 가능 여부
-enum FlightCapability {
-    case canFly
-    case cannotFly
+enum FlightCapability: String {
+    case canFly = "비행 가능"
+    case cannotFly = "비행 불가능"
 }
