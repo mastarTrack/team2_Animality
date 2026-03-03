@@ -91,17 +91,11 @@ extension MapViewController {
         currentLocationButton.configuration = config
         
         currentLocationButton.configurationUpdateHandler = { button in
-            switch button.state {
-            case .normal:
-                let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
-                button.configuration?.image = UIImage(systemName: "location", withConfiguration: imageConfig)
+            let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
             
-            case .highlighted:
-                button.configuration?.image = UIImage(systemName: "location.fill")
-                
-            default:
-                break
-            }
+            button.configuration?.image =
+            button.isHighlighted ? UIImage(systemName: "location.fill")
+            : UIImage(systemName: "location", withConfiguration: imageConfig)
         }
     }
     
