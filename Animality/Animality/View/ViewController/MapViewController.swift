@@ -138,7 +138,7 @@ extension MapViewController {
     // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
     private func moveCameraPosition(lat: Double, lng: Double) {
         let cameraPosition = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat, lng: lng))
-        cameraPosition.animation = didInitialized ? .fly : .none // 초기화 되었을 경우 애니메이션 적용, 초기화 시점일 경우 애니메이션 적용
+        cameraPosition.animation = didInitialized ? .fly : .none // 초기화 이후에만 애니메이션 적용
         
         mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
