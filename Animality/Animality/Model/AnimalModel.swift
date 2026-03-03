@@ -63,7 +63,7 @@ struct Animal {
 }
 
 // MARK: 위경도
-struct Coordinate {
+struct Coordinate: Hashable {
     var latitude: Double
     var longitude: Double
 }

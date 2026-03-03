@@ -43,7 +43,7 @@ class LocationViewModel: ViewModelProtocol {
     }
     
     // 프로퍼티 선언
-    let coreDataManager = TestCoreDataManager()
+    let coreDataManager = CoreDataManager()
 
     private var coordinates = [Coordinate: [AnimalEntity]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     
@@ -80,9 +80,4 @@ class LocationViewModel: ViewModelProtocol {
         }
     }
 
-}
-
-struct Coordinate: Hashable {
-    var latitude: Double
-    var longitude: Double
 }

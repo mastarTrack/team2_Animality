@@ -107,14 +107,14 @@ class ReceiptDetailViewController: UIViewController {
 
 //MARK: - METHOD: Update UI
 extension ReceiptDetailViewController {
-    func updateUI(rentState: StateUILabel.states,
+    func updateUI(rentState: StateUILabel.state,
                   amount: Int,
                   name: String,
                   location: String,
                   rentpaymentTime: Date,
                   rentStartTime: Date,
                   rentEndTime: Date,
-                  paystate: StateUILabel.states
+                  paystate: StateUILabel.state
     ) {
         stateLabel.updateUI(state: rentState, nil)
         totalAmountLabel.text = amount.formatted(.number)
