@@ -7,14 +7,20 @@
 
 import UIKit
 import CoreData
+import NMapsMap
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // 네이버 지도 API 사용 키 등록
+        let networkManager = NetworkManager()
+        guard let clientId = networkManager.clientId else { return false }
+        
+        NMFAuthManager.shared().ncpKeyId = clientId
+        
         return true
     }
 
