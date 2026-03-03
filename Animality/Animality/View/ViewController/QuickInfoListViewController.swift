@@ -23,6 +23,7 @@ class QuickInfoListViewController: UIViewController {
         $0.font = .boldSystemFont(ofSize: 24)
         $0.textColor = .systemGray
         $0.textAlignment = .center
+        $0.isHidden = true
     }
     
     //MARK: - Closures
@@ -39,12 +40,12 @@ class QuickInfoListViewController: UIViewController {
 extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let count = 0
+        let count = 10
         return count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReceiptCell.identifier, for: indexPath)
         return cell
     }
 }
@@ -58,8 +59,13 @@ extension QuickInfoListViewController {
         let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .estimated(313), heightDimension: .estimated(196)), subitems: [item])
         
         let section = NSCollectionLayoutSection(group: group)
-        section.contentInsets = .init(top: 9, leading: 0, bottom: 9, trailing: 0)
-        
+        section.contentInsets = NSDirectionalEdgeInsets(
+            top: 10,
+            leading: (UIScreen.main.bounds.width - 348) / 2,
+            bottom: 10,
+            trailing: (UIScreen.main.bounds.width - 303) / 2
+        )
+        section.interGroupSpacing = 16 
         return section
     }
     
@@ -70,7 +76,9 @@ extension QuickInfoListViewController {
     private func configureUI() {
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewCompositionalLayout(section: getSection()))
         
+        
         guard let collectionView else {return}
+        collectionView.register(ReceiptCell.self, forCellWithReuseIdentifier: ReceiptCell.identifier)
         collectionView.delegate = self
         collectionView.dataSource = self
         

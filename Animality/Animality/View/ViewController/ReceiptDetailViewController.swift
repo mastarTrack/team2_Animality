@@ -127,8 +127,20 @@ extension ReceiptDetailViewController {
     }
 }
 
-//MARK: - METHOD: Button Action
+//MARK: - METHOD: Button Action Binding
 extension ReceiptDetailViewController {
+    
+    private func bindingButtonAction(type: pageType) {
+        if type == .endPay {
+            mypageButton.addAction(UIAction { [weak self] _ in
+                self?.myPageClosure?()
+            }, for: .touchUpInside)
+        }
+        returnButton.addAction(UIAction { [weak self] _ in
+            self?.returnPage()
+        }, for: .touchUpInside)
+    }
+    
     private func returnPage(){
         navigationController?.popViewController(animated: true)
     }
@@ -139,6 +151,8 @@ extension ReceiptDetailViewController {
 //MARK: - METHOD: Configure UI
 extension ReceiptDetailViewController {
     private func ConfigureUI(type: pageType) {
+        
+        bindingButtonAction(type: type)
         
         let reciptView = UIView().then {
             $0.backgroundColor = .deepRose
@@ -297,13 +311,7 @@ extension ReceiptDetailViewController {
                 $0.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(45)
             }
-            mypageButton.addAction(UIAction { [weak self] _ in
-                self?.myPageClosure?()
-            }, for: .touchUpInside)
         }
-        returnButton.addAction(UIAction { [weak self] _ in
-            self?.returnPage()
-        }, for: .touchUpInside)
     }
 }
 
