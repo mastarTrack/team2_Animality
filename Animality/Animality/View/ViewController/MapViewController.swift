@@ -83,6 +83,7 @@ extension MapViewController {
     }
     
     private func setButton() {
+        // configuration
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = .coralText
         config.baseForegroundColor = .white
@@ -97,6 +98,12 @@ extension MapViewController {
             button.isHighlighted ? UIImage(systemName: "location.fill")
             : UIImage(systemName: "location", withConfiguration: imageConfig)
         }
+        
+        // action
+        let move = UIAction { [weak self] _ in
+            self?.currentLocation()
+        }
+        currentLocationButton.addAction(move, for: .touchUpInside)
     }
     
     private func setSearchBar() {
@@ -129,7 +136,9 @@ extension MapViewController {
 extension MapViewController {
     // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
     private func moveCameraPosition(lat: Double, lng: Double) {
-        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
+        let cameraPosition = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat, lng: lng))
+        cameraPosition.animation = didInitialized ? .fly : .none // 초기화 이후에만 애니메이션 적용
+        
         mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
     
@@ -219,7 +228,7 @@ extension MapViewController: CLLocationManagerDelegate {
             lng = Double(location.coordinate.longitude)
         }
         
-        guard let lng, let lat else { return }
+        guard let lat, let lng else { return }
         if didInitialized { // 맵뷰 초기 설정 이후일 경우
             viewModel.action(.didUpdateLocations(lat: lat, lng: lng))
         } else { // 맵뷰 초기 설정 이전일 경우
