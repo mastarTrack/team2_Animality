@@ -149,7 +149,7 @@ final class DetailView: UIView {
         case "pet":
             iconImageView.image = UIImage(systemName: "pawprint.fill")
         default:
-            return
+            iconImageView.image = nil
         }
         
         infoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }

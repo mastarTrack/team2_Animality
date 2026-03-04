@@ -31,6 +31,8 @@ final class DetailViewController: UIViewController {
         bindActions()
 
         guard let id = animalID else {
+            print("Error: animalID is nil")
+            navigationController?.popViewController(animated: true)
             return
         }
         // 바인딩 이후에 액션 호출

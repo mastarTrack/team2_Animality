@@ -88,7 +88,7 @@ final class DetailViewModel: ViewModelProtocol {
             pricePerHour: Int(entity.pricePerHour),
             currentLocation: Coordinate(latitude: entity.latitude, longitude: entity.longitude),
             size: size,
-            flightCapability: flight!
+            flightCapability: FlightCapability(rawValue: entity.flightCapability ?? "") ?? .cannotFly
         )
     }
 }
