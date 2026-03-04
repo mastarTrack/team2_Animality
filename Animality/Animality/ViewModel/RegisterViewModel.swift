@@ -125,7 +125,7 @@ class RegisterViewModel: ViewModelProtocol {
         
 
 
-        coreDataManager.createAnimalEntity(with: payload)
+        coreDataManager.createAnimalEntity(animal:animal)
         
         // 저장 완료 상태 저장
         state = .registerSuccess

@@ -10,7 +10,7 @@ import UIKit
 /// 상태 UILabel
 class StateUILabel: UILabel {
     
-    enum state {
+    enum state: String {
         case completed
         case renting
         case cancel

@@ -143,7 +143,7 @@ extension ReceiptDetailViewController {
 extension ReceiptDetailViewController {
     // UI 업데이트 메소드
     func updateUI(rentState: StateUILabel.state,
-                  amount: Int,
+                  amount: Int64,
                   name: String,
                   location: String,
                   rentpaymentTime: Date,

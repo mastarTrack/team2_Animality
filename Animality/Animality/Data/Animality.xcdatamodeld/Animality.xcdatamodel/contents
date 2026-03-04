@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25B78" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="24512" systemVersion="25C56" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="AnimalEntity" representedClassName="AnimalEntity" syncable="YES">
         <attribute name="category" optional="YES" attributeType="String"/>
         <attribute name="flightCapability" optional="YES" attributeType="String"/>
@@ -11,5 +11,17 @@
         <attribute name="size" optional="YES" attributeType="String"/>
         <attribute name="status" optional="YES" attributeType="String"/>
         <attribute name="type" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="Receipt" representedClassName="Receipt" syncable="YES">
+        <attribute name="amount" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="animalId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
+        <attribute name="payState" optional="YES" attributeType="String"/>
+        <attribute name="rentEndTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="rentPaymentTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="rentStartTime" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="rentState" optional="YES" attributeType="String"/>
+        <attribute name="userId" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
     </entity>
 </model>

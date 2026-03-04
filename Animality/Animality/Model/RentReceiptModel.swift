@@ -18,7 +18,7 @@ struct RentReceipt {
     /// 대여한 동물
     let animalId: UUID
     /// 결제 금액
-    let amount: Int
+    let amount: Int64
     /// 대여 장소
     let location: String?
     /// 결제 시간

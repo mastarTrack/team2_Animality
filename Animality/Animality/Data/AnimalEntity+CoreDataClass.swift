@@ -25,8 +25,5 @@ public class AnimalEntity: NSManagedObject {
         static let pricePerHour  = "pricePerHour"
         static let status = "status"
         static let flightCapability = "flightCapability"
-        
-        
-        
     }
 }
