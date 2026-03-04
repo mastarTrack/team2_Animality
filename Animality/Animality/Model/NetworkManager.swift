@@ -85,4 +85,8 @@ extension NetworkManager {
             throw NetworkingError.failedToDecode
         }
     }
+    
+    func searchImageData(of text: String) async throws -> ImageResponse {
+        
+    }
 }
