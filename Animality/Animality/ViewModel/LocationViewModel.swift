@@ -123,9 +123,21 @@ class LocationViewModel: ViewModelProtocol {
             do {
                 let searchResponse = try await networkManager.searchLocationData(of: text)
                 
-                searchResponse.items.forEach {
-                    print($0.roadAddress)
+                let searchedItems = searchResponse.items.reduce(into: [LocationInfo]()) {
+                    guard let name = $1.title,
+                          let address = $1.roadAddress,
+                          let telephone = $1.telephone,
+                          let mapX = Double($1.mapx ?? ""),
+                          let mapY = Double($1.mapy ?? "") else {
+                        return
+                    }
+                    
+                    $0.append(LocationInfo(name: name, address: address, telephone: telephone, mapX: mapX, mapY: mapY))
                 }
+                
+                let searchNames = searchedItems.map { $0.name }
+                
+                let imageResponse = try await networkManager.searchImageData(of: text)
             } catch {
                 throw error
             }

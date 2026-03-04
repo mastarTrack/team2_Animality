@@ -52,8 +52,9 @@ class NetworkManager {
     }
 }
 
-//MARK: 지역 검색 API
+//MARK: 검색 API
 extension NetworkManager {
+    // 지역 검색
     func searchLocationData(of text: String) async throws -> SearchResponse {
         // url 및 헤더 설정
         var urlComp = URLComponents(string: "https://openapi.naver.com/v1/search/local.json")
@@ -86,7 +87,34 @@ extension NetworkManager {
         }
     }
     
+    // 이미지 검색
     func searchImageData(of text: String) async throws -> ImageResponse {
+        // url 및 헤더 설정
+        var urlComp = URLComponents(string: "https://openapi.naver.com/v1/search/image")
+        let queryItems = [
+            URLQueryItem(name: "query", value: text) // 검색어
+            ]
         
+        urlComp?.queryItems = queryItems
+        
+        guard let url = urlComp?.url else { throw NetworkingError.invalid }
+        print(url)
+        let headers: HTTPHeaders = [
+            "X-Naver-Client-Id": searchClientId ?? "",
+            "X-Naver-Client-Secret": searchSecretId ?? ""
+        ]
+        
+        // request
+        let dataTask = AF.request(url, method: .get, headers: headers)
+                .validate()
+                .serializingDecodable(ImageResponse.self)
+        
+        switch await dataTask.result {
+        case .success(let data):
+            return data
+        case .failure(let error):
+            print("request 실패: \(error)")
+            throw NetworkingError.failedToDecode
+        }
     }
 }
