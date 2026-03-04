@@ -557,7 +557,7 @@ extension UITextField {
     }
 }
 
-extension RegisterViewTest {
+extension RegisterView {
     // 등록 버튼 활성화/비활성화 상태 업데이트
     func updateRegisterButton(_ isEnabled: Bool) {
         registerButton.isEnabled = isEnabled
