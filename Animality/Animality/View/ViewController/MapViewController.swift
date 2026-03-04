@@ -86,7 +86,7 @@ extension MapViewController {
         }
         
         listView.snp.makeConstraints {
-            $0.top.equalTo(searchBar.snp.bottom).offset(10)
+            $0.top.equalTo(searchBar.snp.bottom)
             $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
             $0.height.equalTo(252)
         }
@@ -136,6 +136,8 @@ extension MapViewController {
     
     private func setListView() {
         listView.isHidden = true
+//        listView.backgroundView = UIView()
+//        listView.backgroundView?.backgroundColor = .clear
         listView.backgroundColor = .clear
     }
     
@@ -301,7 +303,11 @@ extension MapViewController {
     // 레이아웃 설정
     private func makeCompositionalLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, environment in
-            let configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+            var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+            
+            // 섹션 배경색 설정
+            configuration.backgroundColor = .clear
+            
             return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: environment)
         }
     }
