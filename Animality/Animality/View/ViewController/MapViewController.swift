@@ -14,6 +14,8 @@ class MapViewController: UIViewController {
     private let viewModel = LocationViewModel()
     
     private let mapView = NMFMapView(frame: .zero)
+    private var markers = [NMFMarker]()
+    
     private let searchBar = UISearchBar()
     private let currentLocationButton = UIButton()
     
@@ -41,8 +43,8 @@ class MapViewController: UIViewController {
                 
                 // 비동기 함수(마커 생성 함수)를 처리하기 위한 Task
                 Task {
-                    let markers = await self.makeMarkers(data)
-                    self.displayMarkers(markers)
+                    self.markers = await self.makeMarkers(data) // 마커 할당
+                    self.displayMarkers(self.markers)
                 }
                 
             case let .locationChanged(lat, lng): // 위치 이동 시
@@ -57,6 +59,7 @@ class MapViewController: UIViewController {
 
 //MARK: Set Layout & Attributes
 extension MapViewController {
+    // 레이아웃 설정
     private func setLayout() {
         view.addSubview(mapView)
         view.addSubview(searchBar)
@@ -76,12 +79,14 @@ extension MapViewController {
         }
     }
     
+    // 속성 설정
     private func setAttributes() {
         setSearchBar()
         setButton()
         currentLocation()
     }
     
+    // 버튼 설정
     private func setButton() {
         // configuration
         var config = UIButton.Configuration.filled()
@@ -106,6 +111,7 @@ extension MapViewController {
         currentLocationButton.addAction(move, for: .touchUpInside)
     }
     
+    // 검색바 설정
     private func setSearchBar() {
         searchBar.searchBarStyle = .minimal
         searchBar.backgroundColor = .clear
@@ -117,6 +123,7 @@ extension MapViewController {
         searchBar.searchTextField.textColor = .secondaryText
     }
     
+    // 맵뷰 설정
     private func setMapView(lat: Double, lng: Double) {
         mapView.mapType = .basic // 지도 유형 설정
         mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
@@ -160,13 +167,13 @@ extension MapViewController {
     
     // 마커 생성 - 백그라운드 스레드에서 비동기적으로 동작
     @BackgroundActor
-    private func makeMarkers(_ data: [(type: AnimalType, coordinate: Coordinate)]) async -> [NMFMarker] {
+    private func makeMarkers(_ data: [Coordinate: AnimalType]) async -> [NMFMarker] {
         return data.reduce(into: [NMFMarker]()) {
             let marker = NMFMarker()
-            marker.position = NMGLatLng(lat: $1.coordinate.latitude, lng: $1.coordinate.longitude) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
+            marker.position = NMGLatLng(lat: $1.key.latitude, lng: $1.key.longitude) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
             
             // 마커 아이콘 설정
-            switch $1.type {
+            switch $1.value {
             case .dog:
                 marker.iconImage = NMFOverlayImage(image: .dogPin)
             case .cat:
@@ -201,7 +208,16 @@ extension MapViewController {
     }
     
     func newRegister() {
+        
+        
         print("새로운 등록")
+    }
+    
+    private func updateMarkers(_ data: [Coordinate: AnimalType]) {
+        for d in data {
+//            markers.filter { $0.position.lat == d.coordinate.latitude && $0.position.lng == d.coordinate.longitude }
+        }
+        
     }
 }
 
