@@ -138,6 +138,8 @@ extension MapViewController {
     private func setListView() {
         listView.isHidden = true
         listView.backgroundColor = .clear
+        listView.showsVerticalScrollIndicator = false
+        listView.layer.cornerRadius = 15
     }
     
     private func setMapView(lat: Double, lng: Double) {
@@ -309,12 +311,13 @@ extension MapViewController {
     // 레이아웃 설정
     private func makeCompositionalLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, environment in
-            var configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
             
             // 섹션 배경색 설정
             configuration.backgroundColor = .clear
             
-            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: environment)
+            let section = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: environment)
+            return section
         }
     }
     
