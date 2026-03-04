@@ -87,7 +87,7 @@ extension SearchResultCell {
 
 extension SearchResultCell {
     func configure(data: LocationInfo) {
-        nameLabel.text = data.name
+        nameLabel.attributedText = data.name
         addressLabel.text = data.address
     }
 }

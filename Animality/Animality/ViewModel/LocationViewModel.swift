@@ -164,7 +164,7 @@ class LocationViewModel: ViewModelProtocol {
                 
                 let image = imageStrings[$1.offset]
                 
-                $0.append(LocationInfo(name: name,
+                $0.append(LocationInfo(htmlName: name,
                                        address: address,
                                        mapX: mapX,
                                        mapY: mapY,
@@ -180,5 +180,4 @@ class LocationViewModel: ViewModelProtocol {
             throw error
         }
     }
-
 }
