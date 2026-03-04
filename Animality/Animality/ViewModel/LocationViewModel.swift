@@ -54,7 +54,7 @@ class LocationViewModel: ViewModelProtocol {
     // 프로퍼티 선언
     let coreDataManager = CoreDataManager()
 
-    private var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
+    private(set) var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     
     // AnimalEntity -> Animal
     private func fetchAllAnimals() -> [Animal] {

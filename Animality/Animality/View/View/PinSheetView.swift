@@ -8,13 +8,19 @@ import UIKit
 import SnapKit
 
 class PinSheetView: UIViewController {
+    private let viewModel: any ViewModelProtocol
+    private let coordinate: Coordinate
     private let animals: [Animal]
     
     private lazy var animalCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
     private lazy var dataSource = makeCollectionViewDiffableDataSource(animalCollectionView)
     
-    init(animals: [Animal]) {
-        self.animals = animals
+    init(viewModel: LocationViewModel, coordinate: Coordinate) {
+        self.animals = viewModel.coordinates[coordinate] ?? []
+        self.viewModel = viewModel
+        self.coordinate = coordinate
+        print(animals)
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -24,6 +30,7 @@ class PinSheetView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setLayout()
         setSnapshot(with: animals)
     }
 }

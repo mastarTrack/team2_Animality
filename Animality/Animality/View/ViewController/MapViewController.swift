@@ -177,12 +177,12 @@ extension MapViewController {
     // 마커 생성 - 백그라운드 스레드에서 비동기적으로 동작
     @BackgroundActor
     private func makeMarkers(_ data: [Coordinate: AnimalType]) async -> [NMFMarker] {
-        return data.reduce(into: [NMFMarker]()) {
+        return data.reduce(into: [NMFMarker]()) { arr, element in
             let marker = NMFMarker()
-            marker.position = NMGLatLng(lat: $1.key.latitude, lng: $1.key.longitude) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
+            marker.position = NMGLatLng(lat: element.key.latitude, lng: element.key.longitude) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
             
             // 마커 아이콘 설정
-            switch $1.value {
+            switch element.value {
             case .dog:
                 marker.iconImage = NMFOverlayImage(image: .dogPin)
             case .cat:
@@ -199,12 +199,13 @@ extension MapViewController {
             marker.width = 30
             marker.height = 44
             
-            marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
+            marker.touchHandler = { [weak self] (overlay: NMFOverlay) -> Bool in
+                self?.showSheet(with: element.key)
                 print("lat: \(marker.position.lat), lng: \(marker.position.lng)")
                 return true // true값일 시, 이벤트를 지도로 전달하지 않음 (마커에서 이벤트를 소비)
             }
             
-            $0.append(marker)
+            arr.append(marker)
         }
     }
     
@@ -304,5 +305,20 @@ extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         let alert = UIAlertController(status: .invalidLocation)
         present(alert, animated: true)
+    }
+}
+
+//MARK: SheetView
+extension MapViewController {
+    func showSheet(with coordinate: Coordinate) {
+        let vc = PinSheetView(viewModel: viewModel, coordinate: coordinate)
+        
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium(), .large()] // 시트 크기
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = true // 시트 확장 가능 여부
+            sheet.prefersGrabberVisible = true // grabber 표시 여부
+        }
+        
+        self.present(vc, animated: true)
     }
 }
