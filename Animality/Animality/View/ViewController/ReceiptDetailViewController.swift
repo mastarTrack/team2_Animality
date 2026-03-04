@@ -17,9 +17,7 @@ class ReceiptDetailViewController: UIViewController {
     //MARK: - ViewModel
     /// ViewModel
     private let vm: any ViewModelProtocol
-    /// 지도 위치 매니저 클래스
-    private let locationManager = CLLocationManager()
-    
+
     //MARK: - Enum
     enum pageType {
         case detail
@@ -93,7 +91,6 @@ class ReceiptDetailViewController: UIViewController {
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
-        currentLocation()
         bindingData()
         bindingButtonAction(type: type)
         ConfigureUI(type: type)
@@ -182,7 +179,7 @@ extension ReceiptDetailViewController {
 }
 
 //MARK: - METHOD: Configure MapView
-extension ReceiptDetailViewController: CLLocationManagerDelegate {
+extension ReceiptDetailViewController {
     /// 지도 컴포넌트 초기화 메소드
     private func ConfigureMapView() {
         // 지도 타입 설정: 일반지도
@@ -202,22 +199,16 @@ extension ReceiptDetailViewController: CLLocationManagerDelegate {
         // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
         mapView.positionMode = .direction
 
-        // 델리게이트 지정
-        locationManager.delegate = self
-        // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        // 이전 위치 대비 위치 업데이트 발동 간격 거리 설정(미터)
-        locationManager.distanceFilter = 10
     }
     
-    // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
+    /// 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
     private func moveCameraPosition(lat: Double, lng: Double) {
         let cameraPosition = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat, lng: lng), zoomTo: 14)
         cameraPosition.animation = .fly
         mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
     
-    // 마커 생성 메소드
+    /// 마커 생성 메소드
     private func makeMarker(animalData: Animal) async {
         let marker = NMFMarker()
         marker.position = NMGLatLng(lat: animalData.currentLocation.latitude, lng: animalData.currentLocation.longitude)
@@ -242,30 +233,6 @@ extension ReceiptDetailViewController: CLLocationManagerDelegate {
         
         moveCameraPosition(lat: animalData.currentLocation.latitude,
                            lng: animalData.currentLocation.longitude)
-    }
-    
-    // 위치 정보 권한 상태 확인
-    private func currentLocation() {
-        if locationManager.authorizationStatus == .authorizedAlways
-            || locationManager.authorizationStatus == .authorizedWhenInUse { // 위치 권한 허용시(항상 || 앱을 사용하는 동안)
-            locationManager.requestLocation() // 현재 위치 정보
-        } else if locationManager.authorizationStatus == .notDetermined { // 위치 권한 미지정시
-            locationManager.requestWhenInUseAuthorization() // 권한 요청
-        } else if locationManager.authorizationStatus == .denied {
-            let alert = UIAlertController(status: .deniedAuth)
-            present(alert, animated: true)
-        }
-    }
-    
-    /// 위치 권한 상태가 변경될 때 호출되는 Delegate 메서드
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        currentLocation()
-    }
-    
-    /// 위치 정보를 가져오는 과정에서 오류가 발생했을 때 호출되는 Delegate 메서드
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
-        let alert = UIAlertController(status: .invalidLocation)
-        present(alert, animated: true)
     }
 }
 
