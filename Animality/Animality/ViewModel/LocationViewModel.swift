@@ -13,6 +13,7 @@ class LocationViewModel: ViewModelProtocol {
     enum Action {
         case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
+        case search(text: String)
     }
     
     // 상태 열거형
@@ -39,11 +40,15 @@ class LocationViewModel: ViewModelProtocol {
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
+            
+        case let .search(text):
+            
         }
     }
     
     // 프로퍼티 선언
     let coreDataManager = CoreDataManager()
+    let networkManager = NetworkManager()
 
     private var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     
@@ -109,6 +114,20 @@ class LocationViewModel: ViewModelProtocol {
                     
                     arr.append((type: type, coordinate: point.key))
                 }
+            }
+        }
+    }
+    
+    private func fetchSearchResult(text: String) throws {
+        Task {
+            do {
+                let searchResponse = try await networkManager.searchLocationData(of: text)
+                
+                searchResponse.items.forEach {
+                    print($0.roadAddress)
+                }
+            } catch {
+                throw error
             }
         }
     }

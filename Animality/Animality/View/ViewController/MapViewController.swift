@@ -245,3 +245,15 @@ extension MapViewController: CLLocationManagerDelegate {
         present(alert, animated: true)
     }
 }
+
+//MARK: SearchBar
+extension MapViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let origin = searchBar.text else { return }
+        let text = origin.trimmingCharacters(in: .whitespaces)
+        
+        if !text.isEmpty {
+            viewModel.action(.search(text: text))
+        }
+    }
+}
