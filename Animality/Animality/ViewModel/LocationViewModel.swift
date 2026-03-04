@@ -58,9 +58,6 @@ class LocationViewModel: ViewModelProtocol {
         case .cancelSearch:
             self.state = .cancelledSearch
         }
-        
-    
-        
     }
     
     // 프로퍼티 선언
@@ -165,7 +162,7 @@ class LocationViewModel: ViewModelProtocol {
                 
                 let image = imageStrings[$1.offset]
                 
-                $0.append(LocationInfo(htmlName: name,
+                $0.append(LocationInfo(name: name.htmlToString() ?? NSAttributedString(string: ""),
                                        address: address,
                                        mapX: mapX,
                                        mapY: mapY,

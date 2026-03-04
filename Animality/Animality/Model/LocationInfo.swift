@@ -7,12 +7,7 @@
 import Foundation
 
 struct LocationInfo: Hashable {
-    var htmlName: String
-    var name: NSAttributedString {
-        get {
-            htmlName.htmlToString() ?? NSAttributedString(string: "")
-        }
-    }
+    var name: NSAttributedString
     var address: String
     var mapX: Double
     var mapY: Double
