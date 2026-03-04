@@ -5,6 +5,7 @@
 //  Created by t2025-m0143 on 3/5/26.
 //
 import UIKit
+import SnapKit
 
 class PinSheetView: UIViewController {
     private let animals: [Animal]
@@ -23,11 +24,28 @@ class PinSheetView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setSnapshot(with: animals)
     }
-    
+}
+
+extension PinSheetView {
+    private func setLayout() {
+        animalCollectionView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 0, trailing: 10)
+        
+        view.addSubview(animalCollectionView)
+        
+        animalCollectionView.snp.makeConstraints {
+            $0.directionalEdges.equalToSuperview()
+        }
+    }
+}
+
+//MARK: set CollectionView
+extension PinSheetView {
     // 레이아웃 설정
     private func makeCollectionViewLayout() -> UICollectionViewLayout {
       let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        configuration.contentInsetsReference = .layoutMargins // 여백
         
       return UICollectionViewCompositionalLayout(sectionProvider: { sectionIndex, environment in
           // 여백 설정
