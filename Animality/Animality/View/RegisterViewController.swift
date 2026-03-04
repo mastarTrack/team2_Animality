@@ -89,6 +89,7 @@ class RegisterViewController: UIViewController {
             present(alert, animated: true)
             
         case .registerSuccess:
+            (self.tabBarController?.viewControllers?[0] as! MapViewController).newRegister()
             registerView.showSuccess()
             self.navigationController?.popViewController(animated: true) // 저장 성공시 이전 화면으로 이동학
         }

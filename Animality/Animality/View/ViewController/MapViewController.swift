@@ -199,6 +199,10 @@ extension MapViewController {
             $0.mapView = mapView
         }
     }
+    
+    func newRegister() {
+        print("새로운 등록")
+    }
 }
 
 //MARK: CLLocationManagerDelegate

@@ -16,7 +16,7 @@ class MainViewController: UITabBarController {
     /// 임시 탭바에 넣은 탭바아이템 목업 데이터
     private let tabItems: [TabItem] = [
         TabItem(
-            title: "Home",
+            title: "Map",
             imageName: "map",
             selectedImageName: "map.fill",
             viewControllerType: MapViewController.self,

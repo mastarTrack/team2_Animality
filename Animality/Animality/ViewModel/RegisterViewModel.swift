@@ -95,48 +95,95 @@ class RegisterViewModel: ViewModelProtocol {
     
     // MARK: -- 저장
     
+//    private func register() {
+//        
+//        // 하나라도 빠져있으면 경고
+//        guard
+//            let name,
+//            let type,
+//            let size,
+//            let pricePerHour,
+//            let flightCapability,
+//            let latitude,
+//            let longitude
+//        else {
+//            state = .showAlert("모든 항목을 입력해주세요.")
+//            return
+//        }
+//        
+//        // 도메인 모델 생성
+//        let animal = Animal(
+//            id: UUID(),
+//            name: name,
+//            type: type,
+//            status: .normal,
+//            pricePerHour: Int(pricePerHour),
+//            currentLocation: Coordinate(latitude: latitude, longitude: longitude),
+//            size: size,
+//            flightCapability: flightCapability
+//        )
+//        
+//        // 코어데이터용 payload 생성하기
+//        let payload = CreateAnimalModel(
+//            name: animal.name,
+//            category: animal.type.category,
+//            type: animal.type.rawValue,
+//            size: animal.size.rawValue,
+//            latitude: animal.currentLocation.latitude,
+//            longitude: animal.currentLocation.longitude,
+//            price: Int32(animal.pricePerHour),
+//            status: animal.status.rawValue,
+//            flight: animal.flightCapability.rawValue
+//        )
+//
+//        coreDataManager.createAnimalEntity(with: payload)
+//        
+//        // 저장 완료 상태 저장
+//        state = .registerSuccess
+//    }
+    
     private func register() {
         
-        // 하나라도 빠져있으면 경고
-        guard
-            let name,
-            let type,
-            let size,
-            let pricePerHour,
-            let flightCapability,
-            let latitude,
-            let longitude
-        else {
-            state = .showAlert("모든 항목을 입력해주세요.")
-            return
-        }
-        
-        // 도메인 모델 생성
-        let animal = Animal(
-            id: UUID(),
-            name: name,
-            type: type,
-            status: .normal,
-            pricePerHour: Int(pricePerHour),
-            currentLocation: Coordinate(latitude: latitude, longitude: longitude),
-            size: size,
-            flightCapability: flightCapability
-        )
-        
-        // 코어데이터용 payload 생성하기
-        let payload = CreateAnimalModel(
-            name: animal.name,
-            category: animal.type.category,
-            type: animal.type.rawValue,
-            size: animal.size.rawValue,
-            latitude: animal.currentLocation.latitude,
-            longitude: animal.currentLocation.longitude,
-            price: Int32(animal.pricePerHour),
-            status: animal.status.rawValue,
-            flight: animal.flightCapability.rawValue
-        )
-
-        coreDataManager.createAnimalEntity(with: payload)
+//        // 하나라도 빠져있으면 경고
+//        guard
+//            let name,
+//            let type,
+//            let size,
+//            let pricePerHour,
+//            let flightCapability,
+//            let latitude,
+//            let longitude
+//        else {
+//            state = .showAlert("모든 항목을 입력해주세요.")
+//            return
+//        }
+//        
+//        // 도메인 모델 생성
+//        let animal = Animal(
+//            id: UUID(),
+//            name: name,
+//            type: type,
+//            status: .normal,
+//            pricePerHour: Int(pricePerHour),
+//            currentLocation: Coordinate(latitude: latitude, longitude: longitude),
+//            size: size,
+//            flightCapability: flightCapability
+//        )
+//        
+//        // 코어데이터용 payload 생성하기
+//        let payload = CreateAnimalModel(
+//            name: animal.name,
+//            category: animal.type.category,
+//            type: animal.type.rawValue,
+//            size: animal.size.rawValue,
+//            latitude: animal.currentLocation.latitude,
+//            longitude: animal.currentLocation.longitude,
+//            price: Int32(animal.pricePerHour),
+//            status: animal.status.rawValue,
+//            flight: animal.flightCapability.rawValue
+//        )
+//
+//        coreDataManager.createAnimalEntity(with: payload)
         
         // 저장 완료 상태 저장
         state = .registerSuccess
