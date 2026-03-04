@@ -50,6 +50,7 @@ class LocationViewModel: ViewModelProtocol {
                     let result = try await fetchSearchResult(text: text)
                     self.state = .searched(result: result)
                 } catch {
+                    print("검색 결과를 가져오지 못했습니다.")
 //                    state = 에러로
                 }
             }

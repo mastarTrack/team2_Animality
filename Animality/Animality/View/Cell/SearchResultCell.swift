@@ -7,6 +7,7 @@
 import UIKit
 import Then
 import SnapKit
+import Kingfisher
 
 class SearchResultCell: UICollectionViewListCell {
     static let identifier = "SearchResultCell"
@@ -39,13 +40,6 @@ class SearchResultCell: UICollectionViewListCell {
         $0.adjustsFontSizeToFitWidth = true // 공간 부족시 폰트 크기 조정 허용
         $0.minimumScaleFactor = 0.7 // 최소 폰트 크기 (최초 설정 크기인 14의 0.7배)
     }
-//    private let telephoneLabel = UILabel().then {
-//        $0.textColor = .text
-//        $0.font = .systemFont(ofSize: 13, weight: .regular)
-//        $0.textAlignment = .left
-//        $0.adjustsFontSizeToFitWidth = true // 공간 부족시 폰트 크기 조정 허용
-//        $0.minimumScaleFactor = 0.7 // 최소 폰트 크기 (최초 설정 크기인 14의 0.7배)
-//    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -89,5 +83,11 @@ extension SearchResultCell {
     func configure(data: LocationInfo) {
         nameLabel.attributedText = data.name
         addressLabel.text = data.address
+        loadImage(url: data.image)
+    }
+    
+    private func loadImage(url: String) {
+        guard let url = URL(string: url) else { return }
+        imageView.kf.setImage(with: url)
     }
 }
