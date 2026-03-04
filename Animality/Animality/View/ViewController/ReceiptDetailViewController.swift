@@ -8,11 +8,17 @@
 import UIKit
 import Then
 import SnapKit
+import NMapsMap
+import NMapsGeometry
 
 /// 영수증 ViewController
 class ReceiptDetailViewController: UIViewController {
     
     //MARK: - ViewModel
+    /// ViewModel
+    private let vm: any ViewModelProtocol
+    /// 지도 위치 매니저 클래스
+    private let locationManager = CLLocationManager()
     
     //MARK: - Enum
     enum pageType {
@@ -22,10 +28,6 @@ class ReceiptDetailViewController: UIViewController {
     
     // MARK: - State
     private let type: pageType
-    
-    //MARK: - Closures
-    /// 마이페이지(이용내역) 클로저
-    var myPageClosure: (()->Void)?
     
     //MARK: - Components
     /// 렌트 상태 라벨
@@ -45,6 +47,8 @@ class ReceiptDetailViewController: UIViewController {
         $0.font = .systemFont(ofSize: 16)
         $0.textAlignment = .right
     }
+    /// 대여장소 지도 뷰
+    private let mapView = NMFMapView(frame: .zero)
     /// 결제 시간 라벨
     private let rentpaymentTimeLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 16)
@@ -86,17 +90,22 @@ class ReceiptDetailViewController: UIViewController {
     }
     
 
-    
-    
-    
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
+        currentLocation()
+        bindingData()
+        bindingButtonAction(type: type)
         ConfigureUI(type: type)
+        ConfigureMapView()
+
+        guard let vm = vm as? ReceiptDetailViewModel else { return }
+        vm.action(.initialized)
     }
     
-    init(type: pageType) {
+    init(type: pageType, vm: any ViewModelProtocol) {
         self.type = type
+        self.vm = vm
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -105,8 +114,34 @@ class ReceiptDetailViewController: UIViewController {
     }
 }
 
+//MARK: - METHOD: Binding VM Action
+extension ReceiptDetailViewController {
+    // VM state 클로저 바인딩 메소드
+    private func bindingData() {
+        guard let vm = vm as? ReceiptDetailViewModel else { return }
+        vm.stateChanged = { [weak self] state in
+            guard let self else { return }
+            
+            switch state {
+            case .none:
+                break
+            case let .updateUI(data):
+                // UI 값 업데이트
+                guard let animal = data.animal else { return }
+                updateUI(rentState: data.rentState, amount: data.amount, name: animal.name , location: data.location ?? "", rentpaymentTime: data.rentPaymentTime, rentStartTime: data.rentEndTime, rentEndTime: data.rentEndTime, paystate: data.payState)
+                // 마커 생성
+                Task {
+                    await self.makeMarker(animalData: animal)
+                }
+                
+            }
+        }
+    }
+}
+
 //MARK: - METHOD: Update UI
 extension ReceiptDetailViewController {
+    // UI 업데이트 메소드
     func updateUI(rentState: StateUILabel.state,
                   amount: Int,
                   name: String,
@@ -133,7 +168,7 @@ extension ReceiptDetailViewController {
     private func bindingButtonAction(type: pageType) {
         if type == .endPay {
             mypageButton.addAction(UIAction { [weak self] _ in
-                self?.myPageClosure?()
+           
             }, for: .touchUpInside)
         }
         returnButton.addAction(UIAction { [weak self] _ in
@@ -146,13 +181,103 @@ extension ReceiptDetailViewController {
     }
 }
 
+//MARK: - METHOD: Configure MapView
+extension ReceiptDetailViewController: CLLocationManagerDelegate {
+    /// 지도 컴포넌트 초기화 메소드
+    private func ConfigureMapView() {
+        // 지도 타입 설정: 일반지도
+        mapView.mapType = .basic
+        // 다크 모드 설정: 현상태에 따른 다크모드 설정
+        mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
 
+        // 정적 지도로 만들기 위해 줌외의 기능 제외
+        mapView.allowsTilting = false
+        mapView.allowsScrolling = false
+        mapView.allowsRotating = false
+        
+        // 지도 오버레이설정
+        let locationOverlay = mapView.locationOverlay
+        // 오버레이 IsHide: 오버레이 표시
+        locationOverlay.hidden = false
+        // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
+        mapView.positionMode = .direction
+
+        // 델리게이트 지정
+        locationManager.delegate = self
+        // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        // 이전 위치 대비 위치 업데이트 발동 간격 거리 설정(미터)
+        locationManager.distanceFilter = 10
+    }
+    
+    // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
+    private func moveCameraPosition(lat: Double, lng: Double) {
+        let cameraPosition = NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat, lng: lng), zoomTo: 14)
+        cameraPosition.animation = .fly
+        mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
+    }
+    
+    // 마커 생성 메소드
+    private func makeMarker(animalData: Animal) async {
+        let marker = NMFMarker()
+        marker.position = NMGLatLng(lat: animalData.currentLocation.latitude, lng: animalData.currentLocation.longitude)
+        
+        switch animalData.type {
+        case .dog:
+            marker.iconImage = NMFOverlayImage(image: .dogPin)
+        case .cat:
+            marker.iconImage = NMFOverlayImage(image: .catPin)
+        case .pegasus:
+            marker.iconImage = NMFOverlayImage(image: .pegasusPin)
+        case .unicorn:
+            marker.iconImage = NMFOverlayImage(image: .unicornPin)
+        case .chocobo:
+            marker.iconImage = NMFOverlayImage(image: .chocoboPin)
+        }
+        
+        marker.width = 30
+        marker.height = 44
+        marker.anchor = CGPoint(x: 0.5, y: 1.0)
+        marker.mapView = mapView
+        
+        moveCameraPosition(lat: animalData.currentLocation.latitude,
+                           lng: animalData.currentLocation.longitude)
+    }
+    
+    // 위치 정보 권한 상태 확인
+    private func currentLocation() {
+        if locationManager.authorizationStatus == .authorizedAlways
+            || locationManager.authorizationStatus == .authorizedWhenInUse { // 위치 권한 허용시(항상 || 앱을 사용하는 동안)
+            locationManager.requestLocation() // 현재 위치 정보
+        } else if locationManager.authorizationStatus == .notDetermined { // 위치 권한 미지정시
+            locationManager.requestWhenInUseAuthorization() // 권한 요청
+        } else if locationManager.authorizationStatus == .denied {
+            let alert = UIAlertController(status: .deniedAuth)
+            present(alert, animated: true)
+        }
+    }
+    
+    /// 위치 권한 상태가 변경될 때 호출되는 Delegate 메서드
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        currentLocation()
+    }
+    
+    /// 위치 정보를 가져오는 과정에서 오류가 발생했을 때 호출되는 Delegate 메서드
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        let alert = UIAlertController(status: .invalidLocation)
+        present(alert, animated: true)
+    }
+}
 
 //MARK: - METHOD: Configure UI
 extension ReceiptDetailViewController {
     private func ConfigureUI(type: pageType) {
+       
+        let scrollView = UIScrollView()
+        let contentView = UIView()
         
-        bindingButtonAction(type: type)
+        view.addSubview(scrollView)
+        scrollView.addSubview(contentView)
         
         let reciptView = UIView().then {
             $0.backgroundColor = .deepRose
@@ -241,6 +366,7 @@ extension ReceiptDetailViewController {
         reciptStackView.addArrangedSubview(lineViews[0])
         reciptStackView.addArrangedSubview(nameStack)
         reciptStackView.addArrangedSubview(locationStack)
+        reciptStackView.addArrangedSubview(mapView)
         reciptStackView.addArrangedSubview(lineViews[1])
         reciptStackView.addArrangedSubview(rentDateStack)
         reciptStackView.addArrangedSubview(rentStartStack)
@@ -249,11 +375,21 @@ extension ReceiptDetailViewController {
         reciptStackView.addArrangedSubview(payStateStack)
         reciptView.addSubview(reciptStackView)
         
-        view.addSubview(stateLabel)
-        view.addSubview(reciptView)
+        contentView.addSubview(stateLabel)
+        contentView.addSubview(reciptView)
 
+        scrollView.snp.makeConstraints {
+            $0.top.equalTo(view.safeAreaLayoutGuide).offset(10)
+            $0.bottom.leading.trailing.equalToSuperview()
+        }
+        
+        contentView.snp.makeConstraints {
+            $0.edges.equalTo(scrollView.contentLayoutGuide)
+            $0.width.equalTo(scrollView.frameLayoutGuide)
+        }
+        
         stateLabel.snp.makeConstraints {
-            $0.top.equalTo(view.safeAreaLayoutGuide).offset(20)
+            $0.top.equalToSuperview().offset(10)
             $0.centerX.equalToSuperview()
             $0.width.equalTo(122)
             $0.height.equalTo(36)
@@ -264,13 +400,19 @@ extension ReceiptDetailViewController {
             $0.leading.equalToSuperview().offset(20)
             $0.trailing.equalToSuperview().inset(20)
             $0.width.equalTo(330)
-            $0.height.equalTo(370)
+            $0.height.equalTo(620)
         }
         reciptStackView.snp.makeConstraints {
             $0.top.equalToSuperview().offset(30)
             $0.bottom.equalToSuperview().inset(30)
             $0.leading.equalToSuperview().offset(5)
             $0.trailing.equalToSuperview().inset(5)
+        }
+        
+        mapView.snp.makeConstraints {
+            $0.height.equalTo(250)
+            $0.leading.equalToSuperview().offset(30)
+            $0.trailing.equalToSuperview().inset(30)
         }
         
         [payStack, nameStack, locationStack, rentDateStack, rentStartStack, rentEndStack, payStateStack].forEach{
@@ -287,7 +429,7 @@ extension ReceiptDetailViewController {
             }
         }
         
-        view.addSubview(returnButton)
+        contentView.addSubview(returnButton)
         switch type {
         case .detail:
             returnButton.snp.makeConstraints {
@@ -295,10 +437,11 @@ extension ReceiptDetailViewController {
                 $0.leading.equalToSuperview().offset(20)
                 $0.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(45)
+                $0.bottom.equalToSuperview().inset(20)
 
             }
         case .endPay:
-            view.addSubview(mypageButton)
+            contentView.addSubview(mypageButton)
             mypageButton.snp.makeConstraints {
                 $0.top.equalTo(reciptView.snp.bottom).offset(30)
                 $0.leading.equalToSuperview().offset(20)
@@ -310,6 +453,7 @@ extension ReceiptDetailViewController {
                 $0.leading.equalToSuperview().offset(20)
                 $0.trailing.equalToSuperview().inset(20)
                 $0.height.equalTo(45)
+                $0.bottom.equalToSuperview().inset(20)
             }
         }
     }
@@ -320,8 +464,8 @@ extension ReceiptDetailViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    let vc = ReceiptDetailViewController(type: .endPay)
-    vc.updateUI(rentState: .renting, amount: 100000, name: "황금 유니콘", location: "홍대입구", rentpaymentTime: Date(), rentStartTime: Date(), rentEndTime: Date(), paystate: .completed)
+    let vm = ReceiptDetailViewModel()
+    let vc = ReceiptDetailViewController(type: .endPay, vm: vm)
     return vc
 
 }

@@ -123,18 +123,7 @@ class RegisterViewModel: ViewModelProtocol {
             flightCapability: flightCapability
         )
         
-        // 코어데이터용 payload 생성하기
-        let payload = CreateAnimalModel(
-            name: animal.name,
-            category: animal.type.category,
-            type: animal.type.rawValue,
-            size: animal.size.rawValue,
-            latitude: animal.currentLocation.latitude,
-            longitude: animal.currentLocation.longitude,
-            price: Int32(animal.pricePerHour),
-            status: animal.status.rawValue,
-            flight: animal.flightCapability.rawValue
-        )
+
 
         coreDataManager.createAnimalEntity(with: payload)
         
