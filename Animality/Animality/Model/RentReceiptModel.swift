@@ -8,7 +8,6 @@
 import Foundation
 
 //MARK: - Temp Model & Data
-//TODO: 한주헌: Model 정해질 시 해당 코드 삭제 예정
 /// 렌트 영수증 정보 모델
 struct RentReceipt {
     /// 영수증 ID

@@ -12,11 +12,6 @@ import UIKit
 class ReceiptCell: UICollectionViewCell {
 
     static let identifier = "ReceiptCell"
-        
-    enum CellType {
-        case receipt
-        case regist
-    }
     
     //MARK: - Components
     /// 대여 동물 이름 라벨
@@ -79,7 +74,7 @@ class ReceiptCell: UICollectionViewCell {
 //MARK: - METHOD: Update UI
 extension ReceiptCell {
     /// 셀타입에 따른 UI 업데이트 메소드
-    func updateUIForType(type: CellType) {
+    func updateUIForType(type: QuickInfoListViewController.CellType) {
         switch type {
         case .receipt:
             return
