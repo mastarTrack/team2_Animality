@@ -9,6 +9,8 @@ import Then
 import SnapKit
 
 class SearchResultCell: UICollectionViewListCell {
+    static let identifier = "SearchResultCell"
+    
     //MARK: Set Attributes
     private let imageView = UIImageView().then {
         $0.layer.cornerRadius = 8
@@ -32,13 +34,13 @@ class SearchResultCell: UICollectionViewListCell {
         $0.adjustsFontSizeToFitWidth = true // 공간 부족시 폰트 크기 조정 허용
         $0.minimumScaleFactor = 0.7 // 최소 폰트 크기 (최초 설정 크기인 14의 0.7배)
     }
-    private let telephoneLabel = UILabel().then {
-        $0.textColor = .text
-        $0.font = .systemFont(ofSize: 13, weight: .regular)
-        $0.textAlignment = .left
-        $0.adjustsFontSizeToFitWidth = true // 공간 부족시 폰트 크기 조정 허용
-        $0.minimumScaleFactor = 0.7 // 최소 폰트 크기 (최초 설정 크기인 14의 0.7배)
-    }
+//    private let telephoneLabel = UILabel().then {
+//        $0.textColor = .text
+//        $0.font = .systemFont(ofSize: 13, weight: .regular)
+//        $0.textAlignment = .left
+//        $0.adjustsFontSizeToFitWidth = true // 공간 부족시 폰트 크기 조정 허용
+//        $0.minimumScaleFactor = 0.7 // 최소 폰트 크기 (최초 설정 크기인 14의 0.7배)
+//    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -69,7 +71,7 @@ extension SearchResultCell {
     }
     
     private func makeLabelStack() -> UIStackView {
-        let stackView = UIStackView(arrangedSubviews: [nameLabel, addressLabel, telephoneLabel])
+        let stackView = UIStackView(arrangedSubviews: [nameLabel, addressLabel])
         stackView.axis = .vertical
         stackView.spacing = 4
         stackView.alignment = .leading
@@ -78,7 +80,8 @@ extension SearchResultCell {
 }
 
 extension SearchResultCell {
-    func configure(data: String) {
-        
+    func configure(data: LocationInfo) {
+        nameLabel.text = data.name
+        addressLabel.text = data.address
     }
 }

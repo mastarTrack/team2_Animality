@@ -59,8 +59,7 @@ extension NetworkManager {
         // url 및 헤더 설정
         var urlComp = URLComponents(string: "https://openapi.naver.com/v1/search/local.json")
         let queryItems = [
-            URLQueryItem(name: "query", value: text), // 검색어
-            URLQueryItem(name: "display", value: "5") // 한 번에 표시할 검색 결과 개수
+            URLQueryItem(name: "query", value: text) // 검색어
             ]
         
         urlComp?.queryItems = queryItems

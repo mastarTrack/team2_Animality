@@ -124,45 +124,42 @@ class LocationViewModel: ViewModelProtocol {
     
     private func fetchSearchResult(text: String) async throws -> [LocationInfo] {
         let task = Task<[LocationInfo], Error> {
-            do {
-                // textField 입력값으로 검색
-                let searchResponse = try await networkManager.searchLocationData(of: text)
+            
+            // textField 입력값으로 검색
+            let searchResponse = try await networkManager.searchLocationData(of: text)
+            
+            // 지역 검색 결과 title 배열
+            let searchNames = searchResponse.items.compactMap { $0.title }
+            
+            // 지역 검색 결과의 이미지 검색
+            var imageStrings: [String] = []
+            for name in searchNames {
+                let response = try await networkManager.searchImageData(of: name)
+                let link = response.items.first?.link ?? ""
                 
-                // 지역 검색 결과 title 배열
-                let searchNames = searchResponse.items.compactMap { $0.title }
-                
-                // 지역 검색 결과의 이미지 검색
-                var imageStrings: [String] = []
-                for name in searchNames {
-                    let response = try await networkManager.searchImageData(of: name)
-                    let link = response.items.first?.link ?? ""
-                    
-                    imageStrings.append(link)
-                }
-                
-                // [LocationInfo] 배열 반환
-                return searchResponse.items.enumerated().reduce(into: [LocationInfo]()) {
-                    
-                    guard let name = $1.element.title,
-                          let address = $1.element.roadAddress,
-                          let telephone = $1.element.telephone,
-                          let mapX = Double($1.element.mapx ?? ""),
-                          let mapY = Double($1.element.mapy ?? "") else {
-                        return
-                    }
-                    
-                    let image = imageStrings[$1.offset]
-                    
-                    $0.append(LocationInfo(name: name,
-                                           address: address,
-                                           telephone: telephone,
-                                           mapX: mapX,
-                                           mapY: mapY,
-                                           image: image))
-                }
-            } catch {
-                throw error
+                imageStrings.append(link)
             }
+            
+            // [LocationInfo] 배열 반환
+            return searchResponse.items.enumerated().reduce(into: [LocationInfo]()) {
+                
+                guard let name = $1.element.title,
+                      let address = $1.element.roadAddress,
+                      let telephone = $1.element.telephone,
+                      let mapX = Double($1.element.mapx ?? ""),
+                      let mapY = Double($1.element.mapy ?? "") else {
+                    return
+                }
+                
+                let image = imageStrings[$1.offset]
+                
+                $0.append(LocationInfo(name: name,
+                                       address: address,
+                                       mapX: mapX,
+                                       mapY: mapY,
+                                       image: image))
+            }
+            
         }
         
         switch await task.result {

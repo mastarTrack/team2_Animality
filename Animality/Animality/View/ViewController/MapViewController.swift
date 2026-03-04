@@ -15,7 +15,10 @@ class MapViewController: UIViewController {
     
     private let mapView = NMFMapView(frame: .zero)
     private let searchBar = UISearchBar()
+    private lazy var listView = UICollectionView(frame: .zero, collectionViewLayout: makeCompositionalLayout())
     private let currentLocationButton = UIButton()
+    
+    private lazy var dataSource = makeCollectionViewDiffableDataSource(listView)
     
     private var didInitialized = false // 초기화 여부
     
@@ -50,7 +53,9 @@ class MapViewController: UIViewController {
                 moveCameraPosition(lat: lat, lng: lng)
                 
             case let .searched(result):
-                updateResult(result)
+                Task {
+                    await self.updateSearchResult(result)
+                }
             case .none:
                 break
             }
@@ -63,6 +68,7 @@ extension MapViewController {
     private func setLayout() {
         view.addSubview(mapView)
         view.addSubview(searchBar)
+        view.addSubview(listView)
         view.addSubview(currentLocationButton)
         
         mapView.snp.makeConstraints {
@@ -71,6 +77,12 @@ extension MapViewController {
         
         searchBar.snp.makeConstraints {
             $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
+        }
+        
+        listView.snp.makeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom).offset(10)
+            $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
+            $0.bottom.equalTo(currentLocationButton.snp.top).offset(10)
         }
         
         currentLocationButton.snp.makeConstraints {
@@ -264,10 +276,43 @@ extension MapViewController: UISearchBarDelegate {
     }
 }
 
-// 검색 결과 업데이트
+//MARK: ListView
 extension MapViewController {
-    @MainActor
-    func updateResult(_ data: [LocationInfo]) {
-        print(data)
+    // 레이아웃 설정
+    private func makeCompositionalLayout() -> UICollectionViewCompositionalLayout {
+        return UICollectionViewCompositionalLayout { sectionIndex, environment in
+            let configuration = UICollectionLayoutListConfiguration(appearance: .grouped)
+            return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: environment)
+        }
+    }
+    
+    // DiffableDataSource 설정
+    private func makeCollectionViewDiffableDataSource(_ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Int, LocationInfo> {
+        let listCellRegistration = UICollectionView.CellRegistration<SearchResultCell, LocationInfo> { (cell, indexPath, item) in
+            cell.configure(data: item)
+        }
+        
+        let dataSource = UICollectionViewDiffableDataSource<Int, LocationInfo>(collectionView: listView) { collectionView, indexPath, itemIdentifier in
+            return collectionView.dequeueConfiguredReusableCell(using: listCellRegistration, for: indexPath, item: itemIdentifier)
+        }
+        
+        return dataSource
+    }
+    
+    // 스냅샷 설정
+    private func setSnapshot(with data: [LocationInfo]) {
+        var snapShot = NSDiffableDataSourceSnapshot<Int, LocationInfo>()
+        snapShot.appendSections([0])
+        snapShot.appendItems(data, toSection: 0)
+        self.dataSource.apply(snapShot)
+    }
+    
+    // 검색 결과 업데이트
+    private func updateSearchResult(_ data: [LocationInfo]) async {
+        await MainActor.run {
+            print(data)
+            listView.isHidden = false
+            setSnapshot(with: data)
+        }
     }
 }
