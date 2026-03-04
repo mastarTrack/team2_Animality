@@ -48,6 +48,7 @@ class LocationViewModel: ViewModelProtocol {
             Task {
                 do {
                     let result = try await fetchSearchResult(text: text)
+                    searchResults = result
                     self.state = .searched(result: result)
                 } catch {
                     print("검색 결과를 가져오지 못했습니다.")
@@ -65,6 +66,7 @@ class LocationViewModel: ViewModelProtocol {
     let networkManager = NetworkManager()
 
     private var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
+    private(set) var searchResults: [LocationInfo] = []
     
     // AnimalEntity -> Animal
     private func fetchAllAnimals() -> [Animal] {

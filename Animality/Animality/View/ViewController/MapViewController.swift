@@ -30,6 +30,7 @@ class MapViewController: UIViewController {
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
         searchBar.delegate = self
+        listView.delegate = self
         
         setAttributes()
         setLayout()
@@ -136,8 +137,6 @@ extension MapViewController {
     
     private func setListView() {
         listView.isHidden = true
-//        listView.backgroundView = UIView()
-//        listView.backgroundView?.backgroundColor = .clear
         listView.backgroundColor = .clear
     }
     
@@ -166,6 +165,11 @@ extension MapViewController {
     // 지도를 비출 카메라 위치를 옮기는 메서드(== 표시될 지도의 위치를 변경하는 메서드)
     private func moveCameraPosition(lat: Double, lng: Double) {
         let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(NMGLatLng(lat: lat, lng: lng), zoom: 14))
+        mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
+    }
+    
+    private func moveCameraPosition(to coordinate: NMGLatLng) {
+        let cameraPosition = NMFCameraUpdate(position: NMFCameraPosition(coordinate, zoom: 14))
         mapView.moveCamera(cameraPosition) // 지도의 중앙이 cameraPosition 좌표가 되는 지도를 표시
     }
     
@@ -339,5 +343,20 @@ extension MapViewController {
             print(data.isEmpty)
             listView.isHidden = data.isEmpty
             setSnapshot(with: data)
+    }
+}
+
+extension MapViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        let data = viewModel.searchResults[indexPath.row]
+        print(data.mapX, data.mapY)
+        let x = data.mapX / 10000000
+        let y = data.mapY / 10000000
+//        let coordinate = NMGUtmk(x: data.mapX / 1000, y: data.mapY / 1000).toLatLng()
+//        let coordinate = NMGTm128(x: data.mapX / 1000, y: data.mapY / 1000).toLatLng()
+        let coordinate = NMGLatLng(lat: x, lng: y)
+        print(coordinate)
+        moveCameraPosition(to: coordinate)
     }
 }
