@@ -14,7 +14,7 @@ class MapViewController: UIViewController {
     private let viewModel = LocationViewModel()
     
     private let mapView = NMFMapView(frame: .zero)
-    private var markers = [NMFMarker]()
+    private var displayedMarkers = [NMFMarker]()
     
     private let searchBar = UISearchBar()
     private let currentLocationButton = UIButton()
@@ -43,12 +43,21 @@ class MapViewController: UIViewController {
                 
                 // 비동기 함수(마커 생성 함수)를 처리하기 위한 Task
                 Task {
-                    self.markers = await self.makeMarkers(data) // 마커 할당
-                    self.displayMarkers(self.markers)
+                    self.displayedMarkers = await self.makeMarkers(data) // 마커 할당
+                    self.displayMarkers(self.displayedMarkers)
                 }
                 
             case let .locationChanged(lat, lng): // 위치 이동 시
                 moveCameraPosition(lat: lat, lng: lng)
+                
+            case let .newRegister(data):
+                let new = compareNewMarkers(data) // 마커 생성 대상 찾기
+                
+                Task {
+                    let newMarkers = await self.makeMarkers(new) // 마커 생성
+                    self.displayMarkers(newMarkers) // 신규 마커 배치
+                    self.displayedMarkers += newMarkers // 현재 마커 배열 갱신
+                }
                 
             case .none:
                 break
@@ -208,16 +217,45 @@ extension MapViewController {
     }
     
     func newRegister() {
-        
-        
+        viewModel.action(.newRegister)
         print("새로운 등록")
     }
     
-    private func updateMarkers(_ data: [Coordinate: AnimalType]) {
-        for d in data {
-//            markers.filter { $0.position.lat == d.coordinate.latitude && $0.position.lng == d.coordinate.longitude }
+    // 마커 삭제
+    @MainActor
+    private func deleteMarkers(_ markers: [NMFMarker]) {
+        markers.forEach {
+            $0.mapView = nil // 마커 제거
         }
         
+        //        // 마커 배열 갱신
+        //        markers.removeAll {
+        //            $0.mapView == nil
+        //        }
+    }
+    
+    // 생성 대상 비교
+    private func compareNewMarkers(_ data: [Coordinate: AnimalType]) -> [Coordinate: AnimalType] {
+        return data.reduce(into: [Coordinate: AnimalType]()) { dic, update in
+            // 기존 마커 배열에 업데이트 마커 좌표가 존재하는지 확인
+            let index = displayedMarkers.firstIndex(where: {
+                $0.position.lat == update.key.latitude && $0.position.lng == update.key.longitude
+            })
+            
+            // 없는 경우, 생성 대상에 추가
+            index == nil ? dic[update.key] = update.value : ()
+        }
+    }
+    
+    // 삭제 대상 비교
+    private func compareDeleteMarkers(_ data: [Coordinate: AnimalType]) -> [NMFMarker] {
+        return displayedMarkers.reduce(into: [NMFMarker]()) {
+            // 현재 비교 중인 기존 마커의 좌표
+            let coordinate = Coordinate(latitude: $1.position.lat, longitude: $1.position.lng)
+            
+            // 업데이트된 마커 리스트에 해당 좌표가 없는 경우 삭제 대상에 추가
+            data[coordinate] == nil ? $0.append($1) : ()
+            }
     }
 }
 

@@ -13,13 +13,15 @@ class LocationViewModel: ViewModelProtocol {
     enum Action {
         case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
+        case newRegister
     }
     
     // 상태 열거형
     enum State {
         case none
-        case initialized(lat: Double, lng: Double, markers: [Coordinate: AnimalType]) // (현재 위도, 현재 경도, 마커)
+        case initialized(lat: Double, lng: Double, data: [Coordinate: AnimalType]) // (현재 위도, 현재 경도, 마커)
         case locationChanged(lat: Double, lng: Double)
+        case newRegister(data: [Coordinate: AnimalType])
     }
     
     var state: State = .none {
@@ -34,12 +36,19 @@ class LocationViewModel: ViewModelProtocol {
         case let .initialized(lat, lng):
             coordinates = categorizeAnimalByCoordinate() // 좌표 별로 동물 객체를 분류
             
-            let markers = fetchMarkers(of: coordinates) // 생성할 마커 배열
-            self.state = .initialized(lat: lat, lng: lng, markers: markers)
+            let data = fetchMarkerData(of: coordinates) // 생성할 마커 배열
+            self.state = .initialized(lat: lat, lng: lng, data: data)
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
+            
+        case .newRegister:
+            coordinates = categorizeAnimalByCoordinate()
+            let data = fetchMarkerData(of: coordinates)
+            self.state = .newRegister(data: data)
         }
+        
+    
     }
     
     // 프로퍼티 선언
@@ -85,7 +94,7 @@ class LocationViewModel: ViewModelProtocol {
     
     // 마커를 생성할 좌표와 동물 타입을 반환하는 메서드 [(type: 동물 타입, coordinate: 좌표)]
     //TODO: 화면에 보이는 지도 범위 내의 마커들만 생성해도 되지 않을까? - VC에서 설정해야할 것 같긴 함
-    private func fetchMarkers(of data: [Coordinate: [Animal]]) -> [Coordinate: AnimalType] {
+    private func fetchMarkerData(of data: [Coordinate: [Animal]]) -> [Coordinate: AnimalType] {
         return data.reduce(into: [Coordinate: AnimalType]()) { dic, point in
             // 타겟 좌표의 동물 타입 배열
             let types = point.value.map { $0.type }
