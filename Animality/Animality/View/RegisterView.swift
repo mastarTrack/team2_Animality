@@ -171,6 +171,7 @@ final class RegisterView: UIView {
         setupLayout() // snp
         setupActions() // addTarget
         setupGradient()
+        setupAllTypeButtons()
     }
     
     required init?(coder: NSCoder) {
@@ -424,23 +425,30 @@ final class RegisterView: UIView {
         onCategorySelected?("Pet")
     }
     
-    // 카테고리에 맞는 종류 버튼들을 만드는 함수
-    func updateTypeSelection(for category: String) {
-        // 기존에 생성된 버튼들 싹 지우기
-        typeStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        
-        // 해당 카테고리에 속하는 타입들만 필터링
-        let filteredTypes = AnimalType.allCases.filter { $0.category == category }
-        
-        filteredTypes.forEach { type in
+    // 초기화 시점에 모든 버튼을 미리 생성
+    private func setupAllTypeButtons() {
+        AnimalType.allCases.forEach { type in
             let button = CategoryButton(title: type.rawValue, imageName: "pawprint")
+            button.tag = type.hashValue
+            button.isHidden = true // 일단 모두 숨김
             button.addAction(UIAction(handler: { [weak self] _ in
                 self?.selectTypeButton(selectedButton: button, selectedType: type)
             }), for: .touchUpInside)
+            
             typeStackView.addArrangedSubview(button)
         }
+    }
+    
+    // 카테고리에 맞는 종류 버튼들을 만드는 함수
+    func updateTypeSelection(for category: String) {
+        typeStackView.arrangedSubviews.forEach { view in
+            guard let button = view as? CategoryButton,
+                  let type = AnimalType.allCases.first(where: { $0.rawValue == button.currentTitle }) else { return }
+            
+            // 카테고리가 일치하는 버튼만 보여주고 나머지는 숨긱
+            button.isHidden = (type.category != category)
+        }
         
-        // 숨겨놨던 영역 보이기
         typeTitleLabel.isHidden = false
         typeStackView.isHidden = false
     }
