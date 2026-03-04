@@ -40,18 +40,6 @@ class MainViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
-        Task {
-            await search()
-        }
-    }
-    
-    func search() async {
-        do {
-            let result = try await networkManager.searchLocationData(of: "서울시청")
-            print(result)
-        } catch {
-            print("\(error)검색 실패")
-        }
     }
 }
 
