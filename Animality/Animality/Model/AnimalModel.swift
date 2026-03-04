@@ -32,7 +32,6 @@ import Foundation
      status: myNewAnimal.status.rawValue  // "대여 가능" 문자열 추출
  )
 
- CoreDataManager.shared.createAnimalEntity(with: payload)
  */
 
 
@@ -69,7 +68,7 @@ struct Coordinate: Hashable {
 }
 
 // MARK: 동물 종류 정의
-enum AnimalType: String {
+enum AnimalType: String, CaseIterable {
     case dog = "강아지"
     case cat = "고양이"
     case pegasus = "페가수스"
