@@ -15,9 +15,9 @@ class MapViewController: UIViewController {
     
     private let mapView = NMFMapView(frame: .zero)
     private let searchBar = UISearchBar()
-    private lazy var listView = UICollectionView(frame: .zero, collectionViewLayout: makeCompositionalLayout())
     private let currentLocationButton = UIButton()
     
+    private lazy var listView = UICollectionView(frame: .zero, collectionViewLayout: makeCompositionalLayout())
     private lazy var dataSource = makeCollectionViewDiffableDataSource(listView)
     
     private var didInitialized = false // 초기화 여부
@@ -114,7 +114,7 @@ extension MapViewController {
         currentLocationButton.configuration = config
         
         currentLocationButton.configurationUpdateHandler = { button in
-            let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
+            let imageConfig = UIImage.SymbolConfiguration(weight: .bold) // 버튼에 표시될 이미지 두께 설정
             
             button.configuration?.image =
             button.isHighlighted ? UIImage(systemName: "location.fill")
@@ -131,8 +131,6 @@ extension MapViewController {
         searchBar.searchTextField.layer.borderWidth = 2
         searchBar.searchTextField.backgroundColor = .white.withAlphaComponent(0.5)
         searchBar.searchTextField.textColor = .secondaryText
-        
-//        searchBar.showsCancelButton = true
     }
     
     private func setListView() {
@@ -259,13 +257,12 @@ extension MapViewController: CLLocationManagerDelegate {
             didInitialized = true // 초기화 여부 변경
         }
         
-        print(NMGWebMercatorCoord(from: NMGLatLng(lat: lat, lng: lng)))
         locationManager.stopUpdatingLocation()
     }
     
     // 권한 변경 시 호출되는 함수
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        currentLocation()
+        currentLocation() // 현재 위치로 카메라 이동
     }
     
     // 오류 발생 시 호출되는 함수
@@ -279,25 +276,21 @@ extension MapViewController: CLLocationManagerDelegate {
 extension MapViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let origin = searchBar.text else { return }
-        let text = origin.trimmingCharacters(in: .whitespaces)
+        let text = origin.trimmingCharacters(in: .whitespaces) // 공백 제거
         
-        if !text.isEmpty {
+        if !text.isEmpty { // 텍스트가 공백이 아닐 시 검색
             viewModel.action(.search(text: text))
         }
-        
         searchBar.resignFirstResponder()
-    }
-    
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         if !searchText.isEmpty {
-            searchBar.showsCancelButton = true
+            searchBar.showsCancelButton = true // textField에 글자 존재 시 취소 버튼을 표시
         }
     }
     
+    // 취소 버튼 클릭 시 동작 - 검색 결과 지우기
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         viewModel.action(.cancelSearch)
         searchBar.text = ""
@@ -351,6 +344,7 @@ extension MapViewController {
 }
 
 extension MapViewController: UICollectionViewDelegate {
+    // 검색 결과 셀 클릭 시 해당 위치로 이동
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let data = viewModel.searchResults[indexPath.row]
         let x = data.mapX / 10000000 // 경도
