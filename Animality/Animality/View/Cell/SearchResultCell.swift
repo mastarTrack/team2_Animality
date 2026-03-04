@@ -24,7 +24,6 @@ class SearchResultCell: UICollectionViewListCell {
     // 이름 레이블
     private let nameLabel = UILabel().then {
         $0.textColor = .text
-        $0.font = .systemFont(ofSize: 14, weight: .semibold)
         $0.textAlignment = .left
         $0.adjustsFontSizeToFitWidth = true // 공간 부족시 폰트 크기 조정 허용
         $0.minimumScaleFactor = 0.7 // 최소 폰트 크기 (최초 설정 크기인 14의 0.7배)
@@ -81,7 +80,7 @@ extension SearchResultCell {
 
 extension SearchResultCell {
     func configure(data: LocationInfo) {
-        nameLabel.attributedText = data.name
+        nameLabel.attributedText = addFont(to: data.name)
         addressLabel.text = data.address
         loadImage(url: data.image)
     }
@@ -89,5 +88,15 @@ extension SearchResultCell {
     private func loadImage(url: String) {
         guard let url = URL(string: url) else { return }
         imageView.kf.setImage(with: url)
+    }
+    
+    private func addFont(to text: NSAttributedString) -> NSMutableAttributedString {
+        let font = UIFont.systemFont(ofSize: 15, weight: .semibold)
+        let attributes: [NSAttributedString.Key: Any] = [.font: font]
+
+        let string = NSMutableAttributedString(attributedString: text)
+        string.addAttributes(attributes, range: .init(location: 0, length: text.length))
+        
+        return string
     }
 }
