@@ -14,6 +14,7 @@ class LocationViewModel: ViewModelProtocol {
         case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
         case search(text: String)
+        case cancelSearch
     }
     
     // 상태 열거형
@@ -22,6 +23,7 @@ class LocationViewModel: ViewModelProtocol {
         case initialized(lat: Double, lng: Double, markers: [(type: AnimalType, coordinate: Coordinate)]) // (현재 위도, 현재 경도, 마커)
         case locationChanged(lat: Double, lng: Double)
         case searched(result: [LocationInfo])
+        case cancelledSearch
     }
     
     var state: State = .none {
@@ -44,10 +46,20 @@ class LocationViewModel: ViewModelProtocol {
             
         case let .search(text):
             Task {
-                let result = try await fetchSearchResult(text: text)
-                self.state = .searched(result: result)
+                do {
+                    let result = try await fetchSearchResult(text: text)
+                    self.state = .searched(result: result)
+                } catch {
+//                    state = 에러로
+                }
             }
+            
+        case .cancelSearch:
+            self.state = .cancelledSearch
         }
+        
+    
+        
     }
     
     // 프로퍼티 선언
@@ -145,7 +157,6 @@ class LocationViewModel: ViewModelProtocol {
                 
                 guard let name = $1.element.title,
                       let address = $1.element.roadAddress,
-                      let telephone = $1.element.telephone,
                       let mapX = Double($1.element.mapx ?? ""),
                       let mapY = Double($1.element.mapy ?? "") else {
                     return

@@ -59,13 +59,14 @@ extension NetworkManager {
         // url 및 헤더 설정
         var urlComp = URLComponents(string: "https://openapi.naver.com/v1/search/local.json")
         let queryItems = [
-            URLQueryItem(name: "query", value: text) // 검색어
+            URLQueryItem(name: "query", value: text), // 검색어
+            URLQueryItem(name: "display", value: "5") // 한 번에 표시할 검색 결과 개수
             ]
         
         urlComp?.queryItems = queryItems
         
         guard let url = urlComp?.url else { throw NetworkingError.invalid }
-        print(url)
+
         let headers: HTTPHeaders = [
             "Accept": "application/json",
             "X-Naver-Client-Id": searchClientId ?? "",
@@ -97,7 +98,7 @@ extension NetworkManager {
         urlComp?.queryItems = queryItems
         
         guard let url = urlComp?.url else { throw NetworkingError.invalid }
-        print(url)
+        
         let headers: HTTPHeaders = [
             "X-Naver-Client-Id": searchClientId ?? "",
             "X-Naver-Client-Secret": searchSecretId ?? ""

@@ -56,6 +56,12 @@ class MapViewController: UIViewController {
                 Task {
                     await self.updateSearchResult(result)
                 }
+                
+            case .cancelledSearch:
+                Task {
+                    await self.updateSearchResult([])
+                }
+                
             case .none:
                 break
             }
@@ -82,7 +88,7 @@ extension MapViewController {
         listView.snp.makeConstraints {
             $0.top.equalTo(searchBar.snp.bottom).offset(10)
             $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
-            $0.bottom.equalTo(currentLocationButton.snp.top).offset(10)
+            $0.height.equalTo(252)
         }
         
         currentLocationButton.snp.makeConstraints {
@@ -95,6 +101,7 @@ extension MapViewController {
         setSearchBar()
         setButton()
         currentLocation()
+        setListView()
     }
     
     private func setButton() {
@@ -123,6 +130,13 @@ extension MapViewController {
         searchBar.searchTextField.layer.borderWidth = 2
         searchBar.searchTextField.backgroundColor = .white.withAlphaComponent(0.5)
         searchBar.searchTextField.textColor = .secondaryText
+        
+        searchBar.showsCancelButton = true
+    }
+    
+    private func setListView() {
+        listView.isHidden = true
+        listView.backgroundColor = .clear
     }
     
     private func setMapView(lat: Double, lng: Double) {
@@ -251,10 +265,12 @@ extension MapViewController: CLLocationManagerDelegate {
         locationManager.stopUpdatingLocation()
     }
     
+    // 권한 변경 시 호출되는 함수
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
         currentLocation()
     }
     
+    // 오류 발생 시 호출되는 함수
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         let alert = UIAlertController(status: .invalidLocation)
         present(alert, animated: true)
@@ -264,7 +280,6 @@ extension MapViewController: CLLocationManagerDelegate {
 //MARK: SearchBar
 extension MapViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        print("buttonClicked")
         guard let origin = searchBar.text else { return }
         let text = origin.trimmingCharacters(in: .whitespaces)
         
@@ -274,6 +289,11 @@ extension MapViewController: UISearchBarDelegate {
         
         searchBar.resignFirstResponder()
     }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.action(.cancelSearch)
+        searchBar.resignFirstResponder()
+    }
 }
 
 //MARK: ListView
@@ -281,7 +301,7 @@ extension MapViewController {
     // 레이아웃 설정
     private func makeCompositionalLayout() -> UICollectionViewCompositionalLayout {
         return UICollectionViewCompositionalLayout { sectionIndex, environment in
-            let configuration = UICollectionLayoutListConfiguration(appearance: .grouped)
+            let configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
             return NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: environment)
         }
     }
@@ -308,11 +328,10 @@ extension MapViewController {
     }
     
     // 검색 결과 업데이트
+    @MainActor
     private func updateSearchResult(_ data: [LocationInfo]) async {
-        await MainActor.run {
-            print(data)
-            listView.isHidden = false
+            print(data.isEmpty)
+            listView.isHidden = data.isEmpty
             setSnapshot(with: data)
-        }
     }
 }

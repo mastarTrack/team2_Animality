@@ -12,12 +12,15 @@ class SearchResultCell: UICollectionViewListCell {
     static let identifier = "SearchResultCell"
     
     //MARK: Set Attributes
+    // 이미지
     private let imageView = UIImageView().then {
         $0.layer.cornerRadius = 8
         $0.clipsToBounds = true
         $0.contentMode = .scaleAspectFill
         $0.image = UIImage(systemName: "photo")
     }
+    
+    // 이름 레이블
     private let nameLabel = UILabel().then {
         $0.textColor = .text
         $0.font = .systemFont(ofSize: 14, weight: .semibold)
@@ -25,6 +28,8 @@ class SearchResultCell: UICollectionViewListCell {
         $0.adjustsFontSizeToFitWidth = true // 공간 부족시 폰트 크기 조정 허용
         $0.minimumScaleFactor = 0.7 // 최소 폰트 크기 (최초 설정 크기인 14의 0.7배)
     }
+    
+    // 주소 레이블
     private let addressLabel = UILabel().then {
         $0.textColor = .secondaryText
         $0.font = .systemFont(ofSize: 14, weight: .regular)
@@ -44,6 +49,7 @@ class SearchResultCell: UICollectionViewListCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        setLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -66,7 +72,7 @@ extension SearchResultCell {
         
         labelStack.snp.makeConstraints {
             $0.leading.top.equalToSuperview().inset(10)
-            $0.trailing.equalTo(imageView.snp.leading).inset(10)
+            $0.trailing.equalTo(imageView.snp.leading).offset(-10)
         }
     }
     
