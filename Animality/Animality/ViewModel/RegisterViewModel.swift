@@ -142,49 +142,73 @@ class RegisterViewModel: ViewModelProtocol {
 //        state = .registerSuccess
 //    }
     
+    //MARK: 테스트!!!!!!!!!
     private func register() {
+        let testPayloads = [
+        CreateAnimalModel(
+            name: "모찌",
+            category: "Pet",
+            type: "강아지",
+            size: "소형",
+            latitude: 36.12840,
+            longitude: 128.33075,
+            price: 12000,
+            status: "대여 가능",
+            flight: "비행 불가능"
+        ),
+
+        CreateAnimalModel(
+            name: "루나",
+            category: "Pet",
+            type: "고양이",
+            size: "중형",
+            latitude: 36.12815,
+            longitude: 128.33105,
+            price: 10000,
+            status: "휴식중",
+            flight: "비행 불가능"
+        ),
+
+        CreateAnimalModel(
+            name: "스톰",
+            category: "Ride",
+            type: "페가수스",
+            size: "대형",
+            latitude: 36.12860,
+            longitude: 128.33050,
+            price: 50000,
+            status: "대여 가능",
+            flight: "비행 가능"
+        ),
+
+        CreateAnimalModel(
+            name: "오로라",
+            category: "Ride",
+            type: "유니콘",
+            size: "대형",
+            latitude: 36.12795,
+            longitude: 128.33095,
+            price: 45000,
+            status: "치료중",
+            flight: "비행 불가능"
+        ),
+
+        CreateAnimalModel(
+            name: "카카",
+            category: "Ride",
+            type: "초코보",
+            size: "중형",
+            latitude: 36.12825,
+            longitude: 128.33130,
+            price: 30000,
+            status: "대여중",
+            flight: "비행 불가능"
+        )
+    ]
         
-//        // 하나라도 빠져있으면 경고
-//        guard
-//            let name,
-//            let type,
-//            let size,
-//            let pricePerHour,
-//            let flightCapability,
-//            let latitude,
-//            let longitude
-//        else {
-//            state = .showAlert("모든 항목을 입력해주세요.")
-//            return
-//        }
-//        
-//        // 도메인 모델 생성
-//        let animal = Animal(
-//            id: UUID(),
-//            name: name,
-//            type: type,
-//            status: .normal,
-//            pricePerHour: Int(pricePerHour),
-//            currentLocation: Coordinate(latitude: latitude, longitude: longitude),
-//            size: size,
-//            flightCapability: flightCapability
-//        )
-//        
-//        // 코어데이터용 payload 생성하기
-//        let payload = CreateAnimalModel(
-//            name: animal.name,
-//            category: animal.type.category,
-//            type: animal.type.rawValue,
-//            size: animal.size.rawValue,
-//            latitude: animal.currentLocation.latitude,
-//            longitude: animal.currentLocation.longitude,
-//            price: Int32(animal.pricePerHour),
-//            status: animal.status.rawValue,
-//            flight: animal.flightCapability.rawValue
-//        )
-//
-//        coreDataManager.createAnimalEntity(with: payload)
-        
+        testPayloads.forEach {
+            coreDataManager.createAnimalEntity(with: $0)
+        }
         // 저장 완료 상태 저장
         state = .registerSuccess
     }
