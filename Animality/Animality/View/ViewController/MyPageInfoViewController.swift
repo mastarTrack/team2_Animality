@@ -263,24 +263,13 @@ extension MyPageInfoViewController {
             }
         }
         
-        modifyButton.snp.makeConstraints {
-            $0.height.equalTo(50)
-            $0.leading.equalToSuperview()
-            $0.trailing.equalToSuperview()
+        [modifyButton, rentRegistListButton, modifyCancelButton].forEach{
+            $0.snp.makeConstraints {
+                $0.height.equalTo(50)
+                $0.leading.equalToSuperview()
+                $0.trailing.equalToSuperview()
+            }
         }
-        
-        rentRegistListButton.snp.makeConstraints {
-            $0.height.equalTo(50)
-            $0.leading.equalToSuperview()
-            $0.trailing.equalToSuperview()
-        }
-        
-        modifyCancelButton.snp.makeConstraints {
-            $0.height.equalTo(50)
-            $0.leading.equalToSuperview()
-            $0.trailing.equalToSuperview()
-        }
-        
     }
 }
 

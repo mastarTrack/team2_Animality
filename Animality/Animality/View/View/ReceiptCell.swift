@@ -104,15 +104,7 @@ extension ReceiptCell {
         rentStartTimeLabel.text = startTime.formatted()
         rentEndTimeLabel.text = endTime?.formatted() ?? ""
         totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
-        
-        switch state {
-        case .completed:
-            stateLabel.updateUI(state: .completed, nil)
-        case .renting:
-            stateLabel.updateUI(state: .renting, nil)
-        case .cancel:
-            stateLabel.updateUI(state: .cancel, nil)
-        }
+        stateLabel.updateUI(state: state, nil)
     }
 }
 

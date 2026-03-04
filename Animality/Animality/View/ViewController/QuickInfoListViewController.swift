@@ -58,12 +58,15 @@ extension QuickInfoListViewController {
         
         let group = NSCollectionLayoutGroup.vertical(layoutSize: .init(widthDimension: .estimated(313), heightDimension: .estimated(196)), subitems: [item])
         
+        
         let section = NSCollectionLayoutSection(group: group)
+        let itemWidth: CGFloat = 338
+        let horizontalInset = (UIScreen.main.bounds.width - itemWidth) / 2
         section.contentInsets = NSDirectionalEdgeInsets(
             top: 10,
-            leading: (UIScreen.main.bounds.width - 348) / 2,
+            leading: horizontalInset,
             bottom: 10,
-            trailing: (UIScreen.main.bounds.width - 303) / 2
+            trailing: horizontalInset
         )
         section.interGroupSpacing = 16 
         return section
