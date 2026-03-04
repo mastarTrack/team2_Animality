@@ -95,9 +95,3 @@ class RegisterViewController: UIViewController {
     }
 }
 
-private extension RegisterViewController {
-    func updateRegisterButton(_ isEnabled: Bool) {
-        // 버튼 활성화 처리하기
-    }
-}
-
