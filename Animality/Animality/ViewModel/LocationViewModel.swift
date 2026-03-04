@@ -84,7 +84,7 @@ class LocationViewModel: ViewModelProtocol {
     }
     
     // 좌표별 동물 분류 메서드
-    private func categorizeAnimalByCoordinate() -> [Coordinate: [Animal]]{
+    private func categorizeAnimalByCoordinate() -> [Coordinate: [Animal]] {
         let animals = fetchAllAnimals()
 
         return animals.reduce(into: [Coordinate: [Animal]]()) {

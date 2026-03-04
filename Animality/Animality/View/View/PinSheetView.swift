@@ -6,9 +6,14 @@
 //
 import UIKit
 
-class PinSheetView: UISheetPresentationController {
+class PinSheetView: UIViewController {
     private lazy var listView = UICollectionView(frame: .zero, collectionViewLayout: makeCompositionalLayout())
     private lazy var dataSource = makeCollectionViewDiffableDataSource(listView)
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
     
     // 레이아웃 설정
     private func makeCompositionalLayout() -> UICollectionViewCompositionalLayout {
