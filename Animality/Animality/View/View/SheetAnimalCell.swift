@@ -37,6 +37,8 @@ final class SheetAnimalCell: UICollectionViewCell {
         
         contentView.layer.cornerRadius = 16
         contentView.backgroundColor = .white
+        contentView.layer.borderColor = UIColor(resource: .rose).cgColor
+        contentView.layer.borderWidth = 2
         setLayout()
     }
 
@@ -46,6 +48,7 @@ final class SheetAnimalCell: UICollectionViewCell {
     }
 }
 
+//MARK: methods
 extension SheetAnimalCell {
     private func setLayout() {
         let unitLabel = UILabel().then {
@@ -61,12 +64,12 @@ extension SheetAnimalCell {
         contentView.addSubview(infoStack)
         
         nameStack.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(10)
+            $0.leading.equalToSuperview().inset(15)
             $0.top.equalTo(infoStack.snp.top)
         }
         
         infoStack.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(10)
+            $0.trailing.equalToSuperview().inset(15)
             $0.centerY.equalToSuperview()
         }
     }
@@ -81,23 +84,23 @@ extension SheetAnimalCell {
     func configure(with animal: Animal) {
         nameLabel.text = animal.name
         typeLabel.text = animal.type.rawValue
-        priceLabel.text = "\(animal.pricePerHour)" // 표시형식 바꿔야함
+        priceLabel.text = "\(animal.pricePerHour.formatted(.currency(code: "KRW")))" // 표시형식 바꿔야함
         configureStatusLabel(status: animal.status)
     }
     
     private func configureStatusLabel(status: AnimalStatus) {
         switch status {
         case .normal:
-            statusLabel.updateUI(state: .completed, .systemFont(ofSize: 12, weight: .medium))
+            statusLabel.updateUI(state: .completed, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "한가해요"
         case .rented:
-            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 12, weight: .medium))
+            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "바빠요"
         case .resting:
-            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 12, weight: .medium))
+            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "쉴래요"
         case .sick:
-            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 12, weight: .medium))
+            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "아파요"
             
         }
