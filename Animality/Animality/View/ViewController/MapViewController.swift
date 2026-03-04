@@ -26,6 +26,7 @@ class MapViewController: UIViewController {
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
+        searchBar.delegate = self
         
         setAttributes()
         setLayout()
@@ -48,6 +49,8 @@ class MapViewController: UIViewController {
             case let .locationChanged(lat, lng): // 위치 이동 시
                 moveCameraPosition(lat: lat, lng: lng)
                 
+            case let .searched(result):
+                updateResult(result)
             case .none:
                 break
             }
@@ -249,11 +252,22 @@ extension MapViewController: CLLocationManagerDelegate {
 //MARK: SearchBar
 extension MapViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        print("buttonClicked")
         guard let origin = searchBar.text else { return }
         let text = origin.trimmingCharacters(in: .whitespaces)
         
         if !text.isEmpty {
             viewModel.action(.search(text: text))
         }
+        
+        searchBar.resignFirstResponder()
+    }
+}
+
+// 검색 결과 업데이트
+extension MapViewController {
+    @MainActor
+    func updateResult(_ data: [LocationInfo]) {
+        print(data)
     }
 }

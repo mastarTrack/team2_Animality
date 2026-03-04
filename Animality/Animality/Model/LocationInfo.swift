@@ -11,5 +11,5 @@ struct LocationInfo {
     var telephone: String
     var mapX: Double
     var mapY: Double
-    var image: String?
+    var image: String
 }

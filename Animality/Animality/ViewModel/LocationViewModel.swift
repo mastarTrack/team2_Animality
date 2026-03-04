@@ -21,6 +21,7 @@ class LocationViewModel: ViewModelProtocol {
         case none
         case initialized(lat: Double, lng: Double, markers: [(type: AnimalType, coordinate: Coordinate)]) // (현재 위도, 현재 경도, 마커)
         case locationChanged(lat: Double, lng: Double)
+        case searched(result: [LocationInfo])
     }
     
     var state: State = .none {
@@ -42,7 +43,10 @@ class LocationViewModel: ViewModelProtocol {
             self.state = .locationChanged(lat: lat, lng: lng)
             
         case let .search(text):
-            
+            Task {
+                let result = try await fetchSearchResult(text: text)
+                self.state = .searched(result: result)
+            }
         }
     }
     
@@ -118,29 +122,54 @@ class LocationViewModel: ViewModelProtocol {
         }
     }
     
-    private func fetchSearchResult(text: String) throws {
-        Task {
+    private func fetchSearchResult(text: String) async throws -> [LocationInfo] {
+        let task = Task<[LocationInfo], Error> {
             do {
+                // textField 입력값으로 검색
                 let searchResponse = try await networkManager.searchLocationData(of: text)
                 
-                let searchedItems = searchResponse.items.reduce(into: [LocationInfo]()) {
-                    guard let name = $1.title,
-                          let address = $1.roadAddress,
-                          let telephone = $1.telephone,
-                          let mapX = Double($1.mapx ?? ""),
-                          let mapY = Double($1.mapy ?? "") else {
+                // 지역 검색 결과 title 배열
+                let searchNames = searchResponse.items.compactMap { $0.title }
+                
+                // 지역 검색 결과의 이미지 검색
+                var imageStrings: [String] = []
+                for name in searchNames {
+                    let response = try await networkManager.searchImageData(of: name)
+                    let link = response.items.first?.link ?? ""
+                    
+                    imageStrings.append(link)
+                }
+                
+                // [LocationInfo] 배열 반환
+                return searchResponse.items.enumerated().reduce(into: [LocationInfo]()) {
+                    
+                    guard let name = $1.element.title,
+                          let address = $1.element.roadAddress,
+                          let telephone = $1.element.telephone,
+                          let mapX = Double($1.element.mapx ?? ""),
+                          let mapY = Double($1.element.mapy ?? "") else {
                         return
                     }
                     
-                    $0.append(LocationInfo(name: name, address: address, telephone: telephone, mapX: mapX, mapY: mapY))
+                    let image = imageStrings[$1.offset]
+                    
+                    $0.append(LocationInfo(name: name,
+                                           address: address,
+                                           telephone: telephone,
+                                           mapX: mapX,
+                                           mapY: mapY,
+                                           image: image))
                 }
-                
-                let searchNames = searchedItems.map { $0.name }
-                
-                let imageResponse = try await networkManager.searchImageData(of: text)
             } catch {
                 throw error
             }
+        }
+        
+        switch await task.result {
+        case .success(let result):
+            return result
+        case .failure(let error):
+            throw error
         }
     }
 
