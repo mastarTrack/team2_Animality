@@ -13,7 +13,7 @@ import SnapKit
 class QuickInfoListViewController: UIViewController {
     
     //MARK: - ViewModel
-    let vm: any ViewModelProtocol
+     let vm: MyPageViewModel
     
     //MARK: - Enum
     enum CellType {
@@ -40,10 +40,16 @@ class QuickInfoListViewController: UIViewController {
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
+        switch cellType {
+        case .receipt:
+            title = "이용 내역"
+        case .regist:
+            title = "등록 내역"
+        }
         configureUI()
     }
     
-    init(cellType: CellType, vm: any ViewModelProtocol) {
+    init(cellType: CellType, vm: MyPageViewModel) {
         self.cellType = cellType
         self.vm = vm
         super.init(nibName: nil, bundle: nil)
@@ -60,12 +66,41 @@ class QuickInfoListViewController: UIViewController {
 extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let count = 10
-        return count
+        switch cellType {
+        case .receipt:
+            return vm.userModel.rentReceipt?.count ?? 0
+        case .regist:
+            return vm.userModel.registAnimal?.count ?? 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReceiptCell.identifier, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReceiptCell.identifier, for: indexPath) as! ReceiptCell
+        
+        switch cellType {
+        case .receipt:
+            cell.updateUIForType(type: .receipt)
+            guard let receipt = vm.userModel.rentReceipt?[indexPath.item] else {
+                return cell
+            }
+            cell.updateUIForReceipt(name: receipt.animal?.name ?? ""
+                                    , state: receipt.rentState
+                                    , location: receipt.location ?? ""
+                                    , startTime: receipt.rentStartTime
+                                    , endTime: receipt.rentEndTime
+                                    , amount: Int(receipt.amount))
+        case .regist:
+            cell.updateUIForType(type: .regist)
+            guard let animal = vm.userModel.registAnimal?[indexPath.item] else {
+                return cell
+            }
+            cell.updateUIForRegist(name: animal.name
+                                   , state: animal.status
+                                   , startTime: Date()
+                                   , amount: animal.pricePerHour
+            )
+        }
+        
         return cell
     }
 }
@@ -80,7 +115,7 @@ extension QuickInfoListViewController {
         
         
         let section = NSCollectionLayoutSection(group: group)
-        let itemWidth: CGFloat = 338
+        let itemWidth: CGFloat = 353
         let horizontalInset = (UIScreen.main.bounds.width - itemWidth) / 2
         section.contentInsets = NSDirectionalEdgeInsets(
             top: 10,
@@ -125,6 +160,6 @@ extension QuickInfoListViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    let vm = QuickInfoListViewModel(userModel: UserModel.sample)
-    QuickInfoListViewController(cellType: .receipt, vm: vm)
+    let vm = MyPageViewModel(userModel: UserModel.sample)
+    QuickInfoListViewController(cellType: .regist, vm: vm)
 }

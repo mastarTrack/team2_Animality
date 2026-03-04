@@ -10,7 +10,7 @@ import Foundation
 class MyPageViewModel: ViewModelProtocol {
     
     //MARK: - Model
-    private var userModel: UserModel
+    private(set) var userModel: UserModel
     
     //MARK: - Enum
     /// ViewModel의 상태 전달용 Enum

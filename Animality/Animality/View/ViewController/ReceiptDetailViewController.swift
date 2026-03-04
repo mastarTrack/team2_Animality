@@ -148,14 +148,14 @@ extension ReceiptDetailViewController {
                   rentEndTime: Date,
                   paystate: StateUILabel.state
     ) {
-        stateLabel.updateUI(state: rentState, nil)
+        stateLabel.updateUIForReceipt(state: rentState, nil)
         totalAmountLabel.text = amount.formatted(.number)
         nameLabel.text = name
         rentLocationLabel.text = location
         rentpaymentTimeLabel.text = rentpaymentTime.formatted()
         rentStartTimeLabel.text = rentStartTime.formatted()
         rentEndTimeLabel.text = rentEndTime.formatted()
-        payState.updateUI(state: paystate, nil)
+        payState.updateUIForReceipt(state: paystate, nil)
     }
 }
 

@@ -90,6 +90,7 @@ class MyPageInfoViewController : UIViewController {
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "사용자 정보"
         bindingData()
         bindButtonAction()
         configureUI()
@@ -156,6 +157,8 @@ extension MyPageInfoViewController {
         rentRegistListButton.addAction( UIAction { [weak self] _ in
             guard let self else { return }
             // TODO: 등록 목록 화면 전환 코드 추가 예정
+            let quickListVC = QuickInfoListViewController(cellType: .regist, vm: vm)
+            self.navigationController?.pushViewController(quickListVC, animated: true)
         }, for: .touchUpInside )
     }
 }
