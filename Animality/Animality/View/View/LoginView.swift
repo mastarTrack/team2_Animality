@@ -65,7 +65,7 @@ final class LoginView: UIView {
 extension LoginView {
     func setLayout() {
         let imageView = UIImageView().then {
-            $0.image = .dogPin
+            $0.image = .logo
             $0.contentMode = .scaleAspectFit
         }
         
