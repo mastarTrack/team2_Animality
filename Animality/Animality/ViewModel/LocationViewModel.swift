@@ -167,9 +167,9 @@ class LocationViewModel: ViewModelProtocol {
         coordinates = categorizeAnimalByCoordinate()// 갱신
         return coordinates[coordinate]?.sorted {
             if $0.status == .normal && $1.status != .normal {
-                return false
-            } else {
                 return true
+            } else {
+                return false
             }
         } ?? []
     }
