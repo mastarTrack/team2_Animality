@@ -75,6 +75,7 @@ class MapViewController: UIViewController {
                 }
             case let .deleteRegistration(data):
                 let delete = compareDeleteMarkers(data) // 마커 제거 대상 찾기
+
                 Task {
                     self.deleteMarkers(delete) // 마커 제거
                 }

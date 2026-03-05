@@ -65,9 +65,6 @@ final class DetailViewController: UIViewController {
 
         if state.didDelete {
             navigationController?.popViewController(animated: true)
-            guard let nav = self.tabBarController?.viewControllers?.first as? UINavigationController else { return }
-            guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
-            mapVC.deleteRegistration()
         }
     }
 
@@ -76,6 +73,10 @@ final class DetailViewController: UIViewController {
         detailView.onDeleteTapped = { [weak self] in
             self?.updateClosure?()
             self?.viewModel.action(.deleteTapped)
+            
+            guard let nav = self?.tabBarController?.viewControllers?.first as? UINavigationController else { return }
+            guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
+            mapVC.deleteRegistration()
         }
     }
 }
