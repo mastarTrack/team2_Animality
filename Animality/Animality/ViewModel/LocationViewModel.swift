@@ -49,29 +49,7 @@ class LocationViewModel: ViewModelProtocol {
     
     // AnimalEntity -> Animal
     private func fetchAllAnimals() -> [Animal] {
-        let animalEntities = coreDataManager.fetchAllAnimalEntities()
-        
-        return animalEntities.reduce(into: [Animal]()) {
-            guard let id = $1.id,
-                  let name = $1.name,
-                  let type = AnimalType(rawValue: $1.type ?? ""),
-                  let status = AnimalStatus(rawValue: $1.status),
-                  let size = AnimalSize(rawValue: $1.size ?? ""),
-                  let flightCapability = FlightCapability(rawValue: $1.flightCapability ?? "") else { return }
-            
-            let animal = Animal(
-                id: id,
-                name: name,
-                type: type,
-                status: status,
-                pricePerHour: Int($1.pricePerHour),
-                currentLocation: Coordinate(latitude: $1.latitude, longitude: $1.longitude),
-                size: size,
-                flightCapability: flightCapability
-            )
-            
-            $0.append(animal)
-        }
+        return coreDataManager.fetchAllAnimalEntities()
     }
     
     // 좌표별 동물 분류 메서드

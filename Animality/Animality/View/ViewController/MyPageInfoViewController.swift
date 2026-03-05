@@ -13,6 +13,7 @@ import SnapKit
 class MyPageInfoViewController : UIViewController {
     
     //MARK: - ViewModel
+    private var vm: MyPageViewModel
     
     //MARK: - Components
     /// 유저 타이틀 이미지
@@ -27,26 +28,32 @@ class MyPageInfoViewController : UIViewController {
     /// 유저 타이틀 아이디 라벨
     private let titleNameLabel = UILabel().then {
         $0.font = .boldSystemFont(ofSize: 20)
+        $0.textAlignment = .right
     }
     /// 유저 아이디 라벨
     private let idLabel = UILabel().then {
         $0.font = .boldSystemFont(ofSize: 20)
+        $0.textAlignment = .right
     }
     /// 유저 이름 텍스트 필드
     private let nameField = UITextField().then {
         $0.font = .boldSystemFont(ofSize: 20)
+        $0.textAlignment = .right
     }
     /// 유저 이메일 텍스트 필드
     private let emailField = UITextField().then {
         $0.font = .boldSystemFont(ofSize: 20)
+        $0.textAlignment = .right
     }
     /// 유저 가입날짜 라벨
     private let registLabel = UILabel().then {
         $0.font = .boldSystemFont(ofSize: 20)
+        $0.textAlignment = .right
     }
     /// 유저 렌탈 횟수 라벨
     private let rentCountLabel = UILabel().then {
         $0.font = .boldSystemFont(ofSize: 20)
+        $0.textAlignment = .right
     }
 
     /// 사용자 정보 수정버튼
@@ -80,20 +87,45 @@ class MyPageInfoViewController : UIViewController {
         $0.isHidden = true
     }
     
-    //MARK: - Closures
-    /// 수정 완료 클로저
-    var approveModifyClosure: (()->Void)?
-    /// 수정 취소 클로져
-    var cancelModifyClosure: (()->Void)?
-    
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
+        title = "사용자 정보"
+        bindingData()
         bindButtonAction()
+        configureUI()
+        vm.action(.initialized)
+    }
+    
+    init(vm: MyPageViewModel) {
+        self.vm = vm
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
 }
+
+//MARK: - METHOD: Binding VM Action
+extension MyPageInfoViewController {
+    // VM state 클로저 바인딩 메소드
+    private func bindingData() {
+        vm.stateChanged = { [weak self] state in
+            guard let self else { return }
+            
+            switch state {
+            case .none:
+                break
+            case let .updateUI(data):
+                updateUI(image: nil, id: data.id, name: data.name, email: data.email, registDate: data.registDate, rentCount: data.rentalCount)
+            }
+        }
+    }
+}
+
 //MARK: - METHOD: Button Action Binding
 extension MyPageInfoViewController {
     func bindButtonAction() {
@@ -106,7 +138,7 @@ extension MyPageInfoViewController {
                 alert.addAction(UIAlertAction(title: "수정", style: .destructive) { _ in
                     self.modifyButton.isSelected.toggle()
                     self.setEditingMode(self.modifyButton.isSelected)
-                    self.approveModifyClosure?()
+                    self.vm.action(.ApproveuserModify)
                 })
                 present(alert, animated: true)
             } else {
@@ -119,12 +151,14 @@ extension MyPageInfoViewController {
         modifyCancelButton.addAction( UIAction { [weak self] _ in
             guard let self else { return }
             self.setEditingMode(false)
-            self.cancelModifyClosure?()
+            self.vm.action(.CancelUserModify)
         }, for: .touchUpInside )
         
         rentRegistListButton.addAction( UIAction { [weak self] _ in
             guard let self else { return }
             // TODO: 등록 목록 화면 전환 코드 추가 예정
+            let quickListVC = QuickInfoListViewController(cellType: .regist, vm: vm)
+            self.navigationController?.pushViewController(quickListVC, animated: true)
         }, for: .touchUpInside )
     }
 }
@@ -132,8 +166,8 @@ extension MyPageInfoViewController {
 //MARK: - METHOD: Update UI
 extension MyPageInfoViewController {
     /// UI 업데이트 메소드
-    func updateUI(image: UIImage, id: String, name: String, email: String, registDate: Date, rentCount: Int) {
-        titleImage.image = image
+    func updateUI(image: UIImage?, id: String, name: String, email: String, registDate: Date, rentCount: Int) {
+        titleImage.image = image ?? UIImage.pegasusPin
         titleNameLabel.text = name
         nameField.text = name
         idLabel.text = id
@@ -158,6 +192,8 @@ extension MyPageInfoViewController {
         if !isEditing { view.endEditing(true) }
     }
 }
+
+
 
 //MARK: - MATHOD: Configure UI
 extension MyPageInfoViewController {
@@ -275,8 +311,7 @@ extension MyPageInfoViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    let vc = MyPageInfoViewController()
-    let image = UIImage()
-    vc.updateUI(image: image, id: "godzx3", name: "한주헌", email: "xxx@xxxxx.xxx", registDate: Date(), rentCount: 0)
+    let vm = MyPageViewModel(userModel: UserModel.sample)
+    let vc = MyPageInfoViewController(vm: vm)
     return vc
 }

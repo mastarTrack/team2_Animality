@@ -16,12 +16,13 @@ class MyPageViewController: UIViewController {
     private var currentIndex: Int = 0
 
     //MARK: - ViewModel
+    private let vm: MyPageViewModel
     
     //MARK: - Components
     /// 이용내역 VC
-    private let quickListVC = QuickInfoListViewController()
+    private var quickListVC: QuickInfoListViewController
     /// 사용자정보 VC
-    private let myPageInfoVC = MyPageInfoViewController()
+    private var myPageInfoVC: MyPageInfoViewController
     /// 상단 메뉴 세그먼트
     private let segmentedMenu = UISegmentedControl().then {
         /// 세그먼트 아이템 설정 수정
@@ -63,6 +64,18 @@ class MyPageViewController: UIViewController {
         )
         configureUI()
         showSegmentToVC(nextVC: quickListVC, nextIndex: 0)
+    }
+    
+    init(vm: MyPageViewModel) {
+        self.vm = vm
+        quickListVC = QuickInfoListViewController(cellType: .receipt, vm: vm)
+        myPageInfoVC = MyPageInfoViewController(vm: vm)
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -212,5 +225,6 @@ extension MyPageViewController {
 
 @available(iOS 17.0, *)
 #Preview{
-    MyPageViewController()
+    let vm = MyPageViewModel(userModel: UserModel.sample)
+    MyPageViewController(vm: vm)
 }
