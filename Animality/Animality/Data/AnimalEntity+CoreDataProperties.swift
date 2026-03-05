@@ -21,6 +21,7 @@ extension AnimalEntity {
     @NSManaged public var category: String?
     @NSManaged public var flightCapability: String?
     @NSManaged public var id: UUID?
+    @NSManaged public var userId: UUID?
     @NSManaged public var latitude: Double
     @NSManaged public var longitude: Double
     @NSManaged public var name: String?
@@ -28,6 +29,7 @@ extension AnimalEntity {
     @NSManaged public var size: String?
     @NSManaged public var status: String?
     @NSManaged public var type: String?
+    @NSManaged public var registDate: Date?
 
 }
 

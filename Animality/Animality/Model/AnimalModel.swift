@@ -40,6 +40,10 @@ import Foundation
 struct Animal: Hashable {
     /// 고유 ID
     let id: UUID
+    
+    /// 유저 ID
+    let userId: UUID
+    
     /// 개체 이름 (예: "모찌")
     var name: String
     /// 동물 종류 (페가수스, 강아지 등)
@@ -59,6 +63,8 @@ struct Animal: Hashable {
     
     /// 비행 가능 여부 (수정: 타입 명시)
     var flightCapability: FlightCapability
+    
+    var registDate: Date
 }
 
 // MARK: 위경도
