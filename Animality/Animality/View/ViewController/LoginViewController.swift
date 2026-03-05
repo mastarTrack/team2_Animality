@@ -30,6 +30,8 @@ extension LoginViewController {
     func viewModelActionBinding() {
         viewModel.stateChanged = { [weak self] state in
             print("viewModelActionBinding")
+            
+            
             guard let self else { print("no self"); return }
             
             switch state {

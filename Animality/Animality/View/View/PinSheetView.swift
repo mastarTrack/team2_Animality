@@ -51,6 +51,7 @@ extension PinSheetView {
         viewModel.stateChanged = {[weak self] state in
             switch state {
             case let .updateSheetAnimal(result):
+                print("updatE)")
                 self?.animals = result
                 self?.setSnapshot()
                 
@@ -157,13 +158,12 @@ extension PinSheetView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
-        let vc = PaymentViewController(animalID: data.id, modelManager: viewModel.modelManager)
+        let vc = PaymentViewController(animalID: data.id, modelManager: viewModel.modelManager) { [weak self] in
+            guard let coordinate = self?.coordinate else { return }
+            self?.viewModel.action(.fetchAnimalOf(coordinate))
+        }
         
         modalPresentationStyle = .fullScreen
         present(vc, animated: true)
-    }
-    
-    func updateStatus() {
-        viewModel.action(.fetchAnimalOf(coordinate))
     }
 }

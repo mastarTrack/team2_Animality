@@ -14,12 +14,14 @@ final class PaymentViewController: UIViewController {
     private let viewModel: PaymentViewModel
     private let animalID: UUID
 
+    private var updateSheet: (() -> Void)?
     
     // MARK: -- 초기화
     // 의존성 주입
-    init(animalID: UUID, modelManager: AnimalityModelManager) {
+    init(animalID: UUID, modelManager: AnimalityModelManager, action: @escaping (() -> Void)) {
         self.animalID = animalID
         self.viewModel = PaymentViewModel(modelManager: modelManager)
+        self.updateSheet = action
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -65,8 +67,7 @@ final class PaymentViewController: UIViewController {
                     //self.navigationController?.pushViewController(receiptVC, animated: true)
                     
                     self.dismiss(animated: true) {
-                        let vc = self.presentingViewController as? PinSheetView
-                        vc?.updateStatus()
+                        self.updateSheet?()
                     }
                 })
                 self.present(alert, animated: true)

@@ -69,6 +69,7 @@ class LocationViewModel: ViewModelProtocol {
             self.state = .cancelledSearch
             
         case let .fetchAnimalOf(coordinate):
+            print("fetchAnimalOf")
             let animals = fetchAnimals(of: coordinate)
             self.state = .updateSheetAnimal(animals)
         }
@@ -164,7 +165,6 @@ class LocationViewModel: ViewModelProtocol {
     
     private func fetchAnimals(of coordinate: Coordinate) -> [Animal] {
         coordinates = categorizeAnimalByCoordinate()// 갱신
-        print(coordinates[coordinate])
         return coordinates[coordinate]?.sorted {
             if $0.status == .normal && $1.status != .normal {
                 return false
