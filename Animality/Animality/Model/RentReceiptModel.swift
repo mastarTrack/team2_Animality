@@ -27,9 +27,9 @@ struct RentReceipt {
     /// 대여 종료 시간
     let rentEndTime: Date
     /// 대여 상태
-    let rentState: StateUILabel.state
+    let rentState: StateUILabel.RentState
     /// 결제 상태
-    let payState: StateUILabel.state
+    let payState: StateUILabel.RentState
     /// 동물 모델
     let animal: Animal?
 }

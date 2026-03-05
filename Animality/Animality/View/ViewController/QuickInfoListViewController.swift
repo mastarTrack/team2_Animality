@@ -176,7 +176,7 @@ extension QuickInfoListViewController {
 
 // MARK: - 상태 매핑
 private extension QuickInfoListViewController {
-    func mapToReceiptState(_ statusString: String?) -> StateUILabel.state {
+    func mapToReceiptState(_ statusString: String?) -> StateUILabel.RentState {
         // Optional일 수 있어서 안전 처리
         let status = statusString ?? ""
 

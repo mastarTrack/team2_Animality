@@ -128,8 +128,8 @@ extension CoreDataManager {
                     let rentEndTime = entity.rentEndTime,
                     let rentStateRaw = entity.rentState,
                     let payStateRaw = entity.payState,
-                    let rentState = StateUILabel.state(rawValue: rentStateRaw),
-                    let payState = StateUILabel.state(rawValue: payStateRaw)
+                    let rentState = StateUILabel.RentState(rawValue: rentStateRaw),
+                    let payState = StateUILabel.RentState(rawValue: payStateRaw)
                 else { return }
 
                 result.append(
@@ -177,8 +177,8 @@ extension CoreDataManager {
                         let rentEndTime = entity.rentEndTime,
                         let rentStateRaw = entity.rentState,
                         let payStateRaw = entity.payState,
-                        let rentState = StateUILabel.state(rawValue: rentStateRaw),
-                        let payState = StateUILabel.state(rawValue: payStateRaw)
+                        let rentState = StateUILabel.RentState(rawValue: rentStateRaw),
+                        let payState = StateUILabel.RentState(rawValue: payStateRaw)
                     else { return }
 
                     result.append(
@@ -222,8 +222,8 @@ extension CoreDataManager {
                 let rentEndTime = entity.rentEndTime,
                 let rentStateRaw = entity.rentState,
                 let payStateRaw = entity.payState,
-                let rentState = StateUILabel.state(rawValue: rentStateRaw),
-                let payState = StateUILabel.state(rawValue: payStateRaw)
+                let rentState = StateUILabel.RentState(rawValue: rentStateRaw),
+                let payState = StateUILabel.RentState(rawValue: payStateRaw)
             else { return nil }
 
             return RentReceipt(

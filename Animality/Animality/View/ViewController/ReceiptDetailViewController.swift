@@ -44,6 +44,7 @@ class ReceiptDetailViewController: UIViewController {
     }
     /// 대여장소 지도 뷰
     private let mapView = NMFMapView(frame: .zero)
+    
     /// 결제 시간 라벨
     private let rentpaymentTimeLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 16)
@@ -124,7 +125,7 @@ class ReceiptDetailViewController: UIViewController {
 //MARK: - METHOD: Update UI
 extension ReceiptDetailViewController {
     // UI 업데이트 메소드
-    func updateUI(rentState: StateUILabel.state,
+    func updateUI(rentState: StateUILabel.RentState,
                   amount: Int64,
                   name: String,
                   locationName: String,
@@ -132,16 +133,16 @@ extension ReceiptDetailViewController {
                   rentpaymentTime: Date,
                   rentStartTime: Date,
                   rentEndTime: Date,
-                  paystate: StateUILabel.state
+                  paystate: StateUILabel.RentState
     ) {
-        stateLabel.updateUIForReceipt(state: rentState, nil)
+        stateLabel.updateUIForReceipt(state: rentState,payState: false, nil)
         totalAmountLabel.text = amount.formatted(.number)
         nameLabel.text = name
         rentLocationLabel.text = locationName
         rentpaymentTimeLabel.text = rentpaymentTime.formatted()
         rentStartTimeLabel.text = rentStartTime.formatted()
         rentEndTimeLabel.text = rentEndTime.formatted()
-        payState.updateUIForReceipt(state: paystate, nil)
+        payState.updateUIForReceipt(state: paystate,payState: true, nil)
         
     }
 }
@@ -152,7 +153,7 @@ extension ReceiptDetailViewController {
     private func bindingButtonAction(type: pageType) {
         if type == .endPay {
             mypageButton.addAction(UIAction { [weak self] _ in
-           
+                self?.navigationController?.popToRootViewController(animated: true)
             }, for: .touchUpInside)
         }
         returnButton.addAction(UIAction { [weak self] _ in
@@ -234,7 +235,7 @@ extension ReceiptDetailViewController {
         scrollView.addSubview(contentView)
         
         let reciptView = UIView().then {
-            $0.backgroundColor = .deepRose
+            $0.backgroundColor = .lightRose
             $0.layer.cornerRadius = 24
             $0.layer.borderColor = UIColor.systemGray.cgColor
             $0.layer.borderWidth = 0.5

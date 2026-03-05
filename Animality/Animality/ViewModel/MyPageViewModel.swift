@@ -7,13 +7,12 @@
 
 import Foundation
 
+/// 마이페이지 ViewModel
 class MyPageViewModel: ViewModelProtocol {
     
     //MARK: - Model
     private(set) var modelManager: AnimalityModelManager
-    
-    let coreDataManager = CoreDataManager()
-    
+        
     //MARK: - Enum
     /// ViewModel의 상태 전달용 Enum
     enum State {
@@ -25,7 +24,7 @@ class MyPageViewModel: ViewModelProtocol {
     enum Action {
         case initialized
         case CancelUserModify
-        case ApproveuserModify
+        case ApproveuserModify(name:String,email: String)
         case fetchRegistAnimal
         case fetchReceipt
     }
@@ -50,13 +49,12 @@ class MyPageViewModel: ViewModelProtocol {
             self.initialized()
         case .CancelUserModify:
             self.initialized()
-        case .ApproveuserModify:
-            //TODO: 한주헌 - User 정보 CoreData 저장 및 재수신 코드 추가
-            break
+        case .ApproveuserModify(let name, let email):
+            modifyUserData(name: name, email: email)
         case .fetchRegistAnimal:
-            break
+            return
         case .fetchReceipt:
-            break
+            return
         }
     }
     
@@ -64,22 +62,27 @@ class MyPageViewModel: ViewModelProtocol {
     init(modelManager: AnimalityModelManager) {
         self.modelManager = modelManager
     }
-    
 }
-
+ 
 //MARK: - METHOD: To Action
 extension MyPageViewModel {
-    func initialized() {
+    // 초기 업데이트 메소드
+    private func initialized() {
         state = .updateUI
     }
-
-    func fetchRegistAnimal() {
+    // 유저가 등록한 동물 업데이트 메소드
+    private func fetchRegistAnimal() {
         modelManager.refreashUserRegistAnimals()
         state = .updateUI
     }
-    
-    func fetchReceipt(){
+    // 유저 영수증 업데이트 메소드
+    private func fetchReceipt(){
         modelManager.refreshReceipts()
+        state = .updateUI
+    }
+    // 유저 정보수정 메소드
+    private func modifyUserData(name: String, email: String) {
+        modelManager.updateUser(name: name, email: email)
         state = .updateUI
     }
 }

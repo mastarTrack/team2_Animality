@@ -11,11 +11,12 @@ import UIKit
 class StateUILabel: UILabel {
     private let padding = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     
-    enum state: String {
+    enum RentState: String {
         case completed
         case renting
         case cancel
     }
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,21 +30,20 @@ class StateUILabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateUIForReceipt(state: state, _ inputFont: UIFont?) {
+    func updateUIForReceipt(state: RentState, payState: Bool, _ inputFont: UIFont?) {
         switch state {
         case .completed:
             backgroundColor = UIColor(hexCode: "#DCFCE7")
             textColor = UIColor(hexCode: "#008236")
-            text = "랜트 완료"
+            text = payState ? "결제완료" : "랜트 완료"
         case .renting:
             backgroundColor = UIColor(hexCode: "#DBEAFE")
             textColor = UIColor(hexCode: "#1D4ED8")
-            text = "렌트 중"
-            
+            text = payState ? "결제 대기" : "렌트 중"
         case .cancel:
             backgroundColor = UIColor(hexCode: "#FEE2E2")
             textColor = UIColor(hexCode: "#DC2626")
-            text = "취소"
+            text = payState ? "결제 취소" : "랜트 취소"
         }
         guard let inputFont = inputFont else {
             return
