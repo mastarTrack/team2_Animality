@@ -21,6 +21,7 @@ final class LoginViewModel: ViewModelProtocol {
     
     var state: State = .none {
         didSet {
+            print("state changed \(state)")
             stateChanged?(state) // 상태가 변화할 때마다 동작
         }
     }
@@ -79,3 +80,4 @@ extension LoginViewModel {
         return validation.evaluate(with: email)
     }
 }
+

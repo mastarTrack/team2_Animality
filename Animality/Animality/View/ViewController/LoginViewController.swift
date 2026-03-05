@@ -20,7 +20,7 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setButtonAction()
-        viewModelActionBinding() 
+        viewModelActionBinding()
     }
     
 }
@@ -29,7 +29,8 @@ final class LoginViewController: UIViewController {
 extension LoginViewController {
     func viewModelActionBinding() {
         viewModel.stateChanged = { [weak self] state in
-            guard let self else { return }
+            print("viewModelActionBinding")
+            guard let self else { print("no self"); return }
             
             switch state {
             case .failed(_):
@@ -39,6 +40,7 @@ extension LoginViewController {
             case .success:
                 return
             case .resultLogin(let result):
+                print("resultLogin")
                 guard let result = result else {
                     let alert = UIAlertController(status: .deniLogin)
                     present(alert, animated: true)

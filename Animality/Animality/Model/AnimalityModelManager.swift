@@ -37,6 +37,7 @@ extension AnimalityModelManager {
     /// 전체 개체 업데이트 메소드
     func refreshAnimals() {
         allAnimals = coreDataManager.fetchAllAnimalEntities()
+        refreashUserRegistAnimals()
     }
     
     /// 사용자가 등록한 동물 내역 업데이트 메소드
