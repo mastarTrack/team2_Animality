@@ -14,10 +14,6 @@ import NMapsGeometry
 /// 영수증 ViewController
 class ReceiptDetailViewController: UIViewController {
     
-    //MARK: - ViewModel
-    /// ViewModel
-    private let vm: any ViewModelProtocol
-
     //MARK: - Enum
     enum pageType {
         case detail
@@ -26,6 +22,7 @@ class ReceiptDetailViewController: UIViewController {
     
     // MARK: - State
     private let type: pageType
+    private let receipt: RentReceipt
     
     //MARK: - Components
     /// 렌트 상태 라벨
@@ -91,48 +88,35 @@ class ReceiptDetailViewController: UIViewController {
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
-        bindingData()
         bindingButtonAction(type: type)
         ConfigureUI(type: type)
         ConfigureMapView()
-
-        guard let vm = vm as? ReceiptDetailViewModel else { return }
-        vm.action(.initialized)
+        
+        guard let animal = receipt.animal else { return }
+        
+        updateUI(rentState: receipt.rentState
+                 , amount: receipt.amount
+                 , name: animal.name
+                 , locationName: receipt.location ?? ""
+                 , location: animal.currentLocation
+                 , rentpaymentTime: receipt.rentPaymentTime
+                 , rentStartTime: receipt.rentStartTime
+                 , rentEndTime: receipt.rentEndTime
+                 , paystate: receipt.payState
+        )
+        Task {
+            await makeMarker(animalData: animal)
+        }
     }
     
-    init(type: pageType, vm: any ViewModelProtocol) {
+    init(type: pageType, receipt: RentReceipt) {
         self.type = type
-        self.vm = vm
+        self.receipt = receipt
         super.init(nibName: nil, bundle: nil)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-}
-
-//MARK: - METHOD: Binding VM Action
-extension ReceiptDetailViewController {
-    // VM state 클로저 바인딩 메소드
-    private func bindingData() {
-        guard let vm = vm as? ReceiptDetailViewModel else { return }
-        vm.stateChanged = { [weak self] state in
-            guard let self else { return }
-            
-            switch state {
-            case .none:
-                break
-            case let .updateUI(data):
-                // UI 값 업데이트
-                guard let animal = data.animal else { return }
-                updateUI(rentState: data.rentState, amount: data.amount, name: animal.name , location: data.location ?? "", rentpaymentTime: data.rentPaymentTime, rentStartTime: data.rentEndTime, rentEndTime: data.rentEndTime, paystate: data.payState)
-                // 마커 생성
-                Task {
-                    await self.makeMarker(animalData: animal)
-                }
-                
-            }
-        }
     }
 }
 
@@ -142,7 +126,8 @@ extension ReceiptDetailViewController {
     func updateUI(rentState: StateUILabel.state,
                   amount: Int64,
                   name: String,
-                  location: String,
+                  locationName: String,
+                  location: Coordinate,
                   rentpaymentTime: Date,
                   rentStartTime: Date,
                   rentEndTime: Date,
@@ -151,11 +136,12 @@ extension ReceiptDetailViewController {
         stateLabel.updateUIForReceipt(state: rentState, nil)
         totalAmountLabel.text = amount.formatted(.number)
         nameLabel.text = name
-        rentLocationLabel.text = location
+        rentLocationLabel.text = locationName
         rentpaymentTimeLabel.text = rentpaymentTime.formatted()
         rentStartTimeLabel.text = rentStartTime.formatted()
         rentEndTimeLabel.text = rentEndTime.formatted()
         payState.updateUIForReceipt(state: paystate, nil)
+        
     }
 }
 
@@ -431,8 +417,8 @@ extension ReceiptDetailViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    let vm = ReceiptDetailViewModel()
-    let vc = ReceiptDetailViewController(type: .endPay, vm: vm)
+    let receipt = RentReceipt.sample1
+    let vc = ReceiptDetailViewController(type: .endPay, receipt: receipt)
     return vc
 
 }
