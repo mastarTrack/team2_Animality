@@ -40,6 +40,7 @@ extension RentReceipt {
 
         let animal = Animal(
             id: UUID(),
+            userId: UUID(),
             name: "황금 유니콘",
             type: .unicorn,
             status: .rented,
@@ -49,7 +50,8 @@ extension RentReceipt {
                 longitude: 126.924492
             ),
             size: .large,
-            flightCapability: .canFly
+            flightCapability: .canFly,
+            registDate: Date()
         )
 
         return RentReceipt(

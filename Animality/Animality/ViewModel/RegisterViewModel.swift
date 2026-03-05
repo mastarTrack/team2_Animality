@@ -128,8 +128,8 @@ class RegisterViewModel: ViewModelProtocol {
         
         // 코어데이터용 payload 생성하기
         let payload = CreateAnimalModel(
-            userId: animal.userId,
             name: animal.name,
+            userId: animal.userId,
             category: animal.type.category,
             type: animal.type.rawValue,
             size: animal.size.rawValue,

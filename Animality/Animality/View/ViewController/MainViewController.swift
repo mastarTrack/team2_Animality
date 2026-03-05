@@ -13,26 +13,32 @@ import Then
 class MainViewController: UITabBarController {
     // MARK: - Mockup Data
     /// 임시 탭바에 넣은 탭바아이템 목업 데이터
-    private let tabItems: [TabItem] = [
-        TabItem(
-            title: "Map",
-            imageName: "map",
-            selectedImageName: "map.fill",
-            viewControllerType: MapViewController.self,
-        ),
-        TabItem(
-            title: "Register",
-            imageName: "plus.circle",
-            selectedImageName: "plus.circle.fill",
-            viewControllerType: RegisterViewController.self,
-        ),
-        TabItem(
-            title: "My Page",
-            imageName: "person",
-            selectedImageName: "person.fill",
-            viewControllerType: MyPageViewController.self,
-        )
-    ]
+    private lazy var tabItems: [TabItem] = {
+        // 샘플/임시 유저 & VM (나중에 로그인 유저로 교체)
+        let user = UserModel.sample
+        let myPageVM = MyPageViewModel(userModel: user)
+
+        return [
+            TabItem(
+                title: "Map",
+                imageName: "map",
+                selectedImageName: "map.fill",
+                makeViewController: { MapViewController() }
+            ),
+            TabItem(
+                title: "Register",
+                imageName: "plus.circle",
+                selectedImageName: "plus.circle.fill",
+                makeViewController: { RegisterViewController() }
+            ),
+            TabItem(
+                title: "My Page",
+                imageName: "person",
+                selectedImageName: "person.fill",
+                makeViewController: { MyPageViewController(vm: myPageVM) }
+            )
+        ]
+    }()
     
     // MARK: - Viewmodel
     
@@ -52,13 +58,13 @@ class MainViewController: UITabBarController {
 extension MainViewController {
     /// 탭바 설정 메소드
     private func configureTabBar(tabitems: [TabItem]){
-        let controllers  = tabitems.compactMap { item in
-            let vc = item.viewControllerType.init()
-            vc.tabBarItem = UITabBarItem().then {
-                $0.title = item.title
-                $0.image = UIImage(systemName: item.imageName)
-                $0.selectedImage = UIImage(systemName: item.selectedImageName ?? item.imageName)
-            }
+        let controllers = tabitems.map { item -> UIViewController in
+            let vc = item.makeViewController()
+            vc.tabBarItem = UITabBarItem(
+                title: item.title,
+                image: UIImage(systemName: item.imageName),
+                selectedImage: UIImage(systemName: item.selectedImageName ?? item.imageName)
+            )
             return vc
         }
         setViewControllers(controllers, animated: true)

@@ -131,18 +131,21 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        guard let animal = vm.userModel.registAnimal?[indexPath.item] else { return }
-        // 클릭한 데이터의 UUID 추출
-        
+
         switch cellType {
         case .regist:
+            guard let animal = vm.userModel.registAnimal?[indexPath.item] else { return }
             // 같은 CoreDataManager를 Detail VM에 주입해줌
             let vm = DetailViewModel(coreDataManager: vm.coreDataManager)
             let detailVC = DetailViewController(animalID: animal.id, viewModel: vm)
             // 네비게이션 push
             navigationController?.pushViewController(detailVC, animated: true)
+            
         case .receipt:
-            break
+            guard let receipt = vm.userModel.rentReceipt?[indexPath.item] else { return }
+            let receiptVC = ReceiptDetailViewController(type: .detail, receipt: receipt)
+            navigationController?.pushViewController(receiptVC, animated: true)
+            return
         }
     }
     

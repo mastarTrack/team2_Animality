@@ -82,13 +82,15 @@ final class DetailViewModel: ViewModelProtocol {
 
         return Animal(
             id: entity.id ?? UUID(),
+            userId: entity.userId ?? UUID(),
             name: entity.name ?? "",
             type: type,
             status: status,
             pricePerHour: Int(entity.pricePerHour),
             currentLocation: Coordinate(latitude: entity.latitude, longitude: entity.longitude),
             size: size,
-            flightCapability: FlightCapability(rawValue: entity.flightCapability ?? "") ?? .cannotFly
+            flightCapability: FlightCapability(rawValue: entity.flightCapability ?? "") ?? .cannotFly,
+            registDate: entity.registDate ?? Date()
         )
     }
 }

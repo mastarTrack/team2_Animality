@@ -7,8 +7,6 @@
 
 import CoreData
 
-
-
 // MARK: Animal 등록 모델 구조체
 struct CreateAnimalModel {
     var userId: UUID
@@ -38,9 +36,6 @@ struct UpdateAnimalModel {
     var flight: String?
     var registDate: Date?
 }
-
-
-
 
 
 // MARK: -- 코어데이터 매니저
@@ -88,7 +83,7 @@ final class CoreDataManager {
 
 // MARK: - Receipt CRUD
 extension CoreDataManager {
-    // 영수증 생성
+    // 영수증 생성 메소드
     func createReceiptEntity(receipt: borrowing RentReceipt) {
         let context = self.context
         
@@ -113,11 +108,9 @@ extension CoreDataManager {
         doCatchSaveContext()
     }
 
-    // 전체 영수증 읽기
+    // 전체 영수증 읽기 메소드
     func fetchAllReceiptEntities() -> [RentReceipt] {
         let request: NSFetchRequest<Receipt> = Receipt.fetchRequest()
-        
-        // 최신 결제 시간 순(원하면 제거 가능)
         request.sortDescriptors = [
             NSSortDescriptor(key: Receipt.keys.rentPaymentTime, ascending: false)
         ]
@@ -160,8 +153,58 @@ extension CoreDataManager {
             return []
         }
     }
+    
+    // userId와 일치하는 영수증들 불러오기 메소드
+    func fetchReceipts(userId: UUID) -> [RentReceipt] {
+            let request: NSFetchRequest<Receipt> = Receipt.fetchRequest()
+            request.predicate = NSPredicate(format: "\(Receipt.keys.userId) == %@", userId as CVarArg)
 
-    /// 특정 영수증 불러오기
+            // 최신 결제 시간 순
+            request.sortDescriptors = [
+                NSSortDescriptor(key: Receipt.keys.rentPaymentTime, ascending: false)
+            ]
+
+            do {
+                let entities = try context.fetch(request)
+
+                return entities.reduce(into: [RentReceipt]()) { result, entity in
+                    guard
+                        let id = entity.id,
+                        let uid = entity.userId,
+                        let animalId = entity.animalId,
+                        let rentPaymentTime = entity.rentPaymentTime,
+                        let rentStartTime = entity.rentStartTime,
+                        let rentEndTime = entity.rentEndTime,
+                        let rentStateRaw = entity.rentState,
+                        let payStateRaw = entity.payState,
+                        let rentState = StateUILabel.state(rawValue: rentStateRaw),
+                        let payState = StateUILabel.state(rawValue: payStateRaw)
+                    else { return }
+
+                    result.append(
+                        RentReceipt(
+                            id: id,
+                            userId: uid,
+                            animalId: animalId,
+                            amount: entity.amount,
+                            location: entity.location,
+                            rentPaymentTime: rentPaymentTime,
+                            rentStartTime: rentStartTime,
+                            rentEndTime: rentEndTime,
+                            rentState: rentState,
+                            payState: payState,
+                            animal: nil
+                        )
+                    )
+                }
+            } catch {
+                print("유저 영수증 fetch 실패: \(error.localizedDescription)")
+                return []
+            }
+        }
+    
+
+    /// 특정 영수증 불러오기 메소드
     func fetchOneReceiptEntity(id: UUID) -> RentReceipt? {
         let request: NSFetchRequest<Receipt> = Receipt.fetchRequest()
         request.predicate = NSPredicate(format: "\(Receipt.keys.id) == %@", id as CVarArg)
@@ -202,7 +245,7 @@ extension CoreDataManager {
         }
     }
 
-    /// 영수증 업데이트
+    /// 영수증 업데이트 메소드
     func updateReceiptEntity(receipt: borrowing RentReceipt) {
         let request: NSFetchRequest<Receipt> = Receipt.fetchRequest()
         request.predicate = NSPredicate(format: "\(Receipt.keys.id) == %@", receipt.id as CVarArg)
@@ -230,7 +273,7 @@ extension CoreDataManager {
         }
     }
 
-    /// 영수증 삭제 (id 기준)
+    /// 영수증 삭제 (id 기준) 메소드
     func deleteReceiptEntity(id: UUID) {
         let request: NSFetchRequest<Receipt> = Receipt.fetchRequest()
         request.predicate = NSPredicate(format: "\(Receipt.keys.id) == %@", id as CVarArg)
@@ -319,20 +362,30 @@ extension CoreDataManager {
     
     
     // MARK: UPDATE
-    func updateAnimalEntity(entity: AnimalEntity, with payload: UpdateAnimalModel) {
-        
-        if let userId = payload.userId { entity.userId = userId }
-        if let name = payload.name { entity.name = name }
-        if let category = payload.category { entity.category = category }
-        if let type = payload.type { entity.type = type }
-        if let size = payload.size { entity.size = size }
-        if let latitude = payload.latitude { entity.latitude = latitude }
-        if let longitude = payload.longitude { entity.longitude = longitude }
-        if let price = payload.price { entity.pricePerHour = price }
-        if let status = payload.status { entity.status = status }
-        if let flight = payload.flight { entity.flightCapability = flight }
-        if let registDate = payload.registDate { entity.registDate = registDate }
-        doCatchSaveContext()
+    func updateAnimalEntity(id: UUID, with payload: UpdateAnimalModel) {
+        let request: NSFetchRequest<AnimalEntity> = AnimalEntity.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id as CVarArg)
+        request.fetchLimit = 1
+
+        do {
+            guard let entity = try context.fetch(request).first else { return }
+
+            if let name = payload.name { entity.name = name }
+            if let userId = payload.userId { entity.userId = userId }
+            if let category = payload.category { entity.category = category }
+            if let type = payload.type { entity.type = type }
+            if let size = payload.size { entity.size = size }
+            if let latitude = payload.latitude { entity.latitude = latitude }
+            if let longitude = payload.longitude { entity.longitude = longitude }
+            if let price = payload.price { entity.pricePerHour = price }
+            if let status = payload.status { entity.status = status }
+            if let flight = payload.flight { entity.flightCapability = flight }
+            if let registDate = payload.registDate { entity.registDate = registDate }
+
+            doCatchSaveContext()
+        } catch {
+            print("업데이트 실패: \(error.localizedDescription)")
+        }
     }
     
     
@@ -343,3 +396,4 @@ extension CoreDataManager {
         doCatchSaveContext()
     }
 }
+
