@@ -19,7 +19,7 @@ class AnimalityModelManager {
     private(set) var allAnimals: [Animal] = []
     
     //MARK: - Init
-    init(user: UserModel) {
+    init(user: UserModel, coreDataManager: CoreDataManager) {
         self.user = user
         refreshAnimals()
         refreshReceipts()
