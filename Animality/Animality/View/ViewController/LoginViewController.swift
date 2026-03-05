@@ -9,6 +9,7 @@ import SnapKit
 
 final class LoginViewController: UIViewController {
     let loginView = LoginView()
+    let viewModel = LoginViewModel()
     
     override func loadView() {
         view = loginView
@@ -24,7 +25,8 @@ final class LoginViewController: UIViewController {
 extension LoginViewController {
     private func setButtonAction() {
         let navToRegister = UIAction { [weak self] _ in
-            let vc = UserRegisterViewController()
+            guard let viewModel = self?.viewModel else { return }
+            let vc = UserRegisterViewController(viewModel: viewModel)
             self?.navigationController?.pushViewController(vc, animated: true)
         }
         

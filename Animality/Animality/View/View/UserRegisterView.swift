@@ -71,13 +71,14 @@ final class UserRegisterView: UIView {
     }
     
     //MARK: Binding Closure (View -> VC)
-    var registerButtonTapped: ((String, String, String, String) -> Void)?
+    var registerButtonTapped: ((String, String, String, String?) -> Void)?
     
     //MARK: init
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
         setLayout()
+        setButtonAction()
     }
     
     required init?(coder: NSCoder) {
@@ -171,6 +172,8 @@ extension UserRegisterView {
             
             self?.registerButtonTapped?(id, password, name, email)
         }
+        
+        registerButton.addAction(register, for: .touchUpInside)
     }
     
     func setDelegate(vc: UITextFieldDelegate) {

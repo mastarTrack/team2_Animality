@@ -4,14 +4,17 @@
 //
 //  Created by t2025-m0143 on 3/5/26.
 //
+import Foundation
 
 final class LoginViewModel: ViewModelProtocol {
     enum Action {
-        case register(String?, String?, String?, String?)
+        case register(String, String, String, String?)
     }
     
     enum State {
         case none
+        case success
+        case failed(String)
     }
     
     var state: State = .none {
@@ -23,15 +26,18 @@ final class LoginViewModel: ViewModelProtocol {
     
     func action(_ action: Action) -> Void {
         switch action {
-        case let .register((id, password, name, email)):
-            
+        case let .register(id, password, name, email):
+            saveUserInfo(id: id, password: password, name: name, email: email)
+            self.state = .success
         }
     }
 }
 
 extension LoginViewModel {
-    private func validateInput(id: String?, password: String?, name: String?, email: String?) -> Bool {
-        
-        
+    private func saveUserInfo(id: String, password: String, name: String, email: String?) {
+        UserDefaults.standard.set(id, forKey: UserDefaultsKey.id.rawValue)
+        UserDefaults.standard.set(password, forKey: UserDefaultsKey.id.rawValue)
+        UserDefaults.standard.set(name, forKey: UserDefaultsKey.id.rawValue)
+        UserDefaults.standard.set(email ?? "", forKey: UserDefaultsKey.id.rawValue)
     }
 }

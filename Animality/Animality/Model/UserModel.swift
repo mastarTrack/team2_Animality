@@ -12,7 +12,7 @@ struct UserModel {
     let uid: UUID
     var id: String
     var name: String
-    var email: String?
+    var email: String
     let registDate: Date
     var rentalCount: Int
     
