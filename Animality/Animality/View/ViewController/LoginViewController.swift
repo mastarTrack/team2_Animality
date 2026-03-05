@@ -16,5 +16,19 @@ final class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setButtonAction()
+    }
+    
+}
+
+extension LoginViewController {
+    private func setButtonAction() {
+        let navToRegister = UIAction { [weak self] _ in
+            let vc = UserRegisterViewController()
+            self?.navigationController?.pushViewController(vc, animated: true)
+            print("pushed")
+        }
+        
+        loginView.registerButton.addAction(navToRegister, for: .touchUpInside)
     }
 }
