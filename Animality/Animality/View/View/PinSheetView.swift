@@ -10,6 +10,7 @@ import SnapKit
 class PinSheetView: UIViewController {
     private let viewModel: LocationViewModel
     private var animals: [Animal]
+    private let coordinate: Coordinate
     
     private lazy var animalCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
     private lazy var dataSource = makeCollectionViewDiffableDataSource(animalCollectionView)
@@ -17,6 +18,7 @@ class PinSheetView: UIViewController {
     init(viewModel: LocationViewModel, coordinate: Coordinate) {
         self.viewModel = viewModel
         self.animals = viewModel.coordinates[coordinate] ?? []
+        self.coordinate = coordinate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -41,6 +43,19 @@ extension PinSheetView {
         
         animalCollectionView.snp.makeConstraints {
             $0.directionalEdges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+    
+    private func bindingData() {
+        viewModel.stateChanged = {[weak self] state in
+            switch state {
+            case let .updateAfterPaid(result):
+                self?.animals = result
+                self?.setSnapshot(with: result)
+                
+            default:
+                break
+            }
         }
     }
 }
@@ -145,5 +160,9 @@ extension PinSheetView: UICollectionViewDelegate {
         
         modalPresentationStyle = .fullScreen
         present(vc, animated: true)
+    }
+    
+    func updateStatus() {
+        viewModel.action(.paid(coordinate))
     }
 }

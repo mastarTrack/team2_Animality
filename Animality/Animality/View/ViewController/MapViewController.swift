@@ -84,7 +84,7 @@ class MapViewController: UIViewController {
                     await self.updateSearchResult([])
                 }
                 
-            case .none:
+            default:
                 break
             }
         }

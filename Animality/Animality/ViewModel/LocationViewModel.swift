@@ -16,6 +16,7 @@ class LocationViewModel: ViewModelProtocol {
         case newRegister
         case search(text: String)
         case cancelSearch
+        case paid(Coordinate)
     }
     
     // 상태 열거형
@@ -26,6 +27,7 @@ class LocationViewModel: ViewModelProtocol {
         case newRegister(data: [Coordinate: AnimalType])
         case searched(result: [LocationInfo])
         case cancelledSearch
+        case updateAfterPaid([Animal])
     }
     
     var state: State = .none {
@@ -65,7 +67,12 @@ class LocationViewModel: ViewModelProtocol {
             
         case .cancelSearch:
             self.state = .cancelledSearch
+            
+        case let .paid(coordinate):
+            let animals = fetchAnimals(of: coordinate)
+            self.state = .updateAfterPaid(animals)
         }
+        
     }
     
     // init
@@ -80,11 +87,6 @@ class LocationViewModel: ViewModelProtocol {
 
     private(set) var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     private(set) var searchResults: [LocationInfo] = []
-
-    // AnimalEntity -> Animal
-//    private func fetchAllAnimals() -> [Animal] {
-//        return coreDataManager.fetchAllAnimalEntities()
-//    }
     
     // 좌표별 동물 분류 메서드
     private func categorizeAnimalByCoordinate() -> [Coordinate: [Animal]] {
@@ -158,5 +160,17 @@ class LocationViewModel: ViewModelProtocol {
                                    mapY: mapY,
                                    image: image))
         }
+    }
+    
+    private func fetchAnimals(of coordinate: Coordinate) -> [Animal] {
+        coordinates = categorizeAnimalByCoordinate()
+//        guard let animals = coordinates[coordinate]
+        return coordinates[coordinate] ?? []
+    }
+    
+    private func updateAnimals(of coordinate: Coordinate) -> [Animal]? {
+        // 갱신
+        coordinates = categorizeAnimalByCoordinate()
+        return coordinates[coordinate]
     }
 }
