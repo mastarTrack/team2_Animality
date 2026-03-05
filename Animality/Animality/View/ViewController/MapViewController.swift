@@ -133,7 +133,7 @@ extension MapViewController {
         searchBar.searchBarStyle = .minimal
         searchBar.backgroundColor = .clear
         searchBar.placeholder = "검색할 장소를 입력해주세요."
-
+        
         searchBar.searchTextField.layer.borderColor = UIColor(resource: .deepRose).cgColor
         searchBar.searchTextField.layer.borderWidth = 2
         searchBar.searchTextField.backgroundColor = .white.withAlphaComponent(0.5)
@@ -347,18 +347,19 @@ extension MapViewController {
     // 검색 결과 업데이트
     @MainActor
     private func updateSearchResult(_ data: [LocationInfo]) async {
-            listView.isHidden = data.isEmpty
-            setSnapshot(with: data)
+        listView.isHidden = data.isEmpty
+        setSnapshot(with: data)
     }
 }
 
 extension MapViewController: UICollectionViewDelegate {
     // 검색 결과 셀 클릭 시 해당 위치로 이동
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let data = viewModel.searchResults[indexPath.row]
+        guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
+        
         let x = data.mapX / 10000000 // 경도
         let y = data.mapY / 10000000 // 위도
-
+        
         moveCameraPosition(lat: y, lng: x)
     }
 }
