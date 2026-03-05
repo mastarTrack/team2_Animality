@@ -28,7 +28,6 @@ final class RegisterView: UIView {
     var onRegisterTapped: (() -> Void)?
     var onPriceEntered: ((String?) -> Void)?
     var onTypeSelected: ((AnimalType) -> Void)?
-    var onLocationSelected: ((Double, Double) -> Void)?
     var showAlert: ((UIError) -> Void)?
     var onPickedCoordinate: ((Coordinate)->Void)?
     
@@ -425,7 +424,7 @@ final class RegisterView: UIView {
         
         let tap = UITapGestureRecognizer(target: self,
                                          action: #selector(locationTapped))
-        locationCardView.addGestureRecognizer(tap)
+        mapView.addGestureRecognizer(tap)
         
         registerButton.addTarget(self, action: #selector(registerTapped), for: .touchUpInside)
     }
@@ -535,7 +534,7 @@ final class RegisterView: UIView {
     }
     
     @objc private func locationTapped() {
-        onLocationTapped?()
+        onPickedCoordinate!(currentCenterCoordinate())
     }
     
     @objc private func registerTapped() {

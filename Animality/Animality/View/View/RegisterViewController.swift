@@ -66,8 +66,8 @@ class RegisterViewController: UIViewController {
             self?.registerViewModel.action(.flightCapabilitySelected(flight))
         }
         
-        registerView.onLocationSelected = { [weak self] lat, lon in
-            self?.registerViewModel.action(.locationSelected(lat, lon))
+        registerView.onPickedCoordinate = { [weak self] Coordinate in
+            self?.registerViewModel.action(.locationSelected(Coordinate.latitude, Coordinate.longitude))
         }
         
         registerView.onRegisterTapped = { [weak self] in
@@ -101,9 +101,10 @@ class RegisterViewController: UIViewController {
             present(alert, animated: true)
             
         case .registerSuccess:
-            (self.tabBarController?.viewControllers?[0] as! MapViewController).newRegister()
-            registerView.showSuccess()
-            self.navigationController?.popViewController(animated: true) // 저장 성공시 이전 화면으로 이동학
+            //mapVC 호출 - 마커 refresh
+            guard let nav = self.tabBarController?.viewControllers?.first as? UINavigationController else { return }
+            guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
+            mapVC.newRegister()
         }
     }
 }

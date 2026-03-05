@@ -37,6 +37,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func showMain(user: UserModel) {
         let main = MainViewController(userModel: user)
         window?.rootViewController = main
+        window?.makeKeyAndVisible()
     }
     
     func setupUID(){
