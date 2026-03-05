@@ -201,7 +201,6 @@ extension MapViewController {
             
             marker.touchHandler = { [weak self] (overlay: NMFOverlay) -> Bool in
                 self?.showSheet(with: element.key)
-                print("lat: \(marker.position.lat), lng: \(marker.position.lng)")
                 return true // true값일 시, 이벤트를 지도로 전달하지 않음 (마커에서 이벤트를 소비)
             }
             
@@ -237,15 +236,11 @@ extension MapViewController {
     
     // 생성 대상 비교
     private func compareNewMarkers(_ data: [Coordinate: AnimalType]) -> [Coordinate: AnimalType] {
-        return data.reduce(into: [Coordinate: AnimalType]()) { dic, update in
-            // 기존 마커 배열에 업데이트 마커 좌표가 존재하는지 확인
-            let index = displayedMarkers.firstIndex(where: {
-                $0.position.lat == update.key.latitude && $0.position.lng == update.key.longitude
-            })
-            
-            // 없는 경우, 생성 대상에 추가
-            index == nil ? dic[update.key] = update.value : ()
-        }
+        // 기존 마커 좌표 Set
+        let exist = Set(displayedMarkers.map { Coordinate(latitude: $0.position.lat, longitude: $0.position.lng) })
+        // 기존 마커 좌표에 없는 data들을 반환
+        return data.filter { !exist.contains($0.key) }
+        
     }
     
     // 삭제 대상 비교

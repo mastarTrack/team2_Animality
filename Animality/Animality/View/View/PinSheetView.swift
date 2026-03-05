@@ -8,8 +8,6 @@ import UIKit
 import SnapKit
 
 class PinSheetView: UIViewController {
-    private let viewModel: any ViewModelProtocol
-    private let coordinate: Coordinate
     private let animals: [Animal]
     
     private lazy var animalCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
@@ -17,10 +15,6 @@ class PinSheetView: UIViewController {
     
     init(viewModel: LocationViewModel, coordinate: Coordinate) {
         self.animals = viewModel.coordinates[coordinate] ?? []
-        self.viewModel = viewModel
-        self.coordinate = coordinate
-        print(animals)
-        
         super.init(nibName: nil, bundle: nil)
     }
     
