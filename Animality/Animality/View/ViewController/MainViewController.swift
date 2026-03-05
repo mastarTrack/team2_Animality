@@ -11,48 +11,7 @@ import Then
 
 /// 메인 화면 ViewController
 class MainViewController: UITabBarController {
-    
-    // MARK: - Properites
-    /// TabBar Item
-    private lazy var tabItems: [TabItem] = {
-        // 샘플/임시 유저 & VM (나중에 로그인 유저로 교체)
-        let user = UserModel.sample
-        let myPageVM = MyPageViewModel(userModel: user)
-        
-        return [
-            TabItem(
-                title: "지도 화면",
-                imageName: "map",
-                selectedImageName: "map.fill",
-                makeViewController: {
-                    let vc = MapViewController()
-                    let nav = UINavigationController(rootViewController: vc)
-                    return nav
-                }
-            ),
-            TabItem(
-                title: "개체 등록",
-                imageName: "plus.circle",
-                selectedImageName: "plus.circle.fill",
-                makeViewController: {
-                    let vc = RegisterViewController()
-                    let nav = UINavigationController(rootViewController: vc)
-                    return nav
-                }
-            ),
-            TabItem(
-                title: "마이 페이지",
-                imageName: "person",
-                selectedImageName: "person.fill",
-                makeViewController: {
-                    let vc = MyPageViewController(vm: myPageVM)
-                    let nav = UINavigationController(rootViewController: vc)
-                    return nav
-                }
-            )
-        ]
-    }()
-    
+     
     // MARK: - Viewmodel
     let animalityModelManager: AnimalityModelManager
     
@@ -64,7 +23,7 @@ class MainViewController: UITabBarController {
     }
     
     init(userModel: UserModel) {
-        modelManager = AnimalityModelManager(user: userModel, coreDataManager: CoreDataManager())
+        animalityModelManager = AnimalityModelManager(user: userModel, coreDataManager: CoreDataManager())
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -78,10 +37,6 @@ class MainViewController: UITabBarController {
         super.init(nibName: nil, bundle: nil)
     }
     
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
 }
 
 //MARK: - METHOD: TAB BAR METHOD
@@ -105,26 +60,39 @@ extension MainViewController {
 extension MainViewController {
     /// 매인 UI 초기 설정 메소드
     private func configureUI() {
-        let manager = modelManager
+        let manager = animalityModelManager
 
         let tabItems: [TabItem] = [
             TabItem(
                 title: "지도 화면",
                 imageName: "map",
                 selectedImageName: "map.fill",
-                makeViewController: { MapViewController() }
+                makeViewController: {
+                    let vc = MapViewController()
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
             ),
             TabItem(
                 title: "등록 하기",
                 imageName: "plus.circle",
                 selectedImageName: "plus.circle.fill",
-                makeViewController: { RegisterViewController() }
+                makeViewController: {
+                    let vc = RegisterViewController()
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
+
             ),
             TabItem(
                 title: "마이페이지",
                 imageName: "person",
                 selectedImageName: "person.fill",
-                makeViewController: { MyPageViewController(modelManager: manager) }
+                makeViewController: {
+                    let vc = MyPageViewController(modelManager: manager)
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
             )
         ]
         
