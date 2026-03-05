@@ -95,7 +95,7 @@ extension MapViewController {
         }
         
         searchBar.snp.makeConstraints {
-            $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
+             $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
         }
         
         listView.snp.makeConstraints {
@@ -112,6 +112,7 @@ extension MapViewController {
     
     // 속성 설정
     private func setAttributes() {
+        self.navigationController?.navigationBar.isHidden = true
         setSearchBar()
         setButton()
         currentLocation()

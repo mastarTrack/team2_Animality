@@ -25,7 +25,7 @@ class RegisterViewController: UIViewController {
         
         // 네비게이션바 타이틀 설정
         self.title = "등록하기"
-        self.navigationController?.navigationBar.prefersLargeTitles = true
+        //self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     

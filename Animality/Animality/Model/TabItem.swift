@@ -16,5 +16,5 @@ struct TabItem {
     /// 선택됬을때 이미지 이름
     let selectedImageName: String?
     /// 뷰컨트롤러 타입 설정
-    let makeViewController: () -> UIViewController
+    let makeViewController: () -> UINavigationController
 }

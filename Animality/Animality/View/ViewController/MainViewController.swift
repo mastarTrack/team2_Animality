@@ -11,9 +11,50 @@ import Then
 
 /// 메인 화면 ViewController
 class MainViewController: UITabBarController {
-
-    //MARK: - ViewModel
-    let modelManager: AnimalityModelManager
+    
+    // MARK: - Properites
+    /// TabBar Item
+    private lazy var tabItems: [TabItem] = {
+        // 샘플/임시 유저 & VM (나중에 로그인 유저로 교체)
+        let user = UserModel.sample
+        let myPageVM = MyPageViewModel(userModel: user)
+        
+        return [
+            TabItem(
+                title: "지도 화면",
+                imageName: "map",
+                selectedImageName: "map.fill",
+                makeViewController: {
+                    let vc = MapViewController()
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
+            ),
+            TabItem(
+                title: "개체 등록",
+                imageName: "plus.circle",
+                selectedImageName: "plus.circle.fill",
+                makeViewController: {
+                    let vc = RegisterViewController()
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
+            ),
+            TabItem(
+                title: "마이 페이지",
+                imageName: "person",
+                selectedImageName: "person.fill",
+                makeViewController: {
+                    let vc = MyPageViewController(vm: myPageVM)
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
+            )
+        ]
+    }()
+    
+    // MARK: - Viewmodel
+    let animalityModelManager: AnimalityModelManager
     
     // MARK: - INIT
     override func viewDidLoad() {
@@ -24,6 +65,16 @@ class MainViewController: UITabBarController {
     
     init(userModel: UserModel) {
         modelManager = AnimalityModelManager(user: userModel, coreDataManager: CoreDataManager())
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    init(user: UserModel) {
+        self.animalityModelManager = AnimalityModelManager(user: user, coreDataManager: CoreDataManager())
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -83,6 +134,6 @@ extension MainViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    
-    MainViewController(userModel: UserModel.sample)
+    let userModel = UserModel.sample
+    MainViewController(user: userModel)
 }
