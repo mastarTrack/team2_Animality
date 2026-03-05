@@ -83,14 +83,14 @@ extension LoginView {
         idTextField.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(imageView.snp.bottom).offset(20)
-            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(40)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(50)
             $0.height.equalTo(50)
         }
         
         passwordTextField.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(idTextField.snp.bottom).offset(8)
-            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(40)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(50)
             $0.height.equalTo(50)
         }
         
