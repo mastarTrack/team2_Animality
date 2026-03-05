@@ -16,6 +16,10 @@ final class UserRegisterView: UIView {
         $0.backgroundColor = .systemGray6
         $0.layer.cornerRadius = 14
         $0.addLeftPadding(12)
+        
+        $0.snp.makeConstraints {
+            $0.height.equalTo(56)
+        }
     }
     
     // 비밀번호 입력
@@ -24,6 +28,10 @@ final class UserRegisterView: UIView {
         $0.backgroundColor = .systemGray6
         $0.layer.cornerRadius = 14
         $0.addLeftPadding(12)
+        
+        $0.snp.makeConstraints {
+            $0.height.equalTo(56)
+        }
     }
     
     // 이름 입력
@@ -32,6 +40,10 @@ final class UserRegisterView: UIView {
         $0.backgroundColor = .systemGray6
         $0.layer.cornerRadius = 14
         $0.addLeftPadding(12)
+        
+        $0.snp.makeConstraints {
+            $0.height.equalTo(56)
+        }
     }
     
     // 이메일 입력
@@ -41,6 +53,10 @@ final class UserRegisterView: UIView {
         $0.layer.cornerRadius = 14
         $0.addLeftPadding(12)
         $0.keyboardType = .emailAddress
+        
+        $0.snp.makeConstraints {
+            $0.height.equalTo(56)
+        }
     }
     
     // 등록 버튼
@@ -55,6 +71,7 @@ final class UserRegisterView: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
+        setLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -76,12 +93,15 @@ extension UserRegisterView {
         let emailTitleLabel = makeTitleLabel(of: "이메일")
         let optionTitleLabel = UILabel().then {
             $0.text = "(선택)"
-            $0.textColor = .systemGray4
+            $0.textColor = .lightGray
             $0.font = .systemFont(ofSize: 14, weight: .medium)
+            $0.textAlignment = .left
         }
         let emailTitleStack = UIStackView(arrangedSubviews: [emailTitleLabel, optionTitleLabel]).then {
             $0.axis = .horizontal
             $0.spacing = 5
+            $0.alignment = .leading
+            emailTitleLabel.setContentHuggingPriority(.required, for: .horizontal)
         }
         let emailStack = makeLabelStack(of: [emailTitleStack, emailTextField])
         
@@ -97,6 +117,22 @@ extension UserRegisterView {
         passwordStack.snp.makeConstraints {
             $0.top.equalTo(idStack.snp.bottom).offset(20)
             $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(24)
+        }
+        
+        nameStack.snp.makeConstraints {
+            $0.top.equalTo(passwordStack.snp.bottom).offset(20)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(24)
+        }
+        
+        emailStack.snp.makeConstraints {
+            $0.top.equalTo(nameStack.snp.bottom).offset(20)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(24)
+        }
+        
+        registerButton.snp.makeConstraints {
+            $0.top.equalTo(emailStack.snp.bottom).offset(32)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(24)
+            $0.height.equalTo(56)
         }
     }
     
