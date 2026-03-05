@@ -137,6 +137,10 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
             guard let animal = vm.modelManager.user.registAnimal?[indexPath.item] else { return }
             // 같은 CoreDataManager를 Detail VM에 주입해줌
             let detailVC = DetailViewController(animalID: animal.id, modelManager: vm.modelManager)
+            detailVC.updateClosure = { [weak self] in
+                guard let self else { return }
+                vm.action(.fetchReceipt)
+            }
             // 네비게이션 push
             navigationController?.pushViewController(detailVC, animated: true)
             

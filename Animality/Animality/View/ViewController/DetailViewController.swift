@@ -14,6 +14,8 @@ final class DetailViewController: UIViewController {
 
     var animalID: UUID?
 
+    var updateClosure: (()->Void)?
+    
     // 초기화
     // 의존성 주입
     init(animalID: UUID, modelManager: AnimalityModelManager) {
@@ -72,6 +74,7 @@ final class DetailViewController: UIViewController {
     
     private func bindActions() {
         detailView.onDeleteTapped = { [weak self] in
+            self?.updateClosure?()
             self?.viewModel.action(.deleteTapped)
         }
     }
