@@ -2,9 +2,11 @@ import Foundation
 
 class RegisterViewModel: ViewModelProtocol {
     
-    let coreDataManager = CoreDataManager()
+    private let modelManager: AnimalityModelManager
     
-    
+    init(modelManager: AnimalityModelManager) {
+        self.modelManager = modelManager
+    }
     
     // MARK: -- Action, State
     
@@ -111,37 +113,25 @@ class RegisterViewModel: ViewModelProtocol {
             return
         }
         
-        // 도메인 모델 생성
-        let animal = Animal(
-            id: UUID(),
-            //TODO: 사용자 uid로 변경 요청
-            userId: UUID(),
-            name: name,
-            type: type,
-            status: .normal,
-            pricePerHour: Int(pricePerHour),
-            currentLocation: Coordinate(latitude: latitude, longitude: longitude),
-            size: size,
-            flightCapability: flightCapability,
-            registDate: Date()
-        )
+        let now = Date() // 등록 버튼 클릭 시점의 시간 저장
         
         // 코어데이터용 payload 생성하기
         let payload = CreateAnimalModel(
-            name: animal.name,
-            userId: animal.userId,
-            category: animal.type.category,
-            type: animal.type.rawValue,
-            size: animal.size.rawValue,
-            latitude: animal.currentLocation.latitude,
-            longitude: animal.currentLocation.longitude,
-            price: Int32(animal.pricePerHour),
-            status: animal.status.rawValue,
-            flight: animal.flightCapability.rawValue,
-            registDate: animal.registDate
+            name: name,
+            userId: modelManager.user.uid,
+            category: type.category,
+            type: type.rawValue,
+            size: size.rawValue,
+            latitude: latitude,
+            longitude: longitude,
+            price: Int32(pricePerHour),
+            status: AnimalStatus.normal.rawValue,
+            flight: flightCapability.rawValue,
+            registDate: now
         )
 
         // 저장 완료 상태 저장
+        modelManager.createAnimal(payload: payload)
         state = .registerSuccess
     }
 }
