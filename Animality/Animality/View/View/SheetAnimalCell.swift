@@ -90,7 +90,7 @@ extension SheetAnimalCell {
     private func setLayout() {
         let nameStack = makeVerticalStack(of: [nameLabel, typeLabel])
         let infoStack = makeVerticalStack(of: [priceLabel, unitLabel, statusLabel])
-        infoStack.alignment = .center
+        infoStack.alignment = .trailing
         
         contentView.addSubview(nameStack)
         contentView.addSubview(infoStack)
