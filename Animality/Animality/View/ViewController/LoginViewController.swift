@@ -11,6 +11,7 @@ final class LoginViewController: UIViewController {
     private let loginView = LoginView()
     private let viewModel: LoginViewModel
     
+    //MARK: 이니셜라이저에서 뷰모델 주입받음
     init(viewModel: LoginViewModel) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -29,10 +30,11 @@ final class LoginViewController: UIViewController {
         bindingData()
     }
     
+    //MARK: 여기서 LoginView 클로저 정의
     private func bindingData() {
         loginView.registerButtonPushed = { [weak self] in
             guard let viewModel = self?.viewModel else { return }
-            let vc = UserRegisterViewController(viewModel: viewModel)
+            let vc = UserRegisterViewController(viewModel: viewModel) // 뷰모델 넘겨주면서 push
             self?.navigationController?.pushViewController(vc, animated: true)
         }
     }

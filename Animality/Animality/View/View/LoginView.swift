@@ -50,7 +50,7 @@ final class LoginView: UIView {
     }
     
     //MARK: Binding Closures
-    var registerButtonPushed: (() -> Void)?
+    var registerButtonPushed: (() -> Void)? // 버튼 동작 클로저 (LoginVC에서 할당)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -121,6 +121,7 @@ extension LoginView {
         }
     }
     
+    //TODO: 나중에 쓸까봐 일단 만들어뒀는데 안쓰면 지우시면 됩니다!!
     func setDelegate(vc: UITextFieldDelegate) {
         idTextField.delegate = vc
         passwordTextField.delegate = vc
@@ -131,6 +132,6 @@ extension LoginView {
             self?.registerButtonPushed?()
         }
         
-        loginView.registerButton.addAction(navToRegister, for: .touchUpInside)
+        registerButton.addAction(navToRegister, for: .touchUpInside)
     }
 }

@@ -8,6 +8,7 @@ import Foundation
 
 final class LoginViewModel: ViewModelProtocol {
     enum Action {
+        case loginViewDidLoad
         case register(String, String, String, String?)
     }
     
@@ -26,6 +27,8 @@ final class LoginViewModel: ViewModelProtocol {
     
     func action(_ action: Action) -> Void {
         switch action {
+        case .loginViewDidLoad:
+            
         case let .register(id, password, name, email):
             if !(email ?? "").isEmpty, !validateEmailExpression(email ?? "") { // 이메일 값이 있지만 유효하지 않을 때
                 self.state = .failed("유효한 이메일 형식이 아닙니다.")
@@ -38,6 +41,10 @@ final class LoginViewModel: ViewModelProtocol {
 }
 
 extension LoginViewModel {
+    private func loadUserInfo() -> UserModel {
+        
+    }
+    
     private func saveUserInfo(id: String, password: String, name: String, email: String?) {
         UserDefaults.standard.set(id, forKey: UserDefaultsKey.id.rawValue)
         UserDefaults.standard.set(password, forKey: UserDefaultsKey.id.rawValue)
