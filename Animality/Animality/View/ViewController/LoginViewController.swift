@@ -13,4 +13,10 @@ final class LoginViewController: UIViewController {
     override func loadView() {
         view = loginView
     }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.title = "로그인 / 회원가입"
+    }
 }
