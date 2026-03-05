@@ -32,11 +32,11 @@ final class PaymentViewModel: ViewModelProtocol {
     }
     var onStateChanged: ((State) -> Void)?
 
-    private let coreDataManager: CoreDataManager
+    private let modelManager: AnimalityModelManager
     private var animalID: UUID?
 
-    init(coreDataManager: CoreDataManager = CoreDataManager()) {
-        self.coreDataManager = coreDataManager
+    init(modelManager: AnimalityModelManager) {
+        self.modelManager = modelManager
     }
 
     func action(_ action: Action) {
@@ -64,37 +64,12 @@ final class PaymentViewModel: ViewModelProtocol {
     
     // 전달받은 ID로 코어데이터에서 찾아오기
     private func fetchAnimal(id: UUID) {
-        guard let entity = coreDataManager.fetchOneAnimalEntity(id: id) else {
-            state.errorMessage = "해당 동물을 찾을 수 없습니다."
-            state.isPayEnabled = false
+        modelManager.refreshAnimals() // 필요하면
+        guard let animal = modelManager.allAnimals.first(where: { $0.id == id }) else {
+        state.errorMessage = "해당 동물을 찾을 수 없습니다."
+        state.isPayEnabled = false
             return
         }
-
-        let type = AnimalType(rawValue: entity.type ?? "") ?? .dog
-
-        // status가 String? 이므로 안전 처리
-        let statusString = entity.status ?? AnimalStatus.normal.rawValue
-        let status = AnimalStatus(rawValue: statusString) ?? .normal
-
-        let size = AnimalSize(rawValue: entity.size ?? "") ?? .medium
-
-        // flightCapability도 String? 이므로
-        let flightString = entity.flightCapability ?? FlightCapability.cannotFly.rawValue
-        let flight = FlightCapability(rawValue: flightString) ?? .cannotFly
-
-        let animal = Animal(
-            id: entity.id ?? UUID(),
-            userId: entity.userId ?? UUID(),
-            name: entity.name ?? "",
-            type: type,
-            status: status,
-            pricePerHour: Int(entity.pricePerHour),
-            currentLocation: Coordinate(latitude: entity.latitude, longitude: entity.longitude),
-            size: size,
-            flightCapability: flight,
-            registDate: entity.registDate ?? Date()
-        )
-
         state.animal = animal
     }
 
@@ -137,18 +112,15 @@ final class PaymentViewModel: ViewModelProtocol {
     
     // 결제하기
     private func pay() {
-        guard state.isPayEnabled else { return }
-        guard let animal = state.animal else { return }
-
-        let locationText = "(\(animal.currentLocation.latitude), \(animal.currentLocation.longitude))"
+        guard state.isPayEnabled, let animal = state.animal else { return }
 
         // 영수증 데이터 RentReceipt 생성
         let receipt = RentReceipt(
             id: UUID(),
-            userId: UUID(),                 // 로그인 붙이면 유저 UUID 넣기
+            userId: modelManager.user.uid,                 // 로그인 붙이면 유저 UUID 넣기
             animalId: animal.id,
             amount: Int64(state.totalAmount),
-            location: locationText,
+            location: "(\(animal.currentLocation.latitude), \(animal.currentLocation.longitude))",
             rentPaymentTime: Date(),
             rentStartTime: state.startDate,
             rentEndTime: state.endDate,
@@ -157,8 +129,7 @@ final class PaymentViewModel: ViewModelProtocol {
             animal: animal
         )
 
-        // 기존 CoreData 함수 재사용해서 create
-        coreDataManager.createReceiptEntity(receipt: receipt)
+        modelManager.createReceipt(receipt)
 
         state.didPay = true
     }
