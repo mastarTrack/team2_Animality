@@ -339,15 +339,15 @@ extension MapViewController: CLLocationManagerDelegate {
 //MARK: SheetView
 extension MapViewController {
     func showSheet(with coordinate: Coordinate) {
-        let vc = PinSheetView(viewModel: viewModel, coordinate: coordinate)
+        let sheet = PinSheetView(viewModel: viewModel, coordinate: coordinate)
         
-        if let sheet = vc.sheetPresentationController {
+        if let sheet = sheet.sheetPresentationController {
             sheet.detents = [.medium(), .large()] // 시트 크기
             sheet.prefersScrollingExpandsWhenScrolledToEdge = true // 시트 확장 가능 여부
             sheet.prefersGrabberVisible = true // grabber 표시 여부
         }
         
-        self.present(vc, animated: true)
+        self.present(sheet, animated: true)
     }
 }
 
