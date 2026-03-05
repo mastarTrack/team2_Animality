@@ -14,6 +14,8 @@ class MapViewController: UIViewController {
     private let viewModel = LocationViewModel()
     
     private let mapView = NMFMapView(frame: .zero)
+    private var displayedMarkers = [NMFMarker]()
+    
     private let searchBar = UISearchBar()
     private let currentLocationButton = UIButton()
     
@@ -46,13 +48,22 @@ class MapViewController: UIViewController {
                 
                 // 비동기 함수(마커 생성 함수)를 처리하기 위한 Task
                 Task {
-                    let markers = await self.makeMarkers(data)
-                    self.displayMarkers(markers)
+                    self.displayedMarkers = await self.makeMarkers(data) // 마커 할당
+                    self.displayMarkers(self.displayedMarkers)
                 }
                 
             case let .locationChanged(lat, lng): // 위치 이동 시
                 moveCameraPosition(lat: lat, lng: lng)
+
+            case let .newRegister(data):
+                let new = compareNewMarkers(data) // 마커 생성 대상 찾기
                 
+                Task {
+                    let newMarkers = await self.makeMarkers(new) // 마커 생성
+                    self.displayMarkers(newMarkers) // 신규 마커 배치
+                    self.displayedMarkers += newMarkers // 현재 마커 배열 갱신
+                }
+
             case let .searched(result):
                 Task {
                     await self.updateSearchResult(result)
@@ -72,6 +83,7 @@ class MapViewController: UIViewController {
 
 //MARK: Set Layout & Attributes
 extension MapViewController {
+    // 레이아웃 설정
     private func setLayout() {
         view.addSubview(mapView)
         view.addSubview(searchBar)
@@ -98,6 +110,7 @@ extension MapViewController {
         }
     }
     
+    // 속성 설정
     private func setAttributes() {
         setSearchBar()
         setButton()
@@ -105,6 +118,7 @@ extension MapViewController {
         setListView()
     }
     
+    // 버튼 설정
     private func setButton() {
         // configuration
         var config = UIButton.Configuration.filled()
@@ -129,6 +143,7 @@ extension MapViewController {
         currentLocationButton.addAction(move, for: .touchUpInside)
     }
     
+    // 검색바 설정
     private func setSearchBar() {
         searchBar.searchBarStyle = .minimal
         searchBar.backgroundColor = .clear
@@ -140,6 +155,7 @@ extension MapViewController {
         searchBar.searchTextField.textColor = .secondaryText
     }
     
+    // 주소 검색 결과 리스트뷰 설정
     private func setListView() {
         listView.isHidden = true
         listView.backgroundColor = .clear
@@ -147,6 +163,7 @@ extension MapViewController {
         listView.layer.cornerRadius = 15
     }
     
+    // 맵뷰 설정
     private func setMapView(lat: Double, lng: Double) {
         mapView.mapType = .basic // 지도 유형 설정
         mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
@@ -160,7 +177,6 @@ extension MapViewController {
         mapView.positionMode = .direction // 지도 화면이 현재 위치를 따라갈지 아닐지를 결정
     }
 }
-
 
 //MARK: MapView
 extension MapViewController {
@@ -190,13 +206,13 @@ extension MapViewController {
     
     // 마커 생성 - 백그라운드 스레드에서 비동기적으로 동작
     @BackgroundActor
-    private func makeMarkers(_ data: [(type: AnimalType, coordinate: Coordinate)]) async -> [NMFMarker] {
-        return data.reduce(into: [NMFMarker]()) {
+    private func makeMarkers(_ data: [Coordinate: AnimalType]) async -> [NMFMarker] {
+        return data.reduce(into: [NMFMarker]()) { arr, element in
             let marker = NMFMarker()
-            marker.position = NMGLatLng(lat: $1.coordinate.latitude, lng: $1.coordinate.longitude) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
+            marker.position = NMGLatLng(lat: element.key.latitude, lng: element.key.longitude) // 마커 좌표 설정 - 반드시 position을 정의한 후 마커를 배치해야함!
             
             // 마커 아이콘 설정
-            switch $1.type {
+            switch element.value {
             case .dog:
                 marker.iconImage = NMFOverlayImage(image: .dogPin)
             case .cat:
@@ -213,12 +229,12 @@ extension MapViewController {
             marker.width = 30
             marker.height = 44
             
-            marker.touchHandler = { (overlay: NMFOverlay) -> Bool in
-                print("lat: \(marker.position.lat), lng: \(marker.position.lng)")
+            marker.touchHandler = { [weak self] (overlay: NMFOverlay) -> Bool in
+                self?.showSheet(with: element.key)
                 return true // true값일 시, 이벤트를 지도로 전달하지 않음 (마커에서 이벤트를 소비)
             }
             
-            $0.append(marker)
+            arr.append(marker)
         }
     }
     
@@ -228,6 +244,44 @@ extension MapViewController {
         markers.forEach {
             $0.mapView = mapView
         }
+    }
+    
+    func newRegister() {
+        viewModel.action(.newRegister)
+        print("새로운 등록")
+    }
+    
+    // 마커 삭제
+    @MainActor
+    private func deleteMarkers(_ markers: [NMFMarker]) {
+        markers.forEach {
+            $0.mapView = nil // 마커 제거
+        }
+        
+        //        // 마커 배열 갱신
+        //        markers.removeAll {
+        //            $0.mapView == nil
+        //        }
+    }
+    
+    // 생성 대상 비교
+    private func compareNewMarkers(_ data: [Coordinate: AnimalType]) -> [Coordinate: AnimalType] {
+        // 기존 마커 좌표 Set
+        let exist = Set(displayedMarkers.map { Coordinate(latitude: $0.position.lat, longitude: $0.position.lng) })
+        // 기존 마커 좌표에 없는 data들을 반환
+        return data.filter { !exist.contains($0.key) }
+        
+    }
+    
+    // 삭제 대상 비교
+    private func compareDeleteMarkers(_ data: [Coordinate: AnimalType]) -> [NMFMarker] {
+        return displayedMarkers.reduce(into: [NMFMarker]()) {
+            // 현재 비교 중인 기존 마커의 좌표
+            let coordinate = Coordinate(latitude: $1.position.lat, longitude: $1.position.lng)
+            
+            // 업데이트된 마커 리스트에 해당 좌표가 없는 경우 삭제 대상에 추가
+            data[coordinate] == nil ? $0.append($1) : ()
+            }
     }
 }
 
@@ -278,6 +332,21 @@ extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         let alert = UIAlertController(status: .invalidLocation)
         present(alert, animated: true)
+    }
+}
+
+//MARK: SheetView
+extension MapViewController {
+    func showSheet(with coordinate: Coordinate) {
+        let vc = PinSheetView(viewModel: viewModel, coordinate: coordinate)
+        
+        if let sheet = vc.sheetPresentationController {
+            sheet.detents = [.medium(), .large()] // 시트 크기
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = true // 시트 확장 가능 여부
+            sheet.prefersGrabberVisible = true // grabber 표시 여부
+        }
+        
+        self.present(vc, animated: true)
     }
 }
 

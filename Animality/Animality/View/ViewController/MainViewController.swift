@@ -15,17 +15,22 @@ class MainViewController: UITabBarController {
     /// 임시 탭바에 넣은 탭바아이템 목업 데이터
     private let tabItems: [TabItem] = [
         TabItem(
-            title: "Home",
-            imageName: "house",
-            selectedImageName: "house.fill",
-//            viewControllerType: UIViewController.self,
+            title: "Map",
+            imageName: "map",
+            selectedImageName: "map.fill",
             viewControllerType: MapViewController.self,
         ),
         TabItem(
-            title: "Setting",
-            imageName: "gear",
-            selectedImageName: "gearshape.fill",
-            viewControllerType: UIViewController.self,
+            title: "Register",
+            imageName: "plus.circle",
+            selectedImageName: "plus.circle.fill",
+            viewControllerType: RegisterViewController.self,
+        ),
+        TabItem(
+            title: "My Page",
+            imageName: "person",
+            selectedImageName: "person.fill",
+            viewControllerType: MyPageViewController.self,
         )
     ]
     
@@ -39,6 +44,7 @@ class MainViewController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
+        tabBar.tintColor = .coralText
     }
 }
 

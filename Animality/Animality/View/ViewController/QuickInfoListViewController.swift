@@ -151,7 +151,7 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
 
 //MARK: - METHOD: Compositional Layout
 extension QuickInfoListViewController {
-    private  func getSection() -> NSCollectionLayoutSection {
+    private func getSection() -> NSCollectionLayoutSection {
         
         let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .estimated(313), heightDimension: .estimated(196)))
         

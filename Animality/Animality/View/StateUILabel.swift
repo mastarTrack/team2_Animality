@@ -9,6 +9,7 @@ import UIKit
 
 /// 상태 UILabel
 class StateUILabel: UILabel {
+    private let padding = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     
     enum state: String {
         case completed
@@ -49,6 +50,7 @@ class StateUILabel: UILabel {
         }
         font = inputFont
     }
+    
     func updateUIForRegist(state: AnimalStatus, _ inputFont: UIFont?) {
         switch state {
         case .normal:
@@ -72,6 +74,19 @@ class StateUILabel: UILabel {
             return
         }
         font = inputFont
+    }
+}
+
+extension StateUILabel {
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: padding))
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        var contentSize = super.intrinsicContentSize
+        contentSize.height += padding.top + padding.bottom
+        contentSize.width += padding.left + padding.right
+        return contentSize
     }
 }
 

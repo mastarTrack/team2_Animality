@@ -37,7 +37,7 @@ import Foundation
 
 // MARK: - Main Animal Model
 // MARK: 앱 전체에서 사용되는 모델
-struct Animal {
+struct Animal: Hashable {
     /// 고유 ID
     let id: UUID
     /// 개체 이름 (예: "모찌")
