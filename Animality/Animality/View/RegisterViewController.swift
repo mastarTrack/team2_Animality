@@ -25,7 +25,7 @@ class RegisterViewController: UIViewController {
         
         // 네비게이션바 타이틀 설정
         self.title = "등록하기"
-        //self.navigationController?.navigationBar.prefersLargeTitles = true
+        self.navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     
@@ -89,9 +89,11 @@ class RegisterViewController: UIViewController {
             present(alert, animated: true)
             
         case .registerSuccess:
-            guard let nav = self.tabBarController?.viewControllers?.first as? UINavigationController else { print("notFound navC"); return }
-            guard let mapVC = nav.viewControllers.first as? MapViewController else { print("notFound mapVC"); return }
+            //mapVC 호출 - 마커 refresh
+            guard let nav = self.tabBarController?.viewControllers?.first as? UINavigationController else { return }
+            guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
             mapVC.newRegister()
+            
             registerView.showSuccess()
             self.navigationController?.popViewController(animated: true) // 저장 성공시 이전 화면으로 이동학
         }
