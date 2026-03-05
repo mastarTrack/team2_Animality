@@ -69,26 +69,26 @@ class LocationViewModel: ViewModelProtocol {
     }
     
     // init
-    init(modelManager: AnimalityModelManager) {
+    init(modelManager: AnimalityModelManager, networkManager: NetworkManager) {
         self.modelManager = modelManager
+        self.networkManager = networkManager
     }
     
     // 프로퍼티 선언
     let modelManager: AnimalityModelManager
-    let coreDataManager = CoreDataManager()
-    let networkManager = NetworkManager()
+    let networkManager: NetworkManager
 
     private(set) var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     private(set) var searchResults: [LocationInfo] = []
 
     // AnimalEntity -> Animal
-    private func fetchAllAnimals() -> [Animal] {
-        return coreDataManager.fetchAllAnimalEntities()
-    }
+//    private func fetchAllAnimals() -> [Animal] {
+//        return coreDataManager.fetchAllAnimalEntities()
+//    }
     
     // 좌표별 동물 분류 메서드
     private func categorizeAnimalByCoordinate() -> [Coordinate: [Animal]] {
-        let animals = fetchAllAnimals()
+        let animals = modelManager.allAnimals
         
         return animals.reduce(into: [Coordinate: [Animal]]()) {
             $0[$1.currentLocation, default: []].append($1)
@@ -96,7 +96,6 @@ class LocationViewModel: ViewModelProtocol {
     }
     
     // 마커를 생성할 좌표와 동물 타입을 반환하는 메서드 [(type: 동물 타입, coordinate: 좌표)]
-    //TODO: 화면에 보이는 지도 범위 내의 마커들만 생성해도 되지 않을까? - VC에서 설정해야할 것 같긴 함
     private func fetchMarkerData(of data: [Coordinate: [Animal]]) -> [Coordinate: AnimalType] {
         return data.reduce(into: [Coordinate: AnimalType]()) { dic, point in
             // 타겟 좌표의 동물 타입 배열

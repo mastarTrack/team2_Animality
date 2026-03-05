@@ -26,7 +26,7 @@ class MapViewController: UIViewController {
     
     //MARK: init
     init(modelManager: AnimalityModelManager) {
-        self.viewModel = LocationViewModel(modelManager: modelManager)
+        self.viewModel = LocationViewModel(modelManager: modelManager, networkManager: NetworkManager())
         super.init(nibName: nil, bundle: nil)
     }
     
