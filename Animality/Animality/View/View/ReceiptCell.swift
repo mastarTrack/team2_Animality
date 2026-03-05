@@ -12,11 +12,6 @@ import UIKit
 class ReceiptCell: UICollectionViewCell {
 
     static let identifier = "ReceiptCell"
-        
-    enum CellType {
-        case receipt
-        case regist
-    }
     
     //MARK: - Components
     /// 대여 동물 이름 라벨
@@ -79,7 +74,7 @@ class ReceiptCell: UICollectionViewCell {
 //MARK: - METHOD: Update UI
 extension ReceiptCell {
     /// 셀타입에 따른 UI 업데이트 메소드
-    func updateUIForType(type: CellType) {
+    func updateUIForType(type: QuickInfoListViewController.CellType) {
         switch type {
         case .receipt:
             return
@@ -90,21 +85,35 @@ extension ReceiptCell {
     }
     
     
-    /// UI 텍스트 업데이트 메소드
-    func updateUI(
+    /// 영수증 UI 텍스트 업데이트 메소드
+    func updateUIForReceipt(
         name: String,
         state: StateUILabel.state,
         location: String,
         startTime: Date,
-        endTime: Date?,
+        endTime: Date,
         amount: Int
     ) {
         nameLabel.text = name
         locationLabel.text = location
         rentStartTimeLabel.text = startTime.formatted()
-        rentEndTimeLabel.text = endTime?.formatted() ?? ""
+        rentEndTimeLabel.text = endTime.formatted()
         totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
-        stateLabel.updateUI(state: state, nil)
+        stateLabel.updateUIForReceipt(state: state, nil)
+    } 
+    
+    func updateUIForRegist(
+        name: String,
+        state: AnimalStatus,
+        startTime: Date,
+        amount: Int
+    ) {
+        nameLabel.text = name
+        locationLabel.text = ""
+        rentStartTimeLabel.text = startTime.formatted()
+        rentEndTimeLabel.text = ""
+        totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
+        stateLabel.updateUIForRegist(state: state, nil)
     }
 }
 
@@ -222,15 +231,5 @@ extension ReceiptCell {
 @available(iOS 17.0, *)
 #Preview {
     let cell = ReceiptCell()
-    cell.frame = CGRect(x: 0, y: 0, width: 300, height: 150)
-    cell.updateUIForType(type: .regist)
-    cell.updateUI(
-        name: "황금 유니콘",
-        state: .completed,
-        location: "강남",
-        startTime: Date(),
-        endTime: Date(),
-        amount: 120000
-    )
     return cell
 }
