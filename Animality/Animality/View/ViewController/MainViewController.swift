@@ -30,7 +30,7 @@ class MainViewController: UITabBarController {
             title: "My Page",
             imageName: "person",
             selectedImageName: "person.fill",
-            viewControllerType: MyPageViewController.self,
+            viewControllerType: RegisterViewController.self, // 임시
         )
     ]
     

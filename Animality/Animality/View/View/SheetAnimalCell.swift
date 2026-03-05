@@ -28,7 +28,15 @@ final class SheetAnimalCell: UICollectionViewCell {
     }
     
     private let statusLabel = StateUILabel().then {
-        $0.updateUIForReceipt(state: .completed, .systemFont(ofSize: 12, weight: .medium))
+        $0.font = .systemFont(ofSize: 14, weight: .medium)
+        $0.updateUIForSheet(status: .normal)
+    }
+    
+    private let unitLabel = UILabel().then {
+        $0.text = "시간 당 요금"
+        $0.textColor = .secondaryText
+        $0.font = .systemFont(ofSize: 12, weight: .medium)
+        $0.textAlignment = .center
     }
     
     //MARK: init
@@ -48,16 +56,28 @@ final class SheetAnimalCell: UICollectionViewCell {
     }
 }
 
+//MARK: configure
+extension SheetAnimalCell {
+    func configure(with animal: Animal) {
+        nameLabel.text = animal.name
+        typeLabel.text = animal.type.rawValue
+        priceLabel.text = "\(animal.pricePerHour.formatted(.currency(code: "KRW")))"
+        statusLabel.updateUIForSheet(status: animal.status)
+    }
+    
+    func configureUnAvailableUI() {
+        contentView.backgroundColor = UIColor(hexCode: "#F9FAFB")
+        contentView.layer.borderColor = UIColor(resource: .serenity).cgColor
+        nameLabel.textColor = .secondaryText
+        typeLabel.textColor = .lightGray
+        unitLabel.textColor = .lightGray
+        priceLabel.textColor = .deepSerenity
+    }
+}
+
 //MARK: methods
 extension SheetAnimalCell {
     private func setLayout() {
-        let unitLabel = UILabel().then {
-            $0.text = "시간 당 요금"
-            $0.textColor = .secondaryText
-            $0.font = .systemFont(ofSize: 12, weight: .medium)
-            $0.textAlignment = .center
-        }
-        
         let nameStack = makeVerticalStack(of: [nameLabel, typeLabel])
         let infoStack = makeVerticalStack(of: [priceLabel, unitLabel, statusLabel])
         infoStack.alignment = .center
@@ -82,29 +102,25 @@ extension SheetAnimalCell {
         stackView.spacing = 4
         return stackView
     }
-    
-    func configure(with animal: Animal) {
-        nameLabel.text = animal.name
-        typeLabel.text = animal.type.rawValue
-        priceLabel.text = "\(animal.pricePerHour.formatted(.currency(code: "KRW")))" // 표시형식 바꿔야함
-        configureStatusLabel(status: animal.status)
-    }
-    
-    private func configureStatusLabel(status: AnimalStatus) {
+}
+
+//MARK: state UILabel 확장
+extension StateUILabel {
+    func updateUIForSheet(status: AnimalStatus) {
+        backgroundColor = UIColor(hexCode: "#E5E7EB")
+        textColor = UIColor(hexCode: "#4A5565")
+        
         switch status {
         case .normal:
-            statusLabel.updateUIForReceipt(state: .completed, .systemFont(ofSize: 14, weight: .medium))
-            statusLabel.text = "한가해요"
+            backgroundColor = UIColor(hexCode: "#DCFCE7")
+            textColor = UIColor(hexCode: "#008236")
+            text = "한가해요"
         case .rented:
-            statusLabel.updateUIForReceipt(state: .renting, .systemFont(ofSize: 14, weight: .medium))
-            statusLabel.text = "바빠요"
+            text = "바빠요"
         case .resting:
-            statusLabel.updateUIForReceipt(state: .renting, .systemFont(ofSize: 14, weight: .medium))
-            statusLabel.text = "쉴래요"
+            text = "쉬어요"
         case .sick:
-            statusLabel.updateUIForReceipt(state: .renting, .systemFont(ofSize: 14, weight: .medium))
-            statusLabel.text = "아파요"
-            
+            text = "아파요"
         }
     }
 }
