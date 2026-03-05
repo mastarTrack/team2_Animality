@@ -120,7 +120,13 @@ extension MyPageInfoViewController {
             case .none:
                 break
             case .updateUI:
-                updateUI(image: nil, id: vm.userModel.id, name: vm.userModel.name, email: vm.userModel.email, registDate: vm.userModel.registDate, rentCount: vm.userModel.rentalCount)
+                updateUI(image: nil,
+                         id: vm.modelManager.user.id,
+                         name: vm.modelManager.user.name,
+                         email: vm.modelManager.user.email,
+                         registDate: vm.modelManager.user.registDate,
+                         rentCount: vm.modelManager.user.rentalCount
+                )
             }
         }
     }
@@ -311,7 +317,8 @@ extension MyPageInfoViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    let vm = MyPageViewModel(userModel: UserModel.sample)
+    let model = AnimalityModelManager(user: UserModel.sample, coreDataManager: CoreDataManager())
+    let vm = MyPageViewModel(modelManager: model)
     let vc = MyPageInfoViewController(vm: vm)
     return vc
 }

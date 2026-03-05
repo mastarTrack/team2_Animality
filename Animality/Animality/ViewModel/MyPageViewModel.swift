@@ -10,7 +10,7 @@ import Foundation
 class MyPageViewModel: ViewModelProtocol {
     
     //MARK: - Model
-    private(set) var userModel: UserModel
+    private(set) var modelManager: AnimalityModelManager
     
     let coreDataManager = CoreDataManager()
     
@@ -61,8 +61,8 @@ class MyPageViewModel: ViewModelProtocol {
     }
     
     //MARK: - METHOD: Init
-    init(userModel: UserModel) {
-        self.userModel = userModel
+    init(modelManager: AnimalityModelManager) {
+        self.modelManager = modelManager
     }
     
 }
@@ -72,16 +72,14 @@ extension MyPageViewModel {
     func initialized() {
         state = .updateUI
     }
-    
+
     func fetchRegistAnimal() {
-        let animals = coreDataManager.fetchAllAnimalEntities()
-        userModel.registAnimal = animals
+        modelManager.refreashUserRegistAnimals()
         state = .updateUI
     }
     
     func fetchReceipt(){
-        let receipts = coreDataManager.fetchAllReceiptEntities()
-        userModel.rentReceipt = receipts
+        modelManager.refreshReceipts()
         state = .updateUI
     }
 }

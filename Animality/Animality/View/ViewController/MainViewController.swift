@@ -11,46 +11,25 @@ import Then
 
 /// 메인 화면 ViewController
 class MainViewController: UITabBarController {
-    // MARK: - Mockup Data
-    /// 임시 탭바에 넣은 탭바아이템 목업 데이터
-    private lazy var tabItems: [TabItem] = {
-        // 샘플/임시 유저 & VM (나중에 로그인 유저로 교체)
-        let user = UserModel.sample
-        let myPageVM = MyPageViewModel(userModel: user)
 
-        return [
-            TabItem(
-                title: "Map",
-                imageName: "map",
-                selectedImageName: "map.fill",
-                makeViewController: { MapViewController() }
-            ),
-            TabItem(
-                title: "Register",
-                imageName: "plus.circle",
-                selectedImageName: "plus.circle.fill",
-                makeViewController: { RegisterViewController() }
-            ),
-            TabItem(
-                title: "My Page",
-                imageName: "person",
-                selectedImageName: "person.fill",
-                makeViewController: { MyPageViewController(vm: myPageVM) }
-            )
-        ]
-    }()
-    
-    // MARK: - Viewmodel
-    
-    
-    // MARK: - Components
-    
+    //MARK: - ViewModel
+    let modelManager: AnimalityModelManager
     
     // MARK: - INIT
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
         tabBar.tintColor = .coralText
+        configureUI()
+    }
+    
+    init(userModel: UserModel) {
+        modelManager = AnimalityModelManager(user: userModel, coreDataManager: CoreDataManager())
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -75,14 +54,35 @@ extension MainViewController {
 extension MainViewController {
     /// 매인 UI 초기 설정 메소드
     private func configureUI() {
+        let manager = modelManager
+
+        let tabItems: [TabItem] = [
+            TabItem(
+                title: "지도 화면",
+                imageName: "map",
+                selectedImageName: "map.fill",
+                makeViewController: { MapViewController() }
+            ),
+            TabItem(
+                title: "등록 하기",
+                imageName: "plus.circle",
+                selectedImageName: "plus.circle.fill",
+                makeViewController: { RegisterViewController() }
+            ),
+            TabItem(
+                title: "마이페이지",
+                imageName: "person",
+                selectedImageName: "person.fill",
+                makeViewController: { MyPageViewController(modelManager: manager) }
+            )
+        ]
+        
         configureTabBar(tabitems: tabItems)
     }
 }
 
-
-
-
 @available(iOS 17.0, *)
 #Preview {
-    MainViewController()
+    
+    MainViewController(userModel: UserModel.sample)
 }
