@@ -52,6 +52,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     /// 로그인화면으로 전환 메소드
     func switchToLogin() {
         let loginVC = LoginViewController()
+        loginVC.successLoginClosure = { [weak self] user in
+            self?.showMain(user: user)
+        }
         let nav = UINavigationController(rootViewController: loginVC)
 
         window?.rootViewController = nav

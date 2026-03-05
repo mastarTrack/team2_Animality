@@ -120,7 +120,7 @@ final class PaymentViewModel: ViewModelProtocol {
             userId: modelManager.user.uid,                 // 로그인 붙이면 유저 UUID 넣기
             animalId: animal.id,
             amount: Int64(state.totalAmount),
-            location: "(\(animal.currentLocation.latitude), \(animal.currentLocation.longitude))",
+            location: "(\(String(format: "%.3f", animal.currentLocation.latitude)), \(String(format: "%.3f", animal.currentLocation.longitude)))",
             rentPaymentTime: Date(),
             rentStartTime: state.startDate,
             rentEndTime: state.endDate,
