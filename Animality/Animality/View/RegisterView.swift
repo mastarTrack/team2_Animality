@@ -8,8 +8,15 @@
 import UIKit
 import SnapKit
 import Then
+import NMapsMap
 
 final class RegisterView: UIView {
+    
+    // MARK: - ViewModel
+    private let locationManager = CLLocationManager()
+    
+    // MARK: - Properties
+    private var isPinLifted = false
     
     // MARK: - View → VC 클로저
     
@@ -22,7 +29,8 @@ final class RegisterView: UIView {
     var onPriceEntered: ((String?) -> Void)?
     var onTypeSelected: ((AnimalType) -> Void)?
     var onLocationSelected: ((Double, Double) -> Void)?
-    
+    var showAlert: ((UIError) -> Void)?
+    var onPickedCoordinate: ((Coordinate)->Void)?
     
     // MARK: -- UI components
     
@@ -151,6 +159,11 @@ final class RegisterView: UIView {
         $0.font = .systemFont(ofSize: 15)
     }
     
+    /// 맵뷰
+    private let mapView = NMFMapView()
+    
+    /// 지도 가운데 마커배치용 이미지
+    private let centerMarkerView = UIImageView(image: UIImage.dogPin)
     
     // 등록 버튼
     private let registerButton = UIButton(type: .system).then {
@@ -172,6 +185,7 @@ final class RegisterView: UIView {
         setupActions() // addTarget
         setupGradient()
         setupAllTypeButtons()
+        configureMapView()
     }
     
     required init?(coder: NSCoder) {
@@ -195,10 +209,13 @@ final class RegisterView: UIView {
         contentView.addSubview(headerView)
         headerView.addSubview(iconImageView)
         
-        [nameTitleLabel, nameTextField, categoryTitleLabel, rideButton, petButton, locationTitleLabel, locationCardView, registerButton, sizeTitleLabel, smallButton, mediumButton, largeButton, flightTitleLabel, canFlyButton, cannotFlyButton, priceTitleLabel, priceTextField, typeTitleLabel, typeStackView].forEach { contentView.addSubview($0) }
+        [nameTitleLabel, nameTextField, categoryTitleLabel, rideButton, petButton, locationTitleLabel,
+         //locationCardView,
+         mapView,
+         registerButton, sizeTitleLabel, smallButton, mediumButton, largeButton, flightTitleLabel, canFlyButton, cannotFlyButton, priceTitleLabel, priceTextField, typeTitleLabel, typeStackView].forEach { contentView.addSubview($0) }
         
-        [locationIcon, locationLabel].forEach { locationCardView.addSubview($0) }
-        
+        //[locationIcon, locationLabel].forEach { locationCardView.addSubview($0) }
+        mapView.addSubview(centerMarkerView)
     }
     
     
@@ -347,26 +364,39 @@ final class RegisterView: UIView {
             $0.leading.equalToSuperview().offset(30)
         }
         
-        locationCardView.snp.makeConstraints {
+//        locationCardView.snp.makeConstraints {
+//            $0.top.equalTo(locationTitleLabel.snp.bottom).offset(20)
+//            $0.horizontalEdges.equalToSuperview().inset(20)
+//            $0.height.equalTo(180)
+//        }
+//        
+//        locationIcon.snp.makeConstraints {
+//            $0.centerX.equalToSuperview()
+//            $0.top.equalToSuperview().offset(60)
+//            $0.size.equalTo(40)
+//        }
+//        
+//        locationLabel.snp.makeConstraints {
+//            $0.top.equalTo(locationIcon.snp.bottom).offset(20)
+//            $0.centerX.equalToSuperview()
+//        }
+        
+        mapView.snp.makeConstraints {
             $0.top.equalTo(locationTitleLabel.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(20)
-            $0.height.equalTo(180)
+            $0.height.equalTo(280)
         }
         
-        locationIcon.snp.makeConstraints {
+        centerMarkerView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().offset(60)
-            $0.size.equalTo(40)
-        }
-        
-        locationLabel.snp.makeConstraints {
-            $0.top.equalTo(locationIcon.snp.bottom).offset(20)
-            $0.centerX.equalToSuperview()
+            $0.centerY.equalToSuperview()
+            $0.width.equalTo(30)
+            $0.height.equalTo(44)
         }
         
         // registerButton 위치 수정
         registerButton.snp.remakeConstraints {
-            $0.top.equalTo(locationCardView.snp.bottom).offset(30)
+            $0.top.equalTo(mapView.snp.bottom).offset(30)
             $0.horizontalEdges.equalToSuperview().inset(20)
             $0.height.equalTo(56)
             $0.bottom.equalToSuperview().inset(20)
@@ -458,6 +488,7 @@ final class RegisterView: UIView {
         typeStackView.arrangedSubviews.compactMap { $0 as? CategoryButton }.forEach {
             $0.setSelected($0 == selectedButton)
         }
+        updatePinMarker(type: selectedType)
         onTypeSelected?(selectedType) // VC에게 알림
     }
     
@@ -576,4 +607,122 @@ extension RegisterView {
     func showSuccess() {
         print("저장에 성공했습니다.")
     }
+}
+
+extension RegisterView {
+    func updatePinMarker(type: AnimalType) {
+        switch type {
+        case .dog:
+            centerMarkerView.image = UIImage.dogPin
+        case .cat:
+            centerMarkerView.image = UIImage.catPin
+        case .pegasus:
+            centerMarkerView.image = UIImage.pegasusPin
+        case .unicorn:
+            centerMarkerView.image = UIImage.unicornPin
+        case .chocobo:
+            centerMarkerView.image = UIImage.chocoboPin
+        }
+        self.centerMarkerView.setNeedsLayout()
+        self.centerMarkerView.layoutIfNeeded()
+    }
+}
+
+
+// MARK: -- 지도 관련
+extension RegisterView: CLLocationManagerDelegate, NMFMapViewCameraDelegate{
+    /// 지도 컴포넌트 초기화 메소드
+    private func configureMapView() {
+        mapView.mapType = .basic
+        mapView.allowsTilting = false
+        mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark
+
+        mapView.addCameraDelegate(delegate: self)
+        
+        let locationOverlay = mapView.locationOverlay
+        locationOverlay.hidden = false
+        mapView.positionMode = .compass
+     
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        
+        locationManager.requestLocation()
+    }
+    
+    /// MapView 위치 변경 메소드
+    func moveCamera(lat: Double, lng: Double, zoomLevel: Double = 14) {
+        mapView.moveCamera(NMFCameraUpdate(scrollTo: NMGLatLng(lat: lat, lng: lng), zoomTo: zoomLevel))
+    }
+    
+    ///  지도 화면 중앙 좌표 반환 메소드
+    func currentCenterCoordinate() -> Coordinate {
+        let target = mapView.cameraPosition.target
+        return Coordinate(latitude: target.lat, longitude: target.lng)
+    }
+    
+    /// mapView 카메라값이 변동 시 호출되는 메소드
+    func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
+        liftPinIfNeeded()
+    }
+    /// mapView  카메라가 Idle 상태일때 호출(정지 및 제스처 종료 시)
+    func mapViewCameraIdle(_ mapView: NMFMapView) {
+        dropPinIfNeeded()
+
+        let coord = currentCenterCoordinate()
+        onPickedCoordinate?(coord)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        var lat: Double? // 현재 위도
+        var lng: Double? // 현재 경도
+        
+        if let location = locations.first {
+            lat = Double(location.coordinate.latitude)
+            lng = Double(location.coordinate.longitude)
+        }
+        locationManager.stopUpdatingLocation()
+
+        guard let lat, let lng else { return }
+        moveCamera(lat: lat, lng: lng)
+    }
+    
+    /// 위치 권한 상태가 변경될 때 호출되는 Delegate 메서드
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        if locationManager.authorizationStatus == .notDetermined { // 위치 권한 미지정시
+           locationManager.requestWhenInUseAuthorization() // 권한 요청
+       } else if locationManager.authorizationStatus == .denied {
+           showAlert?(.deniedAuth)
+       }
+    }
+    
+    /// 위치 정보를 가져오는 과정에서 오류가 발생했을 때 호출되는 Delegate 메서드
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+        showAlert?(.invalidLocation)
+    }
+    
+    
+    // MARK: - Pin Animation
+    // 중안 핀위치 들어올리기 메소드
+    private func liftPinIfNeeded() {
+        guard !isPinLifted else { return }
+        isPinLifted = true
+
+        UIView.animate(withDuration: 0.12) {
+            self.centerMarkerView.transform = CGAffineTransform(translationX: 0, y: -30)
+        }
+    }
+    // 중안 핀위치 내리기 메소드
+    private func dropPinIfNeeded() {
+        guard isPinLifted else { return }
+        isPinLifted = false
+
+        UIView.animate(withDuration: 0.12) {
+            self.centerMarkerView.transform = CGAffineTransform(translationX: 0, y: -22)
+        }
+    }
+}
+
+@available(iOS 17.0, *)
+#Preview {
+    RegisterView()
 }

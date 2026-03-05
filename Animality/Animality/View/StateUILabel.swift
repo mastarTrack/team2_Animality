@@ -11,7 +11,7 @@ import UIKit
 class StateUILabel: UILabel {
     private let padding = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     
-    enum state {
+    enum state: String {
         case completed
         case renting
         case cancel
@@ -29,7 +29,7 @@ class StateUILabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateUI(state: state, _ inputFont: UIFont?) {
+    func updateUIForReceipt(state: state, _ inputFont: UIFont?) {
         switch state {
         case .completed:
             backgroundColor = UIColor(hexCode: "#DCFCE7")
@@ -41,6 +41,31 @@ class StateUILabel: UILabel {
             text = "Renting"
             
         case .cancel:
+            backgroundColor = UIColor(hexCode: "#FEE2E2")
+            textColor = UIColor(hexCode: "#DC2626")
+            text = "Cancel"
+        }
+        guard let inputFont = inputFont else {
+            return
+        }
+        font = inputFont
+    }
+    
+    func updateUIForRegist(state: AnimalStatus, _ inputFont: UIFont?) {
+        switch state {
+        case .normal:
+            backgroundColor = UIColor(hexCode: "#DCFCE7")
+            textColor = UIColor(hexCode: "#008236")
+            text = "Completed"
+        case .resting:
+            backgroundColor = UIColor(hexCode: "#DCFCE7")
+            textColor = UIColor(hexCode: "#008236")
+            text = "Completed"
+        case .rented:
+            backgroundColor = UIColor(hexCode: "#DBEAFE")
+            textColor = UIColor(hexCode: "#1D4ED8")
+            text = "Renting"
+        case .sick:
             backgroundColor = UIColor(hexCode: "#FEE2E2")
             textColor = UIColor(hexCode: "#DC2626")
             text = "Cancel"

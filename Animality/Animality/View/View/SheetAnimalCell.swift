@@ -28,7 +28,7 @@ final class SheetAnimalCell: UICollectionViewCell {
     }
     
     private let statusLabel = StateUILabel().then {
-        $0.updateUI(state: .completed, .systemFont(ofSize: 12, weight: .medium))
+        $0.updateUIForReceipt(state: .completed, .systemFont(ofSize: 12, weight: .medium))
     }
     
     //MARK: init
@@ -93,16 +93,16 @@ extension SheetAnimalCell {
     private func configureStatusLabel(status: AnimalStatus) {
         switch status {
         case .normal:
-            statusLabel.updateUI(state: .completed, .systemFont(ofSize: 14, weight: .medium))
+            statusLabel.updateUIForReceipt(state: .completed, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "한가해요"
         case .rented:
-            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 14, weight: .medium))
+            statusLabel.updateUIForReceipt(state: .renting, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "바빠요"
         case .resting:
-            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 14, weight: .medium))
+            statusLabel.updateUIForReceipt(state: .renting, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "쉴래요"
         case .sick:
-            statusLabel.updateUI(state: .renting, .systemFont(ofSize: 14, weight: .medium))
+            statusLabel.updateUIForReceipt(state: .renting, .systemFont(ofSize: 14, weight: .medium))
             statusLabel.text = "아파요"
             
         }

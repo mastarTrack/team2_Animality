@@ -6,10 +6,10 @@
 //
 import UIKit
 
-enum NetworkingError: Error {
+enum NetworkingError:String, Error {
     case invalid
     case noData
-    case failedToDecode
+    case failedToDecode = "디코딩에 실패하였습니다."
 }
 
 enum UIError: String, Error {
@@ -19,6 +19,13 @@ enum UIError: String, Error {
 
 extension UIAlertController {
     convenience init(status: UIError) {
+        self.init(title: "오류", message: status.rawValue, preferredStyle: .alert)
+        
+        let confirm = UIAlertAction(title: "확인", style: .default)
+        addAction(confirm)
+    }
+    
+    convenience init(status: NetworkingError) {
         self.init(title: "오류", message: status.rawValue, preferredStyle: .alert)
         
         let confirm = UIAlertAction(title: "확인", style: .default)
