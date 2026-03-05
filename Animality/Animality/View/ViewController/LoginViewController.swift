@@ -16,7 +16,15 @@ final class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        setTitle()
+    }
+    
+    private func setTitle() {
+        self.title = "Animality"
         self.navigationController?.navigationBar.prefersLargeTitles = true
-        self.title = "로그인 / 회원가입"
+        self.navigationItem.largeTitleDisplayMode = .always
+        self.navigationController?.navigationBar.largeTitleTextAttributes = [.font: UIFont(name: "Bungee-Regular", size: 48)]
+
     }
 }

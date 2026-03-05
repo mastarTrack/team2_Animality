@@ -63,7 +63,7 @@ final class LoginView: UIView {
 }
 
 extension LoginView {
-    func setLayout() {
+    private func setLayout() {
         let imageView = UIImageView().then {
             $0.image = .logo
             $0.contentMode = .scaleAspectFit
@@ -76,7 +76,6 @@ extension LoginView {
         imageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(safeAreaLayoutGuide).offset(20)
-            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(10)
             $0.width.height.equalTo(183)
         }
         
