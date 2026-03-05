@@ -47,6 +47,7 @@ class QuickInfoListViewController: UIViewController {
             title = "등록 내역"
         }
         configureUI()
+        bindingData()
     }
     
     /// 상세뷰 Detail에서 삭제하고 돌아오면 리스트를 다시 갱신
@@ -75,6 +76,7 @@ extension QuickInfoListViewController {
     // VM state 클로저 바인딩 메소드
     private func bindingData() {
         vm.stateChanged = { [weak self] state in
+            print(state)
             guard let self,
             let collectionView = collectionView else { return }
             

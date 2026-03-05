@@ -52,9 +52,9 @@ class MyPageViewModel: ViewModelProtocol {
         case .ApproveuserModify(let name, let email):
             modifyUserData(name: name, email: email)
         case .fetchRegistAnimal:
-            return
+            fetchRegistAnimal()
         case .fetchReceipt:
-            return
+            fetchReceipt()
         }
     }
     
