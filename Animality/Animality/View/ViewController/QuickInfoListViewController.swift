@@ -13,6 +13,17 @@ import SnapKit
 class QuickInfoListViewController: UIViewController {
     
     //MARK: - ViewModel
+     let vm: MyPageViewModel
+    
+    //MARK: - Enum
+    enum CellType {
+        case receipt
+        case regist
+    }
+
+    //MARK: - Properties
+    private var cellType: CellType
+    
     
     //MARK: - Components
     /// 리스트 컬렉션 뷰
@@ -26,33 +37,121 @@ class QuickInfoListViewController: UIViewController {
         $0.isHidden = true
     }
     
-    //MARK: - Closures
-    
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
+        switch cellType {
+        case .receipt:
+            title = "이용 내역"
+        case .regist:
+            title = "등록 내역"
+        }
         configureUI()
+    }
+    
+    /// 상세뷰 Detail에서 삭제하고 돌아오면 리스트를 다시 갱신
+    override func viewWillAppear(_ animated: Bool) {
+        vm.action(.fetchReceipt)
+        vm.action(.fetchRegistAnimal)
+        super.viewWillAppear(animated)
+    }
+    
+
+    
+    init(cellType: CellType, vm: MyPageViewModel) {
+        self.cellType = cellType
+        self.vm = vm
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
+//MARK: - METHOD: Binding VM Action
+extension QuickInfoListViewController {
+    // VM state 클로저 바인딩 메소드
+    private func bindingData() {
+        vm.stateChanged = { [weak self] state in
+            guard let self,
+            let collectionView = collectionView else { return }
+            
+            switch state {
+            case .none:
+                break
+            case .updateUI:
+                collectionView.reloadData()
+            }
+        }
+    }
+}
+
+
 // MARK: - METHOD: CollectionView
-// TODO: 커스텀 셀 삽입 예정
 extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        let count = 10
-        return count
+        switch cellType {
+        case .receipt:
+            return vm.userModel.rentReceipt?.count ?? 0
+        case .regist:
+            return vm.userModel.registAnimal?.count ?? 0
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReceiptCell.identifier, for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ReceiptCell.identifier, for: indexPath) as! ReceiptCell
+        
+        switch cellType {
+        case .receipt:
+            cell.updateUIForType(type: .receipt)
+            guard let receipt = vm.userModel.rentReceipt?[indexPath.item] else {
+                return cell
+            }
+            cell.updateUIForReceipt(name: receipt.animal?.name ?? ""
+                                    , state: receipt.rentState
+                                    , location: receipt.location ?? ""
+                                    , startTime: receipt.rentStartTime
+                                    , endTime: receipt.rentEndTime
+                                    , amount: Int(receipt.amount))
+        case .regist:
+            cell.updateUIForType(type: .regist)
+            guard let animal = vm.userModel.registAnimal?[indexPath.item] else {
+                return cell
+            }
+            cell.updateUIForRegist(name: animal.name
+                                   , state: animal.status
+                                   , startTime: Date()
+                                   , amount: animal.pricePerHour
+            )
+        }
         return cell
     }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let animal = vm.userModel.registAnimal?[indexPath.item] else { return }
+        // 클릭한 데이터의 UUID 추출
+        
+        switch cellType {
+        case .regist:
+            // 같은 CoreDataManager를 Detail VM에 주입해줌
+            let vm = DetailViewModel(coreDataManager: vm.coreDataManager)
+            let detailVC = DetailViewController(viewModel: vm)
+            detailVC.animalID = animal.id
+            // 네비게이션 push
+            navigationController?.pushViewController(detailVC, animated: true)
+        case .receipt:
+            break
+        }
+    }
+    
 }
 
 //MARK: - METHOD: Compositional Layout
 extension QuickInfoListViewController {
-    private  func getSection() -> NSCollectionLayoutSection {
+    private func getSection() -> NSCollectionLayoutSection {
         
         let item = NSCollectionLayoutItem(layoutSize: .init(widthDimension: .estimated(313), heightDimension: .estimated(196)))
         
@@ -60,7 +159,7 @@ extension QuickInfoListViewController {
         
         
         let section = NSCollectionLayoutSection(group: group)
-        let itemWidth: CGFloat = 338
+        let itemWidth: CGFloat = 353
         let horizontalInset = (UIScreen.main.bounds.width - itemWidth) / 2
         section.contentInsets = NSDirectionalEdgeInsets(
             top: 10,
@@ -72,6 +171,21 @@ extension QuickInfoListViewController {
         return section
     }
     
+}
+
+// MARK: - 상태 매핑
+private extension QuickInfoListViewController {
+    func mapToReceiptState(_ statusString: String?) -> StateUILabel.state {
+        // Optional일 수 있어서 안전 처리
+        let status = statusString ?? ""
+
+        switch status {
+        case AnimalStatus.rented.rawValue:   // "대여중"
+            return .renting
+        default:
+            return .completed
+        }
+    }
 }
 
 //MARK: - CONFIGURE UI
@@ -105,5 +219,6 @@ extension QuickInfoListViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    QuickInfoListViewController()
+    let vm = MyPageViewModel(userModel: UserModel.sample)
+    QuickInfoListViewController(cellType: .regist, vm: vm)
 }

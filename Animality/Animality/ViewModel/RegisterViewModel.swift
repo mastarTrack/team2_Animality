@@ -136,8 +136,6 @@ class RegisterViewModel: ViewModelProtocol {
             flight: animal.flightCapability.rawValue
         )
 
-        coreDataManager.createAnimalEntity(with: payload)
-        
         // 저장 완료 상태 저장
         state = .registerSuccess
     }
