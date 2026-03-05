@@ -27,8 +27,13 @@ final class LoginViewModel: ViewModelProtocol {
     func action(_ action: Action) -> Void {
         switch action {
         case let .register(id, password, name, email):
-            saveUserInfo(id: id, password: password, name: name, email: email)
-            self.state = .success
+            if let email, validateEmailExpression(email) {
+                saveUserInfo(id: id, password: password, name: name, email: email)
+                self.state = .success
+            } else {
+                self.state = .failed("이메일 형식이 유효하지 않습니다.")
+            }
+            
         }
     }
 }
@@ -39,5 +44,11 @@ extension LoginViewModel {
         UserDefaults.standard.set(password, forKey: UserDefaultsKey.id.rawValue)
         UserDefaults.standard.set(name, forKey: UserDefaultsKey.id.rawValue)
         UserDefaults.standard.set(email ?? "", forKey: UserDefaultsKey.id.rawValue)
+    }
+    
+    private func validateEmailExpression(_ email: String) -> Bool {
+        let regex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let validation = NSPredicate(format: "SELF MATCHES %@", regex)
+        return validation.evaluate(with: email)
     }
 }
