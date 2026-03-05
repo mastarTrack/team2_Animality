@@ -131,6 +131,31 @@ final class PaymentViewModel: ViewModelProtocol {
 
         modelManager.createReceipt(receipt)
 
+        // 동물 상태를 대여중으로 CoreData 업데이트
+        let payload = UpdateAnimalModel(
+            name: nil,
+            userId: nil,
+            category: nil,
+            type: nil,
+            size: nil,
+            latitude: nil,
+            longitude: nil,
+            price: nil,
+            status: AnimalStatus.rented.rawValue, // "대여중"
+            flight: nil,
+            registDate: nil
+        )
+        modelManager.updateAnimal(id: animal.id, payload: payload)
+
+
+        var updated = animal
+        updated.status = .rented
+        state.animal = updated
+
+        modelManager.refreshAnimals()
+
+
         state.didPay = true
+        state.isPayEnabled = false
     }
 }
