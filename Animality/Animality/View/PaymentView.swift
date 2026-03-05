@@ -66,6 +66,7 @@ final class PaymentView: UIView {
         $0.text =
 """
 ⚠️ 대여 주의사항
+
 • 반납 시간을 초과하면 추가 요금이 발생할 수 있어요.
 • 대여 중 파손/분실 시 책임이 발생할 수 있어요.
 • 안전 규정을 꼭 지켜주세요.
@@ -148,7 +149,7 @@ final class PaymentView: UIView {
     private let totalValue = UILabel().then {
         $0.font = .boldSystemFont(ofSize: 24)
         $0.textAlignment = .right
-        $0.textColor = .systemBlue
+        $0.textColor = .coralText
     }
 
     private let payButton = UIButton(type: .system).then {
