@@ -44,8 +44,8 @@ class RegisterViewModel: ViewModelProtocol {
     private var size: AnimalSize?
     private var flightCapability: FlightCapability?
     private var pricePerHour: Int?
-    private var latitude: Double? = 37.5563 // 예시 위경도 값
-    private var longitude: Double? = 126.9236
+    private var latitude: Double?
+    private var longitude: Double?
     
     // VC가 호출할 Action함수
     func action(_ action: Action) {
