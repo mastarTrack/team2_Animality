@@ -17,6 +17,9 @@ class MapViewController: UIViewController {
     private let searchBar = UISearchBar()
     private let currentLocationButton = UIButton()
     
+    private lazy var listView = UICollectionView(frame: .zero, collectionViewLayout: makeCompositionalLayout())
+    private lazy var dataSource = makeCollectionViewDiffableDataSource(listView)
+    
     private var didInitialized = false // 초기화 여부
     
     override func viewDidLoad() {
@@ -26,6 +29,8 @@ class MapViewController: UIViewController {
         
         locationManager.delegate = self
         locationManager.desiredAccuracy = kCLLocationAccuracyBest // 거리 정확도 설정 (설정하지 않을 시 kcLLocationAccuracyBest가 디폴트)
+        searchBar.delegate = self
+        listView.delegate = self
         
         setAttributes()
         setLayout()
@@ -48,6 +53,16 @@ class MapViewController: UIViewController {
             case let .locationChanged(lat, lng): // 위치 이동 시
                 moveCameraPosition(lat: lat, lng: lng)
                 
+            case let .searched(result):
+                Task {
+                    await self.updateSearchResult(result)
+                }
+                
+            case .cancelledSearch:
+                Task {
+                    await self.updateSearchResult([])
+                }
+                
             case .none:
                 break
             }
@@ -60,6 +75,7 @@ extension MapViewController {
     private func setLayout() {
         view.addSubview(mapView)
         view.addSubview(searchBar)
+        view.addSubview(listView)
         view.addSubview(currentLocationButton)
         
         mapView.snp.makeConstraints {
@@ -68,6 +84,12 @@ extension MapViewController {
         
         searchBar.snp.makeConstraints {
             $0.top.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
+        }
+        
+        listView.snp.makeConstraints {
+            $0.top.equalTo(searchBar.snp.bottom)
+            $0.horizontalEdges.equalTo(view.safeAreaLayoutGuide).inset(10)
+            $0.height.equalTo(252)
         }
         
         currentLocationButton.snp.makeConstraints {
@@ -80,6 +102,7 @@ extension MapViewController {
         setSearchBar()
         setButton()
         currentLocation()
+        setListView()
     }
     
     private func setButton() {
@@ -92,7 +115,7 @@ extension MapViewController {
         currentLocationButton.configuration = config
         
         currentLocationButton.configurationUpdateHandler = { button in
-            let imageConfig = UIImage.SymbolConfiguration(weight: .bold)
+            let imageConfig = UIImage.SymbolConfiguration(weight: .bold) // 버튼에 표시될 이미지 두께 설정
             
             button.configuration?.image =
             button.isHighlighted ? UIImage(systemName: "location.fill")
@@ -110,11 +133,18 @@ extension MapViewController {
         searchBar.searchBarStyle = .minimal
         searchBar.backgroundColor = .clear
         searchBar.placeholder = "검색할 장소를 입력해주세요."
-
+        
         searchBar.searchTextField.layer.borderColor = UIColor(resource: .deepRose).cgColor
         searchBar.searchTextField.layer.borderWidth = 2
         searchBar.searchTextField.backgroundColor = .white.withAlphaComponent(0.5)
         searchBar.searchTextField.textColor = .secondaryText
+    }
+    
+    private func setListView() {
+        listView.isHidden = true
+        listView.backgroundColor = .clear
+        listView.showsVerticalScrollIndicator = false
+        listView.layer.cornerRadius = 15
     }
     
     private func setMapView(lat: Double, lng: Double) {
@@ -239,12 +269,97 @@ extension MapViewController: CLLocationManagerDelegate {
         locationManager.stopUpdatingLocation()
     }
     
+    // 권한 변경 시 호출되는 함수
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        currentLocation()
+        currentLocation() // 현재 위치로 카메라 이동
     }
     
+    // 오류 발생 시 호출되는 함수
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         let alert = UIAlertController(status: .invalidLocation)
         present(alert, animated: true)
+    }
+}
+
+//MARK: SearchBar
+extension MapViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let origin = searchBar.text else { return }
+        let text = origin.trimmingCharacters(in: .whitespaces) // 공백 제거
+        
+        if !text.isEmpty { // 텍스트가 공백이 아닐 시 검색
+            viewModel.action(.search(text: text))
+        }
+        searchBar.resignFirstResponder()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if !searchText.isEmpty {
+            searchBar.showsCancelButton = true // textField에 글자 존재 시 취소 버튼을 표시
+        }
+    }
+    
+    // 취소 버튼 클릭 시 동작 - 검색 결과 지우기
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        viewModel.action(.cancelSearch)
+        searchBar.text = ""
+        searchBar.showsCancelButton = false
+        searchBar.resignFirstResponder()
+    }
+}
+
+//MARK: ListView
+extension MapViewController {
+    // 레이아웃 설정
+    private func makeCompositionalLayout() -> UICollectionViewCompositionalLayout {
+        return UICollectionViewCompositionalLayout { sectionIndex, environment in
+            var configuration = UICollectionLayoutListConfiguration(appearance: .plain)
+            
+            // 섹션 배경색 설정
+            configuration.backgroundColor = .clear
+            
+            let section = NSCollectionLayoutSection.list(using: configuration, layoutEnvironment: environment)
+            return section
+        }
+    }
+    
+    // DiffableDataSource 설정
+    private func makeCollectionViewDiffableDataSource(_ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Int, LocationInfo> {
+        let listCellRegistration = UICollectionView.CellRegistration<SearchResultCell, LocationInfo> { (cell, indexPath, item) in
+            cell.configure(data: item)
+        }
+        
+        let dataSource = UICollectionViewDiffableDataSource<Int, LocationInfo>(collectionView: listView) { collectionView, indexPath, itemIdentifier in
+            return collectionView.dequeueConfiguredReusableCell(using: listCellRegistration, for: indexPath, item: itemIdentifier)
+        }
+        
+        return dataSource
+    }
+    
+    // 스냅샷 설정
+    private func setSnapshot(with data: [LocationInfo]) {
+        var snapShot = NSDiffableDataSourceSnapshot<Int, LocationInfo>()
+        snapShot.appendSections([0])
+        snapShot.appendItems(data, toSection: 0)
+        self.dataSource.apply(snapShot)
+    }
+    
+    // 검색 결과 업데이트
+    @MainActor
+    private func updateSearchResult(_ data: [LocationInfo]) async {
+        listView.isHidden = data.isEmpty
+        setSnapshot(with: data)
+    }
+}
+
+extension MapViewController: UICollectionViewDelegate {
+    // 검색 결과 셀 클릭 시 해당 위치로 이동
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
+        
+        let x = data.mapX / 10000000 // 경도
+        let y = data.mapY / 10000000 // 위도
+        
+        moveCameraPosition(lat: y, lng: x)
     }
 }

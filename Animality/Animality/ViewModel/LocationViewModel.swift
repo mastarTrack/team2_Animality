@@ -13,6 +13,8 @@ class LocationViewModel: ViewModelProtocol {
     enum Action {
         case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
+        case search(text: String)
+        case cancelSearch
     }
     
     // 상태 열거형
@@ -20,6 +22,8 @@ class LocationViewModel: ViewModelProtocol {
         case none
         case initialized(lat: Double, lng: Double, markers: [(type: AnimalType, coordinate: Coordinate)]) // (현재 위도, 현재 경도, 마커)
         case locationChanged(lat: Double, lng: Double)
+        case searched(result: [LocationInfo])
+        case cancelledSearch
     }
     
     var state: State = .none {
@@ -39,13 +43,30 @@ class LocationViewModel: ViewModelProtocol {
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
+            
+        case let .search(text):
+            Task {
+                do {
+                    let result = try await fetchSearchResult(text: text)
+                    searchResults = result
+                    self.state = .searched(result: result)
+                } catch {
+                    print("검색 결과를 가져오지 못했습니다.")
+                    //                    state = 에러로
+                }
+            }
+            
+        case .cancelSearch:
+            self.state = .cancelledSearch
         }
     }
     
     // 프로퍼티 선언
     let coreDataManager = CoreDataManager()
-
+    let networkManager = NetworkManager()
+    
     private var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
+    private(set) var searchResults: [LocationInfo] = []
     
     // AnimalEntity -> Animal
     private func fetchAllAnimals() -> [Animal] {
@@ -55,7 +76,7 @@ class LocationViewModel: ViewModelProtocol {
     // 좌표별 동물 분류 메서드
     private func categorizeAnimalByCoordinate() -> [Coordinate: [Animal]]{
         let animals = fetchAllAnimals()
-
+        
         return animals.reduce(into: [Coordinate: [Animal]]()) {
             $0[$1.currentLocation, default: []].append($1)
         }
@@ -90,5 +111,40 @@ class LocationViewModel: ViewModelProtocol {
             }
         }
     }
-
+    
+    private func fetchSearchResult(text: String) async throws -> [LocationInfo] {
+        // textField 입력값으로 검색
+        let searchResponse = try await networkManager.searchLocationData(of: text)
+        
+        // 지역 검색 결과 title 배열
+        let searchNames = searchResponse.items.compactMap { $0.title }
+        
+        // 지역 검색 결과의 이미지 검색
+        var imageStrings: [String] = []
+        for name in searchNames {
+            let response = try await networkManager.searchImageData(of: name)
+            let link = response.items.first?.link ?? ""
+            
+            imageStrings.append(link)
+        }
+        
+        // [LocationInfo] 배열 반환
+        return searchResponse.items.enumerated().reduce(into: [LocationInfo]()) {
+            
+            guard let name = $1.element.title,
+                  let address = $1.element.roadAddress,
+                  let mapX = Double($1.element.mapx ?? ""),
+                  let mapY = Double($1.element.mapy ?? "") else {
+                return
+            }
+            
+            let image = imageStrings[$1.offset]
+            
+            $0.append(LocationInfo(name: name.htmlToString() ?? NSAttributedString(string: ""),
+                                   address: address,
+                                   mapX: mapX,
+                                   mapY: mapY,
+                                   image: image))
+        }
+    }
 }

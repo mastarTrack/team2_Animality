@@ -11,7 +11,6 @@ import Then
 
 /// 메인 화면 ViewController
 class MainViewController: UITabBarController {
-    
     // MARK: - Mockup Data
     /// 임시 탭바에 넣은 탭바아이템 목업 데이터
     private let tabItems: [TabItem] = [
@@ -41,7 +40,6 @@ class MainViewController: UITabBarController {
         super.viewDidLoad()
         configureUI()
     }
-    
 }
 
 //MARK: - METHOD: TAB BAR METHOD
