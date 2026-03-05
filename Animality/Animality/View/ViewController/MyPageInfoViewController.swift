@@ -16,8 +16,21 @@ class MyPageInfoViewController : UIViewController {
     private var vm: MyPageViewModel
     
     //MARK: - Components
+    /// 스크롤 뷰
+    let scrollView = UIScrollView()
+    
+    /// ScrollView 배치용 뷰
+    let contentView = UIView()
+    
+    /// 유저정보들을 쌓을 스택뷰
+    let stackView = UIStackView().then {
+        $0.axis = .vertical
+        $0.spacing = 15
+        $0.alignment = .fill
+        $0.distribution = .fill
+    }
+    
     /// 유저 타이틀 이미지
-
     private let titleImage = UIImageView().then {
         $0.contentMode = .scaleAspectFit
         $0.backgroundColor = .white
@@ -87,6 +100,9 @@ class MyPageInfoViewController : UIViewController {
         $0.isHidden = true
     }
     
+    /// 편집 중인 텍스트 필드확인 택스트 필드
+    private weak var activeField: UIView?
+    
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -95,6 +111,7 @@ class MyPageInfoViewController : UIViewController {
         bindButtonAction()
         configureUI()
         vm.action(.initialized)
+        setupKeyboardHandling()
     }
     
     init(vm: MyPageViewModel) {
@@ -107,6 +124,9 @@ class MyPageInfoViewController : UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
 
 //MARK: - METHOD: Binding VM Action
@@ -199,20 +219,88 @@ extension MyPageInfoViewController {
     }
 }
 
+//MARK: - METHOD: Keyboard
+extension MyPageInfoViewController {
+
+    private func setupKeyboardHandling() {
+        // 어떤 필드가 활성인지 추적
+        [nameField, emailField].forEach { field in
+            field.addTarget(self, action: #selector(editingDidBegin(_:)), for: .editingDidBegin)
+            field.addTarget(self, action: #selector(editingDidEnd(_:)), for: .editingDidEnd)
+        }
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillChangeFrame(_:)),
+            name: UIResponder.keyboardWillChangeFrameNotification,
+            object: nil
+        )
+
+        // 화면 탭하면 키보드 내리기(선택)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc
+    private func editingDidBegin(_ sender: UITextField) {
+        activeField = sender
+    }
+    
+    @objc
+    private func editingDidEnd(_ sender: UITextField) {
+        if activeField === sender { activeField = nil }
+    }
+    
+    @objc
+    private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    @objc
+    private func keyboardWillChangeFrame(_ notification: Notification) {
+        guard
+            let userInfo = notification.userInfo,
+            let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue,
+            let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Double,
+            let curveRaw = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? UInt
+        else { return }
+
+        // 키보드 프레임을 "내 view 기준"으로 변환
+        let keyboardFrameInView = view.convert(endFrame, from: nil)
+
+        // 내 view의 하단과 키보드 상단이 겹치는 만큼
+        let overlap = max(0, view.bounds.maxY - keyboardFrameInView.minY)
+
+        // 탭바가 있으면 그 높이만큼은 이미 가려져있을 수 있으니 보정
+        let tabBarHeight = tabBarController?.tabBar.frame.height ?? 0
+
+        // bottomInset = 키보드 겹침 - 탭바높이(겹치는 만큼만)
+        let bottomInset = max(0, overlap - tabBarHeight) + 12
+
+        let options = UIView.AnimationOptions(rawValue: curveRaw << 16)
+
+        UIView.animate(withDuration: duration, delay: 0, options: options) {
+            self.scrollView.contentInset.bottom = bottomInset
+            self.scrollView.scrollIndicatorInsets.bottom = bottomInset
+            self.view.layoutIfNeeded()
+        }
+
+        // ✅ 여기 핵심: contentView 좌표계로 변환해야 안정적
+        guard let active = activeField else { return }
+        DispatchQueue.main.async {
+            let rectInContent = active.convert(active.bounds, to: self.contentView)
+            self.scrollView.scrollRectToVisible(rectInContent.insetBy(dx: 0, dy: -24), animated: true)
+        }
+    }
+}
 
 
 //MARK: - MATHOD: Configure UI
 extension MyPageInfoViewController {
     private func configureUI() {
-
-        let scrollView = UIScrollView()
-        let contentView = UIView()
-        let stackView = UIStackView().then {
-            $0.axis = .vertical
-            $0.spacing = 15
-            $0.alignment = .center
-            
-        }
+        
+        scrollView.keyboardDismissMode = .interactive
+        scrollView.contentInsetAdjustmentBehavior = .never
         
         let titleView = UIView().then{
             $0.backgroundColor = .deepSerenity

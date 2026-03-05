@@ -19,7 +19,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 
-        window.rootViewController = UINavigationController(rootViewController: LoginViewController())
+        let model = AnimalityModelManager(user: UserModel.sample, coreDataManager: CoreDataManager())
+        let vm = MyPageViewModel(modelManager: model)
+        let vc = MyPageInfoViewController(vm: vm)
+        
+        window.rootViewController = UINavigationController(rootViewController: vc)
         window.makeKeyAndVisible()
         
         self.window = window        
