@@ -59,8 +59,18 @@ class MainViewController: UITabBarController {
     // MARK: - INIT
     override func viewDidLoad() {
         super.viewDidLoad()
-        configureUI()
         tabBar.tintColor = .coralText
+        configureUI()
+    }
+    
+    init(userModel: UserModel) {
+        modelManager = AnimalityModelManager(user: userModel, coreDataManager: CoreDataManager())
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     init(user: UserModel) {
@@ -95,6 +105,29 @@ extension MainViewController {
 extension MainViewController {
     /// 매인 UI 초기 설정 메소드
     private func configureUI() {
+        let manager = modelManager
+
+        let tabItems: [TabItem] = [
+            TabItem(
+                title: "지도 화면",
+                imageName: "map",
+                selectedImageName: "map.fill",
+                makeViewController: { MapViewController() }
+            ),
+            TabItem(
+                title: "등록 하기",
+                imageName: "plus.circle",
+                selectedImageName: "plus.circle.fill",
+                makeViewController: { RegisterViewController() }
+            ),
+            TabItem(
+                title: "마이페이지",
+                imageName: "person",
+                selectedImageName: "person.fill",
+                makeViewController: { MyPageViewController(modelManager: manager) }
+            )
+        ]
+        
         configureTabBar(tabitems: tabItems)
     }
 }

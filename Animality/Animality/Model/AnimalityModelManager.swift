@@ -21,18 +21,30 @@ class AnimalityModelManager {
     //MARK: - Init
     init(user: UserModel, coreDataManager: CoreDataManager) {
         self.user = user
-        refreshAnimals()
-        refreshReceipts()
+        refreshAll()
     }
 }
 
 // MARK: - METHOD: Rrfresh Date
 extension AnimalityModelManager {
+    /// 전체 모델 업데이트 메소드
+    func refreshAll() {
+        refreshAnimals()
+        refreashUserRegistAnimals()
+        refreshReceipts()
+    }
+    
     /// 전체 개체 업데이트 메소드
     func refreshAnimals() {
         allAnimals = coreDataManager.fetchAllAnimalEntities()
     }
-    /// User Receipts 업데이트 메소드
+    
+    /// 사용자가 등록한 동물 내역 업데이트 메소드
+    func refreashUserRegistAnimals() {
+        user.registAnimal = allAnimals.filter { $0.userId == user.uid }
+    }
+    
+    /// 사용자 랜트영수증 내역 업데이트 메소드
     func refreshReceipts() {
         let receipt = coreDataManager.fetchReceipts(userId: user.uid)
         user.rentReceipt = receipt.map { attachAnimal(receipt: $0) }

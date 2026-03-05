@@ -66,8 +66,8 @@ class MyPageViewController: UIViewController {
         showSegmentToVC(nextVC: quickListVC, nextIndex: 0)
     }
     
-    init(vm: MyPageViewModel) {
-        self.vm = vm
+    init(modelManager: AnimalityModelManager) {
+        self.vm = MyPageViewModel(modelManager: modelManager)
         quickListVC = QuickInfoListViewController(cellType: .receipt, vm: vm)
         myPageInfoVC = MyPageInfoViewController(vm: vm)
         super.init(nibName: nil, bundle: nil)
@@ -225,6 +225,6 @@ extension MyPageViewController {
 
 @available(iOS 17.0, *)
 #Preview{
-    let vm = MyPageViewModel(userModel: UserModel.sample)
-    MyPageViewController(vm: vm)
+    let model = AnimalityModelManager(user: UserModel.sample, coreDataManager: CoreDataManager())
+    MyPageViewController(modelManager: model)
 }

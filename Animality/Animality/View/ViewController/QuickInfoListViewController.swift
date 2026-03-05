@@ -95,9 +95,9 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch cellType {
         case .receipt:
-            return vm.userModel.rentReceipt?.count ?? 0
+            return vm.modelManager.user.rentReceipt?.count ?? 0
         case .regist:
-            return vm.userModel.registAnimal?.count ?? 0
+            return vm.modelManager.user.registAnimal?.count ?? 0
         }
     }
     
@@ -107,7 +107,7 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
         switch cellType {
         case .receipt:
             cell.updateUIForType(type: .receipt)
-            guard let receipt = vm.userModel.rentReceipt?[indexPath.item] else {
+            guard let receipt = vm.modelManager.user.rentReceipt?[indexPath.item] else {
                 return cell
             }
             cell.updateUIForReceipt(name: receipt.animal?.name ?? ""
@@ -118,7 +118,7 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
                                     , amount: Int(receipt.amount))
         case .regist:
             cell.updateUIForType(type: .regist)
-            guard let animal = vm.userModel.registAnimal?[indexPath.item] else {
+            guard let animal = vm.modelManager.user.registAnimal?[indexPath.item] else {
                 return cell
             }
             cell.updateUIForRegist(name: animal.name
@@ -134,7 +134,7 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
 
         switch cellType {
         case .regist:
-            guard let animal = vm.userModel.registAnimal?[indexPath.item] else { return }
+            guard let animal = vm.modelManager.user.registAnimal?[indexPath.item] else { return }
             // 같은 CoreDataManager를 Detail VM에 주입해줌
             let vm = DetailViewModel(coreDataManager: vm.coreDataManager)
             let detailVC = DetailViewController(animalID: animal.id, viewModel: vm)
@@ -142,7 +142,7 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
             navigationController?.pushViewController(detailVC, animated: true)
             
         case .receipt:
-            guard let receipt = vm.userModel.rentReceipt?[indexPath.item] else { return }
+            guard let receipt = vm.modelManager.user.rentReceipt?[indexPath.item] else { return }
             let receiptVC = ReceiptDetailViewController(type: .detail, receipt: receipt)
             navigationController?.pushViewController(receiptVC, animated: true)
             return
@@ -221,6 +221,7 @@ extension QuickInfoListViewController {
 
 @available(iOS 17.0, *)
 #Preview {
-    let vm = MyPageViewModel(userModel: UserModel.sample)
+    let model = AnimalityModelManager(user: UserModel.sample, coreDataManager: CoreDataManager())
+    let vm = MyPageViewModel(modelManager: model)
     QuickInfoListViewController(cellType: .regist, vm: vm)
 }

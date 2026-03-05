@@ -23,12 +23,14 @@ struct UserModel {
 
 
 //MARK: - SAMPLE DATA
+var sampleUUID = UUID()
+var sampleAnimalUUID = UUID()
 
 extension Animal {
     
     static let sample = Animal(
-        id: UUID(),
-        userId: UUID(),
+        id: sampleAnimalUUID,
+        userId: sampleUUID,
         name: "황금 유니콘",
         type: .unicorn,
         status: .rented,
@@ -47,8 +49,8 @@ extension RentReceipt {
     
     static let sample1 = RentReceipt(
         id: UUID(),
-        userId: UUID(),
-        animalId: UUID(),
+        userId: sampleUUID,
+        animalId: sampleAnimalUUID,
         amount: 100000,
         location: "홍대입구",
         rentPaymentTime: Date(),
@@ -61,8 +63,8 @@ extension RentReceipt {
     
     static let sample2 = RentReceipt(
         id: UUID(),
-        userId: UUID(),
-        animalId: UUID(),
+        userId: sampleUUID,
+        animalId: sampleAnimalUUID,
         amount: 45000,
         location: "강남역",
         rentPaymentTime: Date().addingTimeInterval(-7200),
@@ -75,8 +77,8 @@ extension RentReceipt {
     
     static let sample3 = RentReceipt(
         id: UUID(),
-        userId: UUID(),
-        animalId: UUID(),
+        userId: sampleUUID,
+        animalId: sampleAnimalUUID,
         amount: 30000,
         location: "성수역",
         rentPaymentTime: Date().addingTimeInterval(-10000),
@@ -97,7 +99,7 @@ extension RentReceipt {
 extension UserModel {
     
     static let sample = UserModel(
-        uid: UUID(),
+        uid: sampleUUID,
         id: "Spartan",
         name: "홍길동",
         email: "hong@test.com",
