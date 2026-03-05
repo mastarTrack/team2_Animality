@@ -68,7 +68,13 @@ class LocationViewModel: ViewModelProtocol {
         }
     }
     
+    // init
+    init(modelManager: AnimalityModelManager) {
+        self.modelManager = modelManager
+    }
+    
     // 프로퍼티 선언
+    let modelManager: AnimalityModelManager
     let coreDataManager = CoreDataManager()
     let networkManager = NetworkManager()
 
