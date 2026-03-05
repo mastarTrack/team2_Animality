@@ -65,7 +65,11 @@ struct Coordinate: Hashable {
     var latitude: Double
     var longitude: Double
 }
-
+extension Coordinate {
+    var formatted: String {
+        return String(format: "%.3f, %.3f", latitude, longitude)
+    }
+}
 // MARK: 동물 종류 정의
 enum AnimalType: String, CaseIterable {
     case dog = "강아지"

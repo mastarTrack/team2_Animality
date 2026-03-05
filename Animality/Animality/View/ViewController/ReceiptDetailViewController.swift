@@ -136,14 +136,13 @@ extension ReceiptDetailViewController {
                   paystate: StateUILabel.RentState
     ) {
         stateLabel.updateUIForReceipt(state: rentState,payState: false, nil)
-        totalAmountLabel.text = amount.formatted(.number)
+        totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
         nameLabel.text = name
         rentLocationLabel.text = locationName
         rentpaymentTimeLabel.text = rentpaymentTime.formatted()
         rentStartTimeLabel.text = rentStartTime.formatted()
         rentEndTimeLabel.text = rentEndTime.formatted()
         payState.updateUIForReceipt(state: paystate,payState: true, nil)
-        
     }
 }
 
