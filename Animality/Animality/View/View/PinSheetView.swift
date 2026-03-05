@@ -30,6 +30,7 @@ class PinSheetView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
         setLayout()
         setSnapshot(with: animals)
     }
@@ -37,12 +38,12 @@ class PinSheetView: UIViewController {
 
 extension PinSheetView {
     private func setLayout() {
-        animalCollectionView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 20, leading: 20, bottom: 0, trailing: 20)
-        
+        animalCollectionView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20) // 양옆 마진만 줌
+        animalCollectionView.contentInset = .init(top: 30, left: 0, bottom: 0, right: 0)
         view.addSubview(animalCollectionView)
         
         animalCollectionView.snp.makeConstraints {
-            $0.directionalEdges.equalToSuperview()
+            $0.directionalEdges.equalTo(view.safeAreaLayoutGuide)
         }
     }
 }
@@ -51,10 +52,19 @@ extension PinSheetView {
 extension PinSheetView {
     // 레이아웃 설정
     private func makeCollectionViewLayout() -> UICollectionViewLayout {
-      let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
         configuration.contentInsetsReference = .layoutMargins // 여백
         
       return UICollectionViewCompositionalLayout(sectionProvider: { sectionIndex, environment in
+          let headerItem = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .absolute(28)
+            ),
+            elementKind: "HeaderKind",
+            alignment: .top
+          )
+          
           // 여백 설정
           let spacing: CGFloat = 12
           
@@ -83,6 +93,9 @@ extension PinSheetView {
           
           // Section 설정
           let section = NSCollectionLayoutSection(group: group)
+          section.boundarySupplementaryItems = [headerItem]
+          section.contentInsets = .init(top: 10, leading: 0, bottom: 0, trailing: 0) // 헤더 - 컨텐츠 간 여백 설정
+          
           return section
       }, configuration: configuration)
     }
@@ -93,8 +106,16 @@ extension PinSheetView {
             cell.configure(with: item)
         }
         
+        let headerRegistration = UICollectionView.SupplementaryRegistration<HeaderView>(elementKind: "HeaderKind") { supplementaryView, elementKind, indexPath in
+            supplementaryView.label.text = "한가한 동물들"
+        }
+        
         let dataSource = UICollectionViewDiffableDataSource<Int, Animal>(collectionView: animalCollectionView) { collectionView, indexPath, itemIdentifier in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
+        }
+        
+        dataSource.supplementaryViewProvider = {
+            $0.dequeueConfiguredReusableSupplementary(using: headerRegistration, for: $2)
         }
         
         return dataSource
