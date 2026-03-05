@@ -36,11 +36,10 @@ final class LoginView: UIView {
         $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         $0.setTitleColor(.text, for: .normal)
         $0.layer.cornerRadius = 25
-        $0.isEnabled = false
     }
     
     // 회원가입 버튼
-    private let registerButton = UIButton(type: .system).then {
+    let registerButton = UIButton().then {
         $0.setTitle("회원가입", for: .normal)
         $0.backgroundColor = .white
         $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -48,7 +47,6 @@ final class LoginView: UIView {
         $0.layer.cornerRadius = 25
         $0.layer.borderColor = UIColor.rose.cgColor
         $0.layer.borderWidth = 2
-        $0.isEnabled = false
     }
     
     override init(frame: CGRect) {
@@ -118,5 +116,10 @@ extension LoginView {
             $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(40)
             $0.height.equalTo(50)
         }
+    }
+    
+    func setDelegate(vc: UITextFieldDelegate) {
+        idTextField.delegate = vc
+        passwordTextField.delegate = vc
     }
 }
