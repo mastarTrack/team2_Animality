@@ -27,6 +27,7 @@ final class LoginView: UIView {
         $0.layer.cornerRadius = 16
         $0.font = .systemFont(ofSize: 17, weight: .medium)
         $0.addLeftPadding(12)
+        $0.isSecureTextEntry = true // 값 가리기 
     }
     
     // 로그인 버튼

@@ -73,6 +73,12 @@ class MapViewController: UIViewController {
                     self.displayMarkers(newMarkers) // 신규 마커 배치
                     self.displayedMarkers += newMarkers // 현재 마커 배열 갱신
                 }
+            case let .deleteRegistration(data):
+                let delete = compareDeleteMarkers(data) // 마커 제거 대상 찾기
+                Task {
+                    self.deleteMarkers(delete) // 마커 제거
+                }
+                displayedMarkers.removeAll { $0.mapView == nil } // 현재 마커 배열 갱신
 
             case let .searched(result):
                 Task {
@@ -262,17 +268,17 @@ extension MapViewController {
         print("새로운 등록")
     }
     
+    func deleteRegistration() {
+        viewModel.action(.deleteRegistration)
+        print("삭제")
+    }
+    
     // 마커 삭제
     @MainActor
     private func deleteMarkers(_ markers: [NMFMarker]) {
         markers.forEach {
             $0.mapView = nil // 마커 제거
         }
-        
-        //        // 마커 배열 갱신
-        //        markers.removeAll {
-        //            $0.mapView == nil
-        //        }
     }
     
     // 생성 대상 비교

@@ -14,6 +14,7 @@ class LocationViewModel: ViewModelProtocol {
         case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
         case newRegister
+        case deleteRegistration
         case search(text: String)
         case cancelSearch
         case fetchAnimalOf(Coordinate)
@@ -24,6 +25,7 @@ class LocationViewModel: ViewModelProtocol {
         case none
         case initialized(lat: Double, lng: Double, data: [Coordinate: AnimalType]) // (현재 위도, 현재 경도, 마커)
         case locationChanged(lat: Double, lng: Double)
+        case deleteRegistration(data: [Coordinate: AnimalType])
         case newRegister(data: [Coordinate: AnimalType])
         case searched(result: [LocationInfo])
         case cancelledSearch
@@ -47,6 +49,11 @@ class LocationViewModel: ViewModelProtocol {
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
+         
+        case .deleteRegistration:
+            coordinates = categorizeAnimalByCoordinate()
+            let data = fetchMarkerData(of: coordinates)
+            self.state = .deleteRegistration(data: data)
             
         case .newRegister:
             coordinates = categorizeAnimalByCoordinate()
