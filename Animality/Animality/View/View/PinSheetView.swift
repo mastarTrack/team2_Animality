@@ -99,13 +99,6 @@ extension PinSheetView {
     private func makeCollectionViewDiffableDataSource(_ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Int, Animal> {
         let cellRegistration = UICollectionView.CellRegistration<SheetAnimalCell, Animal> { (cell, indexPath, item) in
             cell.configure(with: item)
-            
-            switch item.status {
-            case .normal:
-                break
-            default:
-                cell.configureUnAvailableUI() // 셀 UI 변경
-            }
         }
         
         let headerRegistration = UICollectionView.SupplementaryRegistration<HeaderView>(elementKind: "HeaderKind") { supplementaryView, elementKind, indexPath in

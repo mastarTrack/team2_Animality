@@ -19,22 +19,18 @@ final class SheetAnimalCell: UICollectionViewCell {
     
     private let typeLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 16, weight: .medium)
-        $0.textColor = .secondaryText
     }
     
     private let priceLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 18, weight: .semibold)
-        $0.textColor = .accentBlue
     }
     
     private let statusLabel = StateUILabel().then {
         $0.font = .systemFont(ofSize: 14, weight: .medium)
-        $0.updateUIForSheet(status: .normal)
     }
     
     private let unitLabel = UILabel().then {
         $0.text = "시간 당 요금"
-        $0.textColor = .secondaryText
         $0.font = .systemFont(ofSize: 12, weight: .medium)
         $0.textAlignment = .center
     }
@@ -44,8 +40,6 @@ final class SheetAnimalCell: UICollectionViewCell {
         super.init(frame: frame)
         
         contentView.layer.cornerRadius = 16
-        contentView.backgroundColor = .white
-        contentView.layer.borderColor = UIColor(resource: .rose).cgColor
         contentView.layer.borderWidth = 2
         setLayout()
     }
@@ -63,12 +57,28 @@ extension SheetAnimalCell {
         typeLabel.text = animal.type.rawValue
         priceLabel.text = "\(animal.pricePerHour.formatted(.currency(code: "KRW")))"
         statusLabel.updateUIForSheet(status: animal.status)
+        
+        switch animal.status {
+        case .normal:
+            configureAvailableUI()
+        default:
+            configureUnAvailableUI()
+        }
     }
     
-    func configureUnAvailableUI() {
+    private func configureAvailableUI() {
+        contentView.backgroundColor = .white
+        contentView.layer.borderColor = UIColor(resource: .rose).cgColor
+        nameLabel.textColor = .text
+        typeLabel.textColor = .secondaryText
+        unitLabel.textColor = .secondaryText
+        priceLabel.textColor = .accentBlue
+    }
+    
+    private func configureUnAvailableUI() {
         contentView.backgroundColor = UIColor(hexCode: "#F9FAFB")
         contentView.layer.borderColor = UIColor(resource: .serenity).cgColor
-        nameLabel.textColor = .secondaryText
+        nameLabel.textColor = .text
         typeLabel.textColor = .lightGray
         unitLabel.textColor = .lightGray
         priceLabel.textColor = .deepSerenity
@@ -101,26 +111,5 @@ extension SheetAnimalCell {
         stackView.axis = .vertical
         stackView.spacing = 4
         return stackView
-    }
-}
-
-//MARK: state UILabel 확장
-extension StateUILabel {
-    func updateUIForSheet(status: AnimalStatus) {
-        backgroundColor = UIColor(hexCode: "#E5E7EB")
-        textColor = UIColor(hexCode: "#4A5565")
-        
-        switch status {
-        case .normal:
-            backgroundColor = UIColor(hexCode: "#DCFCE7")
-            textColor = UIColor(hexCode: "#008236")
-            text = "한가해요"
-        case .rented:
-            text = "바빠요"
-        case .resting:
-            text = "쉬어요"
-        case .sick:
-            text = "아파요"
-        }
     }
 }
