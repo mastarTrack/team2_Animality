@@ -32,6 +32,7 @@ final class PaymentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "결제 하기"
+        self.navigationController?.navigationBar.prefersLargeTitles = true
 
         bind() // VM -> View
         bindActions() // View -> VM
