@@ -117,4 +117,9 @@ extension LoginView {
             $0.height.equalTo(50)
         }
     }
+    
+    func setDelegate(vc: UITextFieldDelegate) {
+        idTextField.delegate = vc
+        passwordTextField.delegate = vc
+    }
 }

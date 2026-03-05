@@ -60,15 +60,20 @@ final class UserRegisterView: UIView {
         }
     }
     
-    // 등록 버튼
+    // 가입 버튼
     private let registerButton = UIButton(type: .system).then {
         $0.setTitle("가입하기", for: .normal)
-        $0.backgroundColor = .deepRose
+        $0.backgroundColor = .systemGray4
         $0.titleLabel?.font = .systemFont(ofSize: 20, weight: .bold)
-        $0.setTitleColor(.text, for: .normal)
+        $0.setTitleColor(.white, for: .normal)
         $0.layer.cornerRadius = 14
+        $0.isEnabled = false
     }
     
+    //MARK: Binding Closure (View -> VC)
+    var registerButtonTapped: ((String, String, String, String) -> Void)?
+    
+    //MARK: init
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
@@ -80,6 +85,7 @@ final class UserRegisterView: UIView {
     }
 }
 
+//MARK: Set Layout
 extension UserRegisterView {
     private func setLayout() {
         let idTitleLabel = makeTitleLabel(of: "아이디")
@@ -151,5 +157,55 @@ extension UserRegisterView {
         stackView.axis = .vertical
         stackView.spacing = 8
         return stackView
+    }
+}
+
+//MARK: Methods
+extension UserRegisterView {
+    private func setButtonAction() {
+        let register = UIAction { [weak self] _ in
+            let id = self?.idTextField.text ?? ""
+            let password = self?.passwordTextField.text ?? ""
+            let name = self?.nameTextField.text ?? ""
+            let email = self?.emailTextField.text ?? ""
+            
+            self?.registerButtonTapped?(id, password, name, email)
+        }
+    }
+    
+    func setDelegate(vc: UITextFieldDelegate) {
+        idTextField.delegate = vc
+        passwordTextField.delegate = vc
+        nameTextField.delegate = vc
+        emailTextField.delegate = vc
+    }
+    
+    func setButtonStatus() {
+        allSatisfyNotEmpty() ? enableButton() : disableButton()
+    }
+    
+    private func enableButton() {
+        registerButton.backgroundColor = .deepRose
+        registerButton.setTitleColor(.text, for: .normal)
+        registerButton.isEnabled = true
+    }
+    
+    private func disableButton() {
+        registerButton.backgroundColor = .systemGray4
+        registerButton.setTitleColor(.white, for: .normal)
+        registerButton.isEnabled = false
+    }
+    
+    private func allSatisfyNotEmpty() -> Bool {
+        if let id = idTextField.text,
+           let password = passwordTextField.text,
+           let name = nameTextField.text,
+           !id.isEmpty, !password.isEmpty, !name.isEmpty {
+            // (이메일 제외) 모든 텍스트필드에 값이 있을 때
+            return true
+        } else {
+            // (이메일 제외) 하나라도 텍스트 필드에 값이 없을 때
+            return false
+        }
     }
 }
