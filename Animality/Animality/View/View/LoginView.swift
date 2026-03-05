@@ -64,18 +64,30 @@ final class LoginView: UIView {
 
 extension LoginView {
     private func setLayout() {
+        let titleLabel = UILabel().then {
+            if let font = UIFont(name: "Bungee-Regular", size: 48) {
+                $0.attributedText = NSAttributedString(string: "Animality", attributes: [.font: font])
+            }
+            $0.textAlignment = .center
+        }
+        
         let imageView = UIImageView().then {
             $0.image = .logo
             $0.contentMode = .scaleAspectFit
         }
         
-        [imageView, idTextField, passwordTextField, loginButton, registerButton].forEach {
+        [titleLabel, imageView, idTextField, passwordTextField, loginButton, registerButton].forEach {
             addSubview($0)
+        }
+        
+        titleLabel.snp.makeConstraints {
+            $0.top.equalTo(safeAreaLayoutGuide).offset(10)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(10)
         }
         
         imageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalTo(safeAreaLayoutGuide).offset(20)
+            $0.top.equalTo(titleLabel.snp.bottom).offset(20)
             $0.width.height.equalTo(183)
         }
         
