@@ -209,7 +209,7 @@ extension MyPageInfoViewController {
         }
         
         let titleView = UIView().then{
-            $0.backgroundColor = .deepSerenity
+            $0.backgroundColor = .deepRose
             $0.layer.cornerRadius = 40
             $0.layer.borderWidth = 0.5
             $0.layer.borderColor = UIColor.systemGray6.cgColor

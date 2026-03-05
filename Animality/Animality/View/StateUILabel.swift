@@ -34,16 +34,16 @@ class StateUILabel: UILabel {
         case .completed:
             backgroundColor = UIColor(hexCode: "#DCFCE7")
             textColor = UIColor(hexCode: "#008236")
-            text = "Completed"
+            text = "랜트 완료"
         case .renting:
             backgroundColor = UIColor(hexCode: "#DBEAFE")
             textColor = UIColor(hexCode: "#1D4ED8")
-            text = "Renting"
+            text = "렌트 중"
             
         case .cancel:
             backgroundColor = UIColor(hexCode: "#FEE2E2")
             textColor = UIColor(hexCode: "#DC2626")
-            text = "Cancel"
+            text = "취소"
         }
         guard let inputFont = inputFont else {
             return
@@ -56,19 +56,19 @@ class StateUILabel: UILabel {
         case .normal:
             backgroundColor = UIColor(hexCode: "#DCFCE7")
             textColor = UIColor(hexCode: "#008236")
-            text = "Completed"
+            text = "한가해요"
         case .resting:
             backgroundColor = UIColor(hexCode: "#DCFCE7")
             textColor = UIColor(hexCode: "#008236")
-            text = "Completed"
+            text = "바빠요"
         case .rented:
             backgroundColor = UIColor(hexCode: "#DBEAFE")
             textColor = UIColor(hexCode: "#1D4ED8")
-            text = "Renting"
+            text = "쉬어요"
         case .sick:
             backgroundColor = UIColor(hexCode: "#FEE2E2")
             textColor = UIColor(hexCode: "#DC2626")
-            text = "Cancel"
+            text = "아파요"
         }
         guard let inputFont = inputFont else {
             return

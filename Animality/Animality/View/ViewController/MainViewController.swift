@@ -11,46 +11,66 @@ import Then
 
 /// 메인 화면 ViewController
 class MainViewController: UITabBarController {
-    // MARK: - Mockup Data
-    /// 임시 탭바에 넣은 탭바아이템 목업 데이터
+    
+    // MARK: - Properites
+    /// TabBar Item
     private lazy var tabItems: [TabItem] = {
         // 샘플/임시 유저 & VM (나중에 로그인 유저로 교체)
         let user = UserModel.sample
         let myPageVM = MyPageViewModel(userModel: user)
-
+        
         return [
             TabItem(
-                title: "Map",
+                title: "지도 화면",
                 imageName: "map",
                 selectedImageName: "map.fill",
-                makeViewController: { MapViewController() }
+                makeViewController: {
+                    let vc = MapViewController()
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
             ),
             TabItem(
-                title: "Register",
+                title: "개체 등록",
                 imageName: "plus.circle",
                 selectedImageName: "plus.circle.fill",
-                makeViewController: { RegisterViewController() }
+                makeViewController: {
+                    let vc = RegisterViewController()
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
             ),
             TabItem(
-                title: "My Page",
+                title: "마이 페이지",
                 imageName: "person",
                 selectedImageName: "person.fill",
-                makeViewController: { MyPageViewController(vm: myPageVM) }
+                makeViewController: {
+                    let vc = MyPageViewController(vm: myPageVM)
+                    let nav = UINavigationController(rootViewController: vc)
+                    return nav
+                }
             )
         ]
     }()
     
     // MARK: - Viewmodel
-    
-    
-    // MARK: - Components
-    
+    let animalityModelManager: AnimalityModelManager
     
     // MARK: - INIT
     override func viewDidLoad() {
         super.viewDidLoad()
         configureUI()
         tabBar.tintColor = .coralText
+    }
+    
+    init(user: UserModel) {
+        self.animalityModelManager = AnimalityModelManager(user: user, coreDataManager: CoreDataManager())
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 }
 
@@ -79,10 +99,8 @@ extension MainViewController {
     }
 }
 
-
-
-
 @available(iOS 17.0, *)
 #Preview {
-    MainViewController()
+    let userModel = UserModel.sample
+    MainViewController(user: userModel)
 }

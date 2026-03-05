@@ -88,6 +88,7 @@ class ReceiptDetailViewController: UIViewController {
     //MARK: - Init
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "상세 내역"
         bindingButtonAction(type: type)
         ConfigureUI(type: type)
         ConfigureMapView()
