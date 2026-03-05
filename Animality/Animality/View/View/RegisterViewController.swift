@@ -11,8 +11,20 @@ class RegisterViewController: UIViewController {
     
     // MARK: - View, VM 인스턴스 생성
     private let registerView = RegisterView()
-    private let registerViewModel = RegisterViewModel()
+    private let registerViewModel: RegisterViewModel
+
     
+    // modelManager를 받아서 ViewModel 생성
+    init(modelManager: AnimalityModelManager) {
+        self.registerViewModel = RegisterViewModel(modelManager: modelManager)
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     
     // MARK: - View 세팅
     override func loadView() {
