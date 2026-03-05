@@ -76,7 +76,7 @@ final class DetailViewModel: ViewModelProtocol {
     // 코어데이터 -> 화면용 데이터로 매핑
     private func mapToAnimal(_ entity: AnimalEntity) -> Animal {
         let type = AnimalType(rawValue: entity.type ?? "") ?? .dog
-        let status = AnimalStatus(rawValue: entity.status) ?? .normal
+        let status = AnimalStatus(rawValue: entity.status ?? "") ?? .normal
         let size = AnimalSize(rawValue: entity.size ?? "") ?? .medium
         let flight = FlightCapability(rawValue: entity.flightCapability ?? "")
 

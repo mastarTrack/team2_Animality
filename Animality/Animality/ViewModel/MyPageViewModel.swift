@@ -12,10 +12,12 @@ class MyPageViewModel: ViewModelProtocol {
     //MARK: - Model
     private(set) var userModel: UserModel
     
+    let coreDataManager = CoreDataManager()
+    
     //MARK: - Enum
     /// ViewModel의 상태 전달용 Enum
     enum State {
-        case updateUI(user: UserModel)
+        case updateUI
         case none
     }
     
@@ -24,6 +26,8 @@ class MyPageViewModel: ViewModelProtocol {
         case initialized
         case CancelUserModify
         case ApproveuserModify
+        case fetchRegistAnimal
+        case fetchReceipt
     }
     
     //MARK: - Properties
@@ -49,6 +53,10 @@ class MyPageViewModel: ViewModelProtocol {
         case .ApproveuserModify:
             //TODO: 한주헌 - User 정보 CoreData 저장 및 재수신 코드 추가
             break
+        case .fetchRegistAnimal:
+            break
+        case .fetchReceipt:
+            break
         }
     }
     
@@ -59,11 +67,22 @@ class MyPageViewModel: ViewModelProtocol {
     
 }
 
-
 //MARK: - METHOD: To Action
 extension MyPageViewModel {
     func initialized() {
-        state = .updateUI(user: userModel)
+        state = .updateUI
+    }
+    
+    func fetchRegistAnimal() {
+        let animals = coreDataManager.fetchAllAnimalEntities()
+        userModel.registAnimal = animals
+        state = .updateUI
+    }
+    
+    func fetchReceipt(){
+        let receipts = coreDataManager.fetchAllReceiptEntities()
+        userModel.rentReceipt = receipts
+        state = .updateUI
     }
 }
 

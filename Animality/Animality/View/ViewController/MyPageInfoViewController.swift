@@ -119,8 +119,8 @@ extension MyPageInfoViewController {
             switch state {
             case .none:
                 break
-            case let .updateUI(data):
-                updateUI(image: nil, id: data.id, name: data.name, email: data.email, registDate: data.registDate, rentCount: data.rentalCount)
+            case .updateUI:
+                updateUI(image: nil, id: vm.userModel.id, name: vm.userModel.name, email: vm.userModel.email, registDate: vm.userModel.registDate, rentCount: vm.userModel.rentalCount)
             }
         }
     }
