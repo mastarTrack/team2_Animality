@@ -71,7 +71,7 @@ extension MainViewController {
                 imageName: "map",
                 selectedImageName: "map.fill",
                 makeViewController: {
-                    let vc = MapViewController()
+                    let vc = MapViewController(modelManager: manager)
                     let nav = UINavigationController(rootViewController: vc)
                     return nav
                 }
