@@ -81,7 +81,7 @@ extension MainViewController {
                 imageName: "plus.circle",
                 selectedImageName: "plus.circle.fill",
                 makeViewController: {
-                    let vc = RegisterViewController()
+                    let vc = RegisterViewController(modelManager: manager)
                     let nav = UINavigationController(rootViewController: vc)
                     return nav
                 }
