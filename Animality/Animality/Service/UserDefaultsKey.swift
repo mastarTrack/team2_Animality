@@ -6,8 +6,10 @@
 //
 
 enum UserDefaultsKey: String {
+    case uid = "uid"
     case id = "id"
     case password = "password"
     case name = "name"
     case email = "email"
+    case registDate = "registDate"
 }

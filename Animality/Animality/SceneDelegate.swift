@@ -19,16 +19,33 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 
-        let model = AnimalityModelManager(user: UserModel.sample, coreDataManager: CoreDataManager())
-        let vm = MyPageViewModel(modelManager: model)
-        let vc = MyPageInfoViewController(vm: vm)
-        
-        window.rootViewController = UINavigationController(rootViewController: vc)
-        window.makeKeyAndVisible()
-        
-        self.window = window        
-    }
 
+        self.window = window
+        setupUID()
+        showLogin()
+        window.makeKeyAndVisible()
+    }
+    
+    func showLogin() {
+        let loginVC = LoginViewController()
+        loginVC.successLoginClosure = { [weak self] user in
+            self?.showMain(user: user)
+        }
+        window?.rootViewController = UINavigationController(rootViewController: loginVC)
+    }
+    
+    func showMain(user: UserModel) {
+        let main = MainViewController(userModel: user)
+        window?.rootViewController = main
+    }
+    
+    func setupUID(){
+        if UserDefaults.standard.string(forKey: UserDefaultsKey.uid.rawValue) == nil {
+            let newUID = UUID().uuidString
+            UserDefaults.standard.set(newUID, forKey: UserDefaultsKey.uid.rawValue)
+        }
+    }
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

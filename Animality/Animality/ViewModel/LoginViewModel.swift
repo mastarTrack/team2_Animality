@@ -9,12 +9,14 @@ import Foundation
 final class LoginViewModel: ViewModelProtocol {
     enum Action {
         case register(String, String, String, String?)
+        case checkLogin(String, String)
     }
     
     enum State {
         case none
         case success
         case failed(String)
+        case resultLogin(UserModel?)
     }
     
     var state: State = .none {
@@ -33,16 +35,42 @@ final class LoginViewModel: ViewModelProtocol {
                 saveUserInfo(id: id, password: password, name: name, email: email)
                 self.state = .success // 성공
             }
+        case let .checkLogin(id, pw):
+            let result = checkLogin(id: id, pw: pw)
+            self.state = .resultLogin(result)
         }
     }
 }
 
+// MARK: - METHOD: Login
+extension LoginViewModel {
+    private func checkLogin(id: String, pw: String) -> UserModel? {
+        let checkId = UserDefaults.standard.string(forKey: UserDefaultsKey.id.rawValue)
+        let checkPw = UserDefaults.standard.string(forKey: UserDefaultsKey.password.rawValue)
+        
+        if id == checkId && pw == checkPw  {
+            guard let uid = UserDefaults.standard.string(forKey: UserDefaultsKey.uid.rawValue),
+            let name = UserDefaults.standard.string(forKey: UserDefaultsKey.name.rawValue),
+            let email = UserDefaults.standard.string(forKey: UserDefaultsKey.email.rawValue),
+            let registDate = UserDefaults.standard.value(forKey: UserDefaultsKey.registDate.rawValue) as? Date else
+            { return nil }
+            let user = UserModel(uid: UUID(uuidString: uid)!, id: id, name: name, email: email, registDate: registDate, rentalCount: 0)
+            return user
+        } else {
+            return nil
+        }
+    }
+}
+
+// MARK: - METHOD: Regist
 extension LoginViewModel {
     private func saveUserInfo(id: String, password: String, name: String, email: String?) {
         UserDefaults.standard.set(id, forKey: UserDefaultsKey.id.rawValue)
-        UserDefaults.standard.set(password, forKey: UserDefaultsKey.id.rawValue)
-        UserDefaults.standard.set(name, forKey: UserDefaultsKey.id.rawValue)
-        UserDefaults.standard.set(email ?? "", forKey: UserDefaultsKey.id.rawValue)
+        UserDefaults.standard.set(password, forKey: UserDefaultsKey.password.rawValue)
+        UserDefaults.standard.set(name, forKey: UserDefaultsKey.name.rawValue)
+        UserDefaults.standard.set(email ?? "" , forKey: UserDefaultsKey.email.rawValue)
+        UserDefaults.standard.set(Date() , forKey: UserDefaultsKey.registDate.rawValue)
+
     }
     
     private func validateEmailExpression(_ email: String) -> Bool {

@@ -42,7 +42,9 @@ final class UserRegisterViewController: UIViewController {
         viewModel.stateChanged = { [weak self] state in
             switch state {
             case .none:
-                break
+                return
+            case .resultLogin(_):
+                return
             case .success:
                 self?.successAction()
             case .failed(let message):

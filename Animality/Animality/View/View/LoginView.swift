@@ -30,7 +30,7 @@ final class LoginView: UIView {
     }
     
     // 로그인 버튼
-    private let loginButton = UIButton(type: .system).then {
+    let loginButton = UIButton(type: .system).then {
         $0.setTitle("로그인", for: .normal)
         $0.backgroundColor = .coralText
         $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
@@ -121,5 +121,9 @@ extension LoginView {
     func setDelegate(vc: UITextFieldDelegate) {
         idTextField.delegate = vc
         passwordTextField.delegate = vc
+    }
+    
+    func getloginInfo() -> (id: String,pw: String) {
+        return ( idTextField.text ?? "" , passwordTextField.text ?? "")
     }
 }
