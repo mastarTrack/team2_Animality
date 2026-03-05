@@ -14,4 +14,9 @@ final class UserRegisterViewController: UIViewController {
     override func loadView() {
         view = userRegisterView
     }
+    
+    override func viewDidLoad() {
+        self.title = "회원가입"
+        self.navigationController?.navigationBar.titleTextAttributes = [.font: UIFont.systemFont(ofSize: 20, weight: .semibold)]
+    }
 }

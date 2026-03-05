@@ -26,7 +26,6 @@ extension LoginViewController {
         let navToRegister = UIAction { [weak self] _ in
             let vc = UserRegisterViewController()
             self?.navigationController?.pushViewController(vc, animated: true)
-            print("pushed")
         }
         
         loginView.registerButton.addAction(navToRegister, for: .touchUpInside)
