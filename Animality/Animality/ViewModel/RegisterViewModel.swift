@@ -114,18 +114,21 @@ class RegisterViewModel: ViewModelProtocol {
         // 도메인 모델 생성
         let animal = Animal(
             id: UUID(),
+            userId: UUID(),
             name: name,
             type: type,
             status: .normal,
             pricePerHour: Int(pricePerHour),
             currentLocation: Coordinate(latitude: latitude, longitude: longitude),
             size: size,
-            flightCapability: flightCapability
+            flightCapability: flightCapability,
+            registDate: Date()
         )
         
         // 코어데이터용 payload 생성하기
         let payload = CreateAnimalModel(
             name: animal.name,
+            userId: animal.userId,
             category: animal.type.category,
             type: animal.type.rawValue,
             size: animal.size.rawValue,
@@ -133,7 +136,8 @@ class RegisterViewModel: ViewModelProtocol {
             longitude: animal.currentLocation.longitude,
             price: Int32(animal.pricePerHour),
             status: animal.status.rawValue,
-            flight: animal.flightCapability.rawValue
+            flight: animal.flightCapability.rawValue,
+            registDate: animal.registDate
         )
 
         // 저장 완료 상태 저장

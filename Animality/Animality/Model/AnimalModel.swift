@@ -40,25 +40,24 @@ import Foundation
 struct Animal: Hashable {
     /// 고유 ID
     let id: UUID
+    /// 등록한 유저의 ID
+    let userId: UUID
     /// 개체 이름 (예: "모찌")
     var name: String
     /// 동물 종류 (페가수스, 강아지 등)
     let type: AnimalType
-    
     /// 동물 상태 (대여 가능, 대여 중 ,휴식중 등)
     var status: AnimalStatus
-    
     /// 시간당 대여 요금
     var pricePerHour: Int
-    
     /// 현재 위치 (위도, 경도)
     var currentLocation: Coordinate
-    
     /// 동물 사이즈
     var size: AnimalSize
-    
     /// 비행 가능 여부 (수정: 타입 명시)
     var flightCapability: FlightCapability
+    /// 개체 등록 시간
+    var registDate: Date
 }
 
 // MARK: 위경도

@@ -28,6 +28,8 @@ extension AnimalEntity {
     @NSManaged public var size: String?
     @NSManaged public var status: String?
     @NSManaged public var type: String?
+    @NSManaged public var userId: UUID?
+    @NSManaged public var registDate: Date?
 
 }
 
