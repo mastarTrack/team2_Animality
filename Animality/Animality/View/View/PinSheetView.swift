@@ -139,9 +139,9 @@ extension PinSheetView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
-        let vc = PaymentViewController(animalID: data.id)
+//        let vc = PaymentViewController(animalID: data.id)
         
         modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+//        present(vc, animated: true)
     }
 }
