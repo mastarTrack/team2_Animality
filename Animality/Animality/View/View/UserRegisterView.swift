@@ -200,15 +200,8 @@ extension UserRegisterView {
     }
     
     private func allSatisfyNotEmpty() -> Bool {
-        if let id = idTextField.text,
-           let password = passwordTextField.text,
-           let name = nameTextField.text,
-           !id.isEmpty, !password.isEmpty, !name.isEmpty {
-            // (이메일 제외) 모든 텍스트필드에 값이 있을 때
-            return true
-        } else {
-            // (이메일 제외) 하나라도 텍스트 필드에 값이 없을 때
-            return false
-        }
+        return !(idTextField.text ?? "").isEmpty &&
+        !(passwordTextField.text ?? "").isEmpty &&
+        !(nameTextField.text ?? "").isEmpty
     }
 }
