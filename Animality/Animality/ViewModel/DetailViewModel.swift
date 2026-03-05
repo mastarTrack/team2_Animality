@@ -41,6 +41,7 @@ final class DetailViewModel: ViewModelProtocol {
     func action(_ action: Action) {
         switch action {
         case .viewDidLoad(let id):
+            self.animalID = id
             fetch(id: id) // id에 해당하는 값 불러오기
 
         case .deleteTapped:
