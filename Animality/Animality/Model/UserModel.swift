@@ -23,7 +23,7 @@ struct UserModel {
 
 
 //MARK: - SAMPLE DATA
-var sampleUUID = UUID()
+var sampleUUID = UUID(uuidString: UserDefaults.standard.string(forKey: UserDefaultsKey.uid.rawValue) ?? "") ?? UUID()
 var sampleAnimalUUID = UUID()
 
 extension Animal {
