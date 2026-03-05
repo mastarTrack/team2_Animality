@@ -24,7 +24,7 @@ final class PaymentViewModel: ViewModelProtocol {
         var totalAmount: Int = 0
         var isPayEnabled: Bool = false
         var errorMessage: String? = nil
-        var didPay: RentReceipt? = nil
+        var didPay: Bool = false
     }
 
     private(set) var state: State = .init() {

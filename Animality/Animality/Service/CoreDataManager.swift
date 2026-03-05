@@ -9,8 +9,8 @@ import CoreData
 
 // MARK: Animal 등록 모델 구조체
 struct CreateAnimalModel {
-    var userId: UUID
     var name: String
+    var userId: UUID
     var category: String
     var type: String
     var size: String
@@ -24,8 +24,8 @@ struct CreateAnimalModel {
 
 // MARK: Animal 수정 모델 구조체
 struct UpdateAnimalModel {
-    var userId: UUID?
     var name: String?
+    var userId: UUID?
     var category: String?
     var type: String?
     var size: String?
