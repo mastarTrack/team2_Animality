@@ -11,7 +11,7 @@ import CoreLocation
 
 class MapViewController: UIViewController {
     private let locationManager = CLLocationManager()
-    private let viewModel = LocationViewModel()
+    private let viewModel: LocationViewModel
     
     private let mapView = NMFMapView(frame: .zero)
     private var displayedMarkers = [NMFMarker]()
@@ -23,6 +23,16 @@ class MapViewController: UIViewController {
     private lazy var dataSource = makeCollectionViewDiffableDataSource(listView)
     
     private var didInitialized = false // 초기화 여부
+    
+    //MARK: init
+    init(modelManager: AnimalityModelManager) {
+        self.viewModel = LocationViewModel(modelManager: modelManager, networkManager: NetworkManager())
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -74,7 +84,7 @@ class MapViewController: UIViewController {
                     await self.updateSearchResult([])
                 }
                 
-            case .none:
+            default:
                 break
             }
         }

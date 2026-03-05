@@ -8,13 +8,17 @@ import UIKit
 import SnapKit
 
 class PinSheetView: UIViewController {
-    private let animals: [Animal]
+    private let viewModel: LocationViewModel
+    private var animals: [Animal]
+    private let coordinate: Coordinate
     
     private lazy var animalCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
     private lazy var dataSource = makeCollectionViewDiffableDataSource(animalCollectionView)
     
     init(viewModel: LocationViewModel, coordinate: Coordinate) {
+        self.viewModel = viewModel
         self.animals = viewModel.coordinates[coordinate] ?? []
+        self.coordinate = coordinate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,6 +43,19 @@ extension PinSheetView {
         
         animalCollectionView.snp.makeConstraints {
             $0.directionalEdges.equalTo(view.safeAreaLayoutGuide)
+        }
+    }
+    
+    private func bindingData() {
+        viewModel.stateChanged = {[weak self] state in
+            switch state {
+            case let .updateAfterPaid(result):
+                self?.animals = result
+                self?.setSnapshot(with: result)
+                
+            default:
+                break
+            }
         }
     }
 }
@@ -139,9 +156,13 @@ extension PinSheetView: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
-//        let vc = PaymentViewController(animalID: data.id)
+        let vc = PaymentViewController(animalID: data.id, modelManager: viewModel.modelManager)
         
         modalPresentationStyle = .fullScreen
-//        present(vc, animated: true)
+        present(vc, animated: true)
+    }
+    
+    func updateStatus() {
+        viewModel.action(.paid(coordinate))
     }
 }

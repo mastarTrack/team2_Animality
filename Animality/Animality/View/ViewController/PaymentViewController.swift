@@ -64,7 +64,10 @@ final class PaymentViewController: UIViewController {
                     //let receiptVC = ReceiptDetailViewController(type: .endPay, receipt: receipt)
                     //self.navigationController?.pushViewController(receiptVC, animated: true)
                     
-                    self.navigationController?.popViewController(animated: true) // 화면 닫기
+                    self.dismiss(animated: true) {
+                        let vc = self.presentingViewController as? PinSheetView
+                        vc?.updateStatus()
+                    }
                 })
                 self.present(alert, animated: true)
             }
