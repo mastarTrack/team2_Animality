@@ -33,7 +33,10 @@ class MainViewController: UITabBarController {
     }
     
     init(user: UserModel) {
-        self.animalityModelManager = AnimalityModelManager(user: user, coreDataManager: CoreDataManager())
+        var userAddSample = user
+        userAddSample.registAnimal = [Animal.sample]
+        userAddSample.rentReceipt = RentReceipt.sampleList
+        self.animalityModelManager = AnimalityModelManager(user: userAddSample, coreDataManager: CoreDataManager())
         super.init(nibName: nil, bundle: nil)
     }
     
