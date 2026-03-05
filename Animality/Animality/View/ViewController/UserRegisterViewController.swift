@@ -55,8 +55,8 @@ final class UserRegisterViewController: UIViewController {
         let message = "회원 가입이 완료되었습니다.\n로그인 후 서비스를 이용해주세요."
         
         let alert = UIAlertController(title: "환영합니다!", message: message, preferredStyle: .alert)
-        let confirm = UIAlertAction(title: "확인", style: .default) { _ in
-            self.dismiss(animated: true)
+        let confirm = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            self?.navigationController?.popViewController(animated: true)
         }
         
         alert.addAction(confirm)

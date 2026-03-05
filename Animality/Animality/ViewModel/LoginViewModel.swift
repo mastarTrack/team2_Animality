@@ -27,13 +27,12 @@ final class LoginViewModel: ViewModelProtocol {
     func action(_ action: Action) -> Void {
         switch action {
         case let .register(id, password, name, email):
-            if let email, validateEmailExpression(email) {
-                saveUserInfo(id: id, password: password, name: name, email: email)
-                self.state = .success
+            if !(email ?? "").isEmpty, !validateEmailExpression(email ?? "") { // 이메일 값이 있지만 유효하지 않을 때
+                self.state = .failed("유효한 이메일 형식이 아닙니다.")
             } else {
-                self.state = .failed("이메일 형식이 유효하지 않습니다.")
+                saveUserInfo(id: id, password: password, name: name, email: email)
+                self.state = .success // 성공
             }
-            
         }
     }
 }
