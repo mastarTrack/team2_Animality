@@ -14,34 +14,38 @@ final class LoginView: UIView {
     // ID 텍스트필드
     private let idTextField = UITextField().then {
         $0.placeholder = "ID or Email"
-        $0.backgroundColor = .systemGray4
+        $0.backgroundColor = .systemGray6
         $0.layer.cornerRadius = 16
+        $0.font = .systemFont(ofSize: 17, weight: .medium)
+        $0.addLeftPadding(12)
     }
     
     // 비밀번호 텍스트필드
     private let passwordTextField = UITextField().then {
         $0.placeholder = "Password"
-        $0.backgroundColor = .systemGray4
+        $0.backgroundColor = .systemGray6
         $0.layer.cornerRadius = 16
+        $0.font = .systemFont(ofSize: 17, weight: .medium)
+        $0.addLeftPadding(12)
     }
     
     // 로그인 버튼
     private let loginButton = UIButton(type: .system).then {
         $0.setTitle("로그인", for: .normal)
         $0.backgroundColor = .coralText
-        $0.titleLabel?.font = .systemFont(ofSize: 18)
+        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         $0.setTitleColor(.text, for: .normal)
-        $0.layer.cornerRadius = 20
+        $0.layer.cornerRadius = 25
         $0.isEnabled = false
     }
     
     // 회원가입 버튼
     private let registerButton = UIButton(type: .system).then {
-        $0.setTitle("로그인", for: .normal)
+        $0.setTitle("회원가입", for: .normal)
         $0.backgroundColor = .white
-        $0.titleLabel?.font = .systemFont(ofSize: 18)
+        $0.titleLabel?.font = .systemFont(ofSize: 16, weight: .medium)
         $0.setTitleColor(.text, for: .normal)
-        $0.layer.cornerRadius = 20
+        $0.layer.cornerRadius = 25
         $0.layer.borderColor = UIColor.rose.cgColor
         $0.layer.borderWidth = 2
         $0.isEnabled = false
@@ -49,6 +53,8 @@ final class LoginView: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        backgroundColor = .white
+        setLayout()
     }
     
     required init?(coder: NSCoder) {
@@ -69,19 +75,37 @@ extension LoginView {
         
         imageView.snp.makeConstraints {
             $0.centerX.equalToSuperview()
-            $0.top.equalToSuperview().offset(20)
+            $0.top.equalTo(safeAreaLayoutGuide).offset(20)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(10)
             $0.width.height.equalTo(183)
         }
         
         idTextField.snp.makeConstraints {
             $0.centerX.equalToSuperview()
             $0.top.equalTo(imageView.snp.bottom).offset(20)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(40)
+            $0.height.equalTo(50)
         }
         
-//        passwordTextField.snp.makeConstraints {
-//            $0.centerX.
-//        }
+        passwordTextField.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(idTextField.snp.bottom).offset(8)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(40)
+            $0.height.equalTo(50)
+        }
         
+        loginButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(passwordTextField.snp.bottom).offset(30)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(40)
+            $0.height.equalTo(50)
+        }
         
+        registerButton.snp.makeConstraints {
+            $0.centerX.equalToSuperview()
+            $0.top.equalTo(loginButton.snp.bottom).offset(8)
+            $0.horizontalEdges.equalTo(safeAreaLayoutGuide).inset(40)
+            $0.height.equalTo(50)
+        }
     }
 }
