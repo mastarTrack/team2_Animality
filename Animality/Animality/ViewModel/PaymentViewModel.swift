@@ -24,7 +24,7 @@ final class PaymentViewModel: ViewModelProtocol {
         var totalAmount: Int = 0
         var isPayEnabled: Bool = false
         var errorMessage: String? = nil
-        var didPay: Bool = false
+        var didPay: RentReceipt? = nil
     }
 
     private(set) var state: State = .init() {
@@ -84,13 +84,15 @@ final class PaymentViewModel: ViewModelProtocol {
 
         let animal = Animal(
             id: entity.id ?? UUID(),
+            userId: entity.userId ?? UUID(),
             name: entity.name ?? "",
             type: type,
             status: status,
             pricePerHour: Int(entity.pricePerHour),
             currentLocation: Coordinate(latitude: entity.latitude, longitude: entity.longitude),
             size: size,
-            flightCapability: flight
+            flightCapability: flight,
+            registDate: entity.registDate ?? Date()
         )
 
         state.animal = animal

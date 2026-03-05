@@ -11,6 +11,7 @@ import CoreData
 
 // MARK: Animal 등록 모델 구조체
 struct CreateAnimalModel {
+    var userId: UUID
     var name: String
     var category: String
     var type: String
@@ -20,10 +21,12 @@ struct CreateAnimalModel {
     var price: Int32
     var status: String
     var flight: String
+    var registDate: Date
 }
 
 // MARK: Animal 수정 모델 구조체
 struct UpdateAnimalModel {
+    var userId: UUID?
     var name: String?
     var category: String?
     var type: String?
@@ -33,6 +36,7 @@ struct UpdateAnimalModel {
     var price: Int32?
     var status: String?
     var flight: String?
+    var registDate: Date?
 }
 
 
@@ -255,6 +259,7 @@ extension CoreDataManager {
         let newEntity = AnimalEntity(context: context)
         
         newEntity.id = UUID() // ID는 자동 생성됨
+        newEntity.userId = payload.userId
         newEntity.name = payload.name
         newEntity.category = payload.category
         newEntity.type = payload.type
@@ -264,6 +269,7 @@ extension CoreDataManager {
         newEntity.pricePerHour = payload.price
         newEntity.status = payload.status
         newEntity.flightCapability = payload.flight
+        newEntity.registDate = payload.registDate
         doCatchSaveContext()
     }
     
@@ -279,13 +285,15 @@ extension CoreDataManager {
             return entities.reduce(into: [Animal]()) {
                 $0.append( Animal(
                     id: $1.id ?? UUID(),
+                    userId: $1.userId ?? UUID(),
                     name: $1.name ?? "",
                     type: AnimalType(rawValue: $1.type ?? "") ?? .dog,
                     status: AnimalStatus(rawValue: $1.status ?? "") ?? .normal,
                     pricePerHour: Int($1.pricePerHour),
                     currentLocation: Coordinate(latitude: $1.latitude, longitude: $1.longitude),
                     size: AnimalSize(rawValue: $1.size ?? "") ?? .medium,
-                    flightCapability: FlightCapability(rawValue: $1.flightCapability ?? "") ?? .cannotFly
+                    flightCapability: FlightCapability(rawValue: $1.flightCapability ?? "") ?? .cannotFly,
+                    registDate: $1.registDate ?? Date()
                 ))
             }
         } catch {
@@ -313,6 +321,7 @@ extension CoreDataManager {
     // MARK: UPDATE
     func updateAnimalEntity(entity: AnimalEntity, with payload: UpdateAnimalModel) {
         
+        if let userId = payload.userId { entity.userId = userId }
         if let name = payload.name { entity.name = name }
         if let category = payload.category { entity.category = category }
         if let type = payload.type { entity.type = type }
@@ -322,9 +331,8 @@ extension CoreDataManager {
         if let price = payload.price { entity.pricePerHour = price }
         if let status = payload.status { entity.status = status }
         if let flight = payload.flight { entity.flightCapability = flight }
-        
+        if let registDate = payload.registDate { entity.registDate = registDate }
         doCatchSaveContext()
-
     }
     
     
@@ -333,6 +341,5 @@ extension CoreDataManager {
     func deleteAnimalEntity(entity: AnimalEntity) {
         self.context.delete(entity)
         doCatchSaveContext()
-
     }
 }

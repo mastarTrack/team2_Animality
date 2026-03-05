@@ -28,6 +28,7 @@ extension Animal {
     
     static let sample = Animal(
         id: UUID(),
+        userId: UUID(),
         name: "황금 유니콘",
         type: .unicorn,
         status: .rented,
@@ -37,7 +38,8 @@ extension Animal {
             longitude: 126.9236
         ),
         size: .large,
-        flightCapability: .canFly
+        flightCapability: .canFly,
+        registDate: Date()
     )
 }
 
