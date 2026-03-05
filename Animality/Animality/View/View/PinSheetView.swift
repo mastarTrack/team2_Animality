@@ -27,6 +27,7 @@ class PinSheetView: UIViewController {
         view.backgroundColor = .white
         setLayout()
         setSnapshot(with: animals)
+        animalCollectionView.delegate = self
     }
 }
 
@@ -121,5 +122,18 @@ extension PinSheetView {
         snapShot.appendSections([0])
         snapShot.appendItems(data, toSection: 0)
         self.dataSource.apply(snapShot)
+    }
+}
+
+extension PinSheetView: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
+        let data = dataSource.itemIdentifier(for: indexPath)
+        
+        switch data?.status {
+        case .normal:
+            return true
+        default:
+            return false
+        }
     }
 }

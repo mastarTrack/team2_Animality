@@ -90,6 +90,26 @@ extension StateUILabel {
     }
 }
 
+extension StateUILabel {
+    func updateUIForSheet(status: AnimalStatus) {
+        backgroundColor = UIColor(hexCode: "#E5E7EB")
+        textColor = UIColor(hexCode: "#4A5565")
+        
+        switch status {
+        case .normal:
+            backgroundColor = UIColor(hexCode: "#DCFCE7")
+            textColor = UIColor(hexCode: "#008236")
+            text = "한가해요"
+        case .rented:
+            text = "바빠요"
+        case .resting:
+            text = "쉬어요"
+        case .sick:
+            text = "아파요"
+        }
+    }
+}
+
 @available(iOS 17.0, *)
 #Preview{
     StateUILabel()
