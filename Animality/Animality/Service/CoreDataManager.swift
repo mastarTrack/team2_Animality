@@ -7,12 +7,10 @@
 
 import CoreData
 
-
-
 // MARK: Animal 등록 모델 구조체
 struct CreateAnimalModel {
-    var name: String
     var userId: UUID
+    var name: String
     var category: String
     var type: String
     var size: String
@@ -26,8 +24,8 @@ struct CreateAnimalModel {
 
 // MARK: Animal 수정 모델 구조체
 struct UpdateAnimalModel {
-    var name: String?
     var userId: UUID?
+    var name: String?
     var category: String?
     var type: String?
     var size: String?
@@ -38,9 +36,6 @@ struct UpdateAnimalModel {
     var flight: String?
     var registDate: Date?
 }
-
-
-
 
 
 // MARK: -- 코어데이터 매니저
@@ -307,6 +302,7 @@ extension CoreDataManager {
         let newEntity = AnimalEntity(context: context)
         
         newEntity.id = UUID() // ID는 자동 생성됨
+        newEntity.userId = payload.userId
         newEntity.name = payload.name
         newEntity.category = payload.category
         newEntity.type = payload.type
@@ -316,6 +312,7 @@ extension CoreDataManager {
         newEntity.pricePerHour = payload.price
         newEntity.status = payload.status
         newEntity.flightCapability = payload.flight
+        newEntity.registDate = payload.registDate
         doCatchSaveContext()
     }
     
@@ -397,7 +394,6 @@ extension CoreDataManager {
     func deleteAnimalEntity(entity: AnimalEntity) {
         self.context.delete(entity)
         doCatchSaveContext()
-
     }
 }
 

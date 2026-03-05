@@ -56,7 +56,7 @@ struct Animal: Hashable {
     var size: AnimalSize
     /// 비행 가능 여부 (수정: 타입 명시)
     var flightCapability: FlightCapability
-    /// 개체 등록 시간
+    /// 개체등록 날짜
     var registDate: Date
 }
 

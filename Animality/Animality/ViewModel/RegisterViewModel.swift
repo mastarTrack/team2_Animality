@@ -114,6 +114,7 @@ class RegisterViewModel: ViewModelProtocol {
         // 도메인 모델 생성
         let animal = Animal(
             id: UUID(),
+            //TODO: 사용자 uid로 변경 요청
             userId: UUID(),
             name: name,
             type: type,
