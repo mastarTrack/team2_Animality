@@ -17,9 +17,9 @@ final class PaymentViewController: UIViewController {
     
     // MARK: -- 초기화
     // 의존성 주입
-    init(animalID: UUID, viewModel: PaymentViewModel = PaymentViewModel()) {
+    init(animalID: UUID, modelManager: AnimalityModelManager) {
         self.animalID = animalID
-        self.viewModel = viewModel
+        self.viewModel = PaymentViewModel(modelManager: modelManager)
         super.init(nibName: nil, bundle: nil)
     }
 
