@@ -14,11 +14,11 @@ final class SheetAnimalCell: UICollectionViewCell {
     
     //MARK: set Attributes
     private let nameLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 16, weight: .semibold)
+        $0.font = .systemFont(ofSize: 18, weight: .semibold)
     }
     
     private let typeLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 14, weight: .medium)
+        $0.font = .systemFont(ofSize: 16, weight: .medium)
         $0.textColor = .secondaryText
     }
     
@@ -55,21 +55,23 @@ extension SheetAnimalCell {
             $0.text = "시간 당 요금"
             $0.textColor = .secondaryText
             $0.font = .systemFont(ofSize: 12, weight: .medium)
+            $0.textAlignment = .center
         }
         
         let nameStack = makeVerticalStack(of: [nameLabel, typeLabel])
         let infoStack = makeVerticalStack(of: [priceLabel, unitLabel, statusLabel])
+        infoStack.alignment = .center
         
         contentView.addSubview(nameStack)
         contentView.addSubview(infoStack)
         
         nameStack.snp.makeConstraints {
-            $0.leading.equalToSuperview().inset(15)
+            $0.leading.equalToSuperview().inset(20)
             $0.top.equalTo(infoStack.snp.top)
         }
         
         infoStack.snp.makeConstraints {
-            $0.trailing.equalToSuperview().inset(15)
+            $0.trailing.equalToSuperview().inset(20)
             $0.centerY.equalToSuperview()
         }
     }

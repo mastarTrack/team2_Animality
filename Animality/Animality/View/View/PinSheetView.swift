@@ -39,7 +39,7 @@ class PinSheetView: UIViewController {
 extension PinSheetView {
     private func setLayout() {
         animalCollectionView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20) // 양옆 마진만 줌
-        animalCollectionView.contentInset = .init(top: 30, left: 0, bottom: 0, right: 0)
+        animalCollectionView.contentInset = .init(top: 40, left: 0, bottom: 0, right: 0)
         view.addSubview(animalCollectionView)
         
         animalCollectionView.snp.makeConstraints {
