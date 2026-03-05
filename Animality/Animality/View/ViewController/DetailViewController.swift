@@ -16,8 +16,8 @@ final class DetailViewController: UIViewController {
 
     // 초기화
     // 의존성 주입
-    init(animalID: UUID, viewModel: DetailViewModel = DetailViewModel()) {
-        self.viewModel = viewModel
+    init(animalID: UUID, modelManager: AnimalityModelManager) {
+        self.viewModel = DetailViewModel(modelManager: modelManager)
         self.animalID = animalID
         super.init(nibName: nil, bundle: nil)
     }

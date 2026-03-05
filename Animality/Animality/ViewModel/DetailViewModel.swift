@@ -27,12 +27,13 @@ final class DetailViewModel: ViewModelProtocol {
     var onStateChanged: ((State) -> Void)?
 
     
-    // MARK: -- 코어데이터 매니저 주입
-    private let coreDataManager: CoreDataManager
-    private var currentEntity: AnimalEntity? // 현 데이터 보관
-
-    init(coreDataManager: CoreDataManager = CoreDataManager()) {
-        self.coreDataManager = coreDataManager
+    // MARK: -- 동물모델메니저 주입
+    
+    private let modelManager: AnimalityModelManager
+    private var animalID: UUID?
+    
+    init(modelManager: AnimalityModelManager) {
+        self.modelManager = modelManager
     }
 
     
@@ -54,43 +55,28 @@ final class DetailViewModel: ViewModelProtocol {
         state.errorMessage = nil
         state.didDelete = false
 
-        guard let entity = coreDataManager.fetchOneAnimalEntity(id: id) else {
-            state.errorMessage = "해당 동물을 찾을 수 없습니다."
-            return
+        modelManager.refreshAnimals()
+        
+        guard let animal = modelManager.allAnimals.first(where: { $0.id == id }) else {
+                    state.errorMessage = "해당 동물을 찾을 수 없습니다."
+                    state.animal = nil
+                    return
         }
 
-        currentEntity = entity
-        state.animal = mapToAnimal(entity)
+        state.animal = animal
     }
 
     private func deleteCurrent() {
-        guard let entity = currentEntity else {
+        state.errorMessage = nil
+        state.didDelete = false
+
+        guard let id = animalID else {
             state.errorMessage = "삭제할 대상이 없습니다."
             return
         }
 
-        coreDataManager.deleteAnimalEntity(entity: entity)
+        modelManager.deleteAnimal(id: id)
         state.didDelete = true
     }
 
-    // 코어데이터 -> 화면용 데이터로 매핑
-    private func mapToAnimal(_ entity: AnimalEntity) -> Animal {
-        let type = AnimalType(rawValue: entity.type ?? "") ?? .dog
-        let status = AnimalStatus(rawValue: entity.status ?? "") ?? .normal
-        let size = AnimalSize(rawValue: entity.size ?? "") ?? .medium
-        let flight = FlightCapability(rawValue: entity.flightCapability ?? "")
-
-        return Animal(
-            id: entity.id ?? UUID(),
-            userId: entity.userId ?? UUID(),
-            name: entity.name ?? "",
-            type: type,
-            status: status,
-            pricePerHour: Int(entity.pricePerHour),
-            currentLocation: Coordinate(latitude: entity.latitude, longitude: entity.longitude),
-            size: size,
-            flightCapability: FlightCapability(rawValue: entity.flightCapability ?? "") ?? .cannotFly,
-            registDate: entity.registDate ?? Date()
-        )
-    }
 }
