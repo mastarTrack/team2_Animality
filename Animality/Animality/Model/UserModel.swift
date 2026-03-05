@@ -16,7 +16,6 @@ struct UserModel {
     let registDate: Date
     var rentalCount: Int
     
-    //TODO: 한주헌 - 등록개체 모델 구현시 추가예정
     var registAnimal: [Animal]?
     var rentReceipt: [RentReceipt]?
 }

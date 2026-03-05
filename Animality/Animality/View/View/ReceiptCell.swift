@@ -88,7 +88,7 @@ extension ReceiptCell {
     /// 영수증 UI 텍스트 업데이트 메소드
     func updateUIForReceipt(
         name: String,
-        state: StateUILabel.state,
+        state: StateUILabel.RentState,
         location: String,
         startTime: Date,
         endTime: Date,
@@ -99,7 +99,7 @@ extension ReceiptCell {
         rentStartTimeLabel.text = startTime.formatted()
         rentEndTimeLabel.text = endTime.formatted()
         totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
-        stateLabel.updateUIForReceipt(state: state, nil)
+        stateLabel.updateUIForReceipt(state: state,payState: false, nil)
     } 
     
     func updateUIForRegist(

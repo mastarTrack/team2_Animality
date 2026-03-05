@@ -140,7 +140,7 @@ extension MyPageInfoViewController {
             case .none:
                 break
             case .updateUI:
-                updateUI(image: nil,
+                updateUI(image: UIImage.unicornPin,
                          id: vm.modelManager.user.id,
                          name: vm.modelManager.user.name,
                          email: vm.modelManager.user.email,
@@ -155,6 +155,7 @@ extension MyPageInfoViewController {
 //MARK: - METHOD: Button Action Binding
 extension MyPageInfoViewController {
     func bindButtonAction() {
+        // 수정요청 및 확인 버튼 바인딩
         modifyButton.addAction( UIAction { [weak self] _ in
             guard let self else { return }
             if self.modifyButton.isSelected {
@@ -164,7 +165,8 @@ extension MyPageInfoViewController {
                 alert.addAction(UIAlertAction(title: "수정", style: .destructive) { _ in
                     self.modifyButton.isSelected.toggle()
                     self.setEditingMode(self.modifyButton.isSelected)
-                    self.vm.action(.ApproveuserModify)
+                    self.vm.action(.ApproveuserModify(name: self.nameField.text ?? "",
+                                                      email: self.emailField.text ?? ""))
                 })
                 present(alert, animated: true)
             } else {
@@ -174,12 +176,14 @@ extension MyPageInfoViewController {
             
             }, for: .touchUpInside )
         
+        // 수정 취소버튼 바인딩
         modifyCancelButton.addAction( UIAction { [weak self] _ in
             guard let self else { return }
             self.setEditingMode(false)
             self.vm.action(.CancelUserModify)
         }, for: .touchUpInside )
         
+        // 등록개체 확인 버튼 바인딩
         rentRegistListButton.addAction( UIAction { [weak self] _ in
             guard let self else { return }
             // TODO: 등록 목록 화면 전환 코드 추가 예정

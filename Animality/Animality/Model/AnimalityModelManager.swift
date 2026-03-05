@@ -52,6 +52,13 @@ extension AnimalityModelManager {
     }
 }
 
+// MARK: - User Data CRUD
+extension AnimalityModelManager {
+    func updateUser(name: String, email: String){
+        
+    }
+}
+
 // MARK: - Animal CRUD
 extension AnimalityModelManager {
     /// 동물 등록

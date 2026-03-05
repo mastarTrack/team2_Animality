@@ -96,6 +96,9 @@ extension MyPageViewController {
     /// 로그아웃 동작 메소드
     //  TODO: 로그인페이지로 전환코드 추가 예정
     private func comfirmLogout() {
+        guard let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let sceneDelegate = scene.delegate as? SceneDelegate else { return }
+        sceneDelegate.switchToLogin()
     }
 }
 
