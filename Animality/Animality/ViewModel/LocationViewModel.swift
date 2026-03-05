@@ -16,7 +16,7 @@ class LocationViewModel: ViewModelProtocol {
         case newRegister
         case search(text: String)
         case cancelSearch
-        case paid(Coordinate)
+        case fetchAnimalOf(Coordinate)
     }
     
     // 상태 열거형
@@ -27,7 +27,7 @@ class LocationViewModel: ViewModelProtocol {
         case newRegister(data: [Coordinate: AnimalType])
         case searched(result: [LocationInfo])
         case cancelledSearch
-        case updateAfterPaid([Animal])
+        case updateSheetAnimal([Animal])
     }
     
     var state: State = .none {
@@ -68,9 +68,9 @@ class LocationViewModel: ViewModelProtocol {
         case .cancelSearch:
             self.state = .cancelledSearch
             
-        case let .paid(coordinate):
+        case let .fetchAnimalOf(coordinate):
             let animals = fetchAnimals(of: coordinate)
-            self.state = .updateAfterPaid(animals)
+            self.state = .updateSheetAnimal(animals)
         }
         
     }
@@ -163,14 +163,14 @@ class LocationViewModel: ViewModelProtocol {
     }
     
     private func fetchAnimals(of coordinate: Coordinate) -> [Animal] {
-        coordinates = categorizeAnimalByCoordinate()
-//        guard let animals = coordinates[coordinate]
-        return coordinates[coordinate] ?? []
-    }
-    
-    private func updateAnimals(of coordinate: Coordinate) -> [Animal]? {
-        // 갱신
-        coordinates = categorizeAnimalByCoordinate()
-        return coordinates[coordinate]
+        coordinates = categorizeAnimalByCoordinate()// 갱신
+        print(coordinates[coordinate])
+        return coordinates[coordinate]?.sorted {
+            if $0.status == .normal && $1.status != .normal {
+                return false
+            } else {
+                return true
+            }
+        } ?? []
     }
 }

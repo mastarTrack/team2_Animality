@@ -30,7 +30,8 @@ class PinSheetView: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
         setLayout()
-        setSnapshot(with: animals)
+        bindingData()
+        viewModel.action(.fetchAnimalOf(coordinate))
         animalCollectionView.delegate = self
     }
 }
@@ -49,9 +50,9 @@ extension PinSheetView {
     private func bindingData() {
         viewModel.stateChanged = {[weak self] state in
             switch state {
-            case let .updateAfterPaid(result):
+            case let .updateSheetAnimal(result):
                 self?.animals = result
-                self?.setSnapshot(with: result)
+                self?.setSnapshot()
                 
             default:
                 break
@@ -134,10 +135,10 @@ extension PinSheetView {
     }
     
     // 스냅샷 설정
-    private func setSnapshot(with data: [Animal]) {
+    private func setSnapshot() {
         var snapShot = NSDiffableDataSourceSnapshot<Int, Animal>()
         snapShot.appendSections([0])
-        snapShot.appendItems(data, toSection: 0)
+        snapShot.appendItems(animals, toSection: 0)
         self.dataSource.apply(snapShot)
     }
 }
@@ -163,6 +164,6 @@ extension PinSheetView: UICollectionViewDelegate {
     }
     
     func updateStatus() {
-        viewModel.action(.paid(coordinate))
+        viewModel.action(.fetchAnimalOf(coordinate))
     }
 }
