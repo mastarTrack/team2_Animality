@@ -28,6 +28,7 @@ final class UserRegisterView: UIView {
         $0.backgroundColor = .systemGray6
         $0.layer.cornerRadius = 14
         $0.addLeftPadding(12)
+        $0.isSecureTextEntry = true // 값 가리기
         
         $0.snp.makeConstraints {
             $0.height.equalTo(56)
