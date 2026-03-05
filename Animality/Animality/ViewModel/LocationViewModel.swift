@@ -52,7 +52,7 @@ class LocationViewModel: ViewModelProtocol {
                     self.state = .searched(result: result)
                 } catch {
                     print("검색 결과를 가져오지 못했습니다.")
-//                    state = 에러로
+                    //                    state = 에러로
                 }
             }
             
@@ -64,7 +64,7 @@ class LocationViewModel: ViewModelProtocol {
     // 프로퍼티 선언
     let coreDataManager = CoreDataManager()
     let networkManager = NetworkManager()
-
+    
     private var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     private(set) var searchResults: [LocationInfo] = []
     
@@ -98,7 +98,7 @@ class LocationViewModel: ViewModelProtocol {
     // 좌표별 동물 분류 메서드
     private func categorizeAnimalByCoordinate() -> [Coordinate: [Animal]]{
         let animals = fetchAllAnimals()
-
+        
         return animals.reduce(into: [Coordinate: [Animal]]()) {
             $0[$1.currentLocation, default: []].append($1)
         }
@@ -135,49 +135,38 @@ class LocationViewModel: ViewModelProtocol {
     }
     
     private func fetchSearchResult(text: String) async throws -> [LocationInfo] {
-        let task = Task<[LocationInfo], Error> {
+        // textField 입력값으로 검색
+        let searchResponse = try await networkManager.searchLocationData(of: text)
+        
+        // 지역 검색 결과 title 배열
+        let searchNames = searchResponse.items.compactMap { $0.title }
+        
+        // 지역 검색 결과의 이미지 검색
+        var imageStrings: [String] = []
+        for name in searchNames {
+            let response = try await networkManager.searchImageData(of: name)
+            let link = response.items.first?.link ?? ""
             
-            // textField 입력값으로 검색
-            let searchResponse = try await networkManager.searchLocationData(of: text)
-            
-            // 지역 검색 결과 title 배열
-            let searchNames = searchResponse.items.compactMap { $0.title }
-            
-            // 지역 검색 결과의 이미지 검색
-            var imageStrings: [String] = []
-            for name in searchNames {
-                let response = try await networkManager.searchImageData(of: name)
-                let link = response.items.first?.link ?? ""
-                
-                imageStrings.append(link)
-            }
-            
-            // [LocationInfo] 배열 반환
-            return searchResponse.items.enumerated().reduce(into: [LocationInfo]()) {
-                
-                guard let name = $1.element.title,
-                      let address = $1.element.roadAddress,
-                      let mapX = Double($1.element.mapx ?? ""),
-                      let mapY = Double($1.element.mapy ?? "") else {
-                    return
-                }
-                
-                let image = imageStrings[$1.offset]
-                
-                $0.append(LocationInfo(name: name.htmlToString() ?? NSAttributedString(string: ""),
-                                       address: address,
-                                       mapX: mapX,
-                                       mapY: mapY,
-                                       image: image))
-            }
-            
+            imageStrings.append(link)
         }
         
-        switch await task.result {
-        case .success(let result):
-            return result
-        case .failure(let error):
-            throw error
+        // [LocationInfo] 배열 반환
+        return searchResponse.items.enumerated().reduce(into: [LocationInfo]()) {
+            
+            guard let name = $1.element.title,
+                  let address = $1.element.roadAddress,
+                  let mapX = Double($1.element.mapx ?? ""),
+                  let mapY = Double($1.element.mapy ?? "") else {
+                return
+            }
+            
+            let image = imageStrings[$1.offset]
+            
+            $0.append(LocationInfo(name: name.htmlToString() ?? NSAttributedString(string: ""),
+                                   address: address,
+                                   mapX: mapX,
+                                   mapY: mapY,
+                                   image: image))
         }
     }
 }
