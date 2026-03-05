@@ -7,16 +7,17 @@
 import Foundation
 
 final class PaymentViewModel: ViewModelProtocol {
-
+    
+    // MARK: -- Action & State
     enum Action {
-        case viewDidLoad(id: UUID)
-        case startDateChanged(Date)
-        case endDateChanged(Date)
-        case payTapped
+        case viewDidLoad(id: UUID) // 화면 로드
+        case startDateChanged(Date) // 시작 날짜 변경
+        case endDateChanged(Date) // 종류 날짜 변경
+        case payTapped // 결제 버튼 클릭
     }
 
     struct State {
-        var animal: Animal? = nil
+        var animal: Animal? = nil // 현재 선택된 동물 정보
         var startDate: Date = Date()
         var endDate: Date = Date().addingTimeInterval(3600)
         var durationText: String = "1시간 (청구 1시간)"
@@ -60,7 +61,8 @@ final class PaymentViewModel: ViewModelProtocol {
             pay()
         }
     }
-
+    
+    // 전달받은 ID로 코어데이터에서 찾아오기
     private func fetchAnimal(id: UUID) {
         guard let entity = coreDataManager.fetchOneAnimalEntity(id: id) else {
             state.errorMessage = "해당 동물을 찾을 수 없습니다."
@@ -76,7 +78,7 @@ final class PaymentViewModel: ViewModelProtocol {
 
         let size = AnimalSize(rawValue: entity.size ?? "") ?? .medium
 
-        // flightCapability도 String?
+        // flightCapability도 String? 이므로
         let flightString = entity.flightCapability ?? FlightCapability.cannotFly.rawValue
         let flight = FlightCapability(rawValue: flightString) ?? .cannotFly
 
@@ -94,6 +96,7 @@ final class PaymentViewModel: ViewModelProtocol {
         state.animal = animal
     }
 
+    // 요금 계산 로직
     private func recalc() {
         state.didPay = false
         state.errorMessage = nil
@@ -103,7 +106,8 @@ final class PaymentViewModel: ViewModelProtocol {
             state.totalAmount = 0
             return
         }
-
+        
+        // 종료시간 - 시작시간
         let diff = state.endDate.timeIntervalSince(state.startDate)
         guard diff > 0 else {
             state.isPayEnabled = false
@@ -113,10 +117,10 @@ final class PaymentViewModel: ViewModelProtocol {
             return
         }
 
-        // 시간 올림(ceil)
+        // 시간 올림(ceil) (1시간 1분 -> 2시간으로 청구됨)
         let billingHours = max(1, Int(ceil(diff / 3600.0)))
 
-        // 표시용 텍스트
+        // 화면 표시용 텍스트
         let minutes = Int(diff / 60)
         let h = minutes / 60
         let m = minutes % 60
@@ -128,23 +132,31 @@ final class PaymentViewModel: ViewModelProtocol {
         state.isPayEnabled = true
     }
 
+    
+    // 결제하기
     private func pay() {
         guard state.isPayEnabled else { return }
         guard let animal = state.animal else { return }
 
         let locationText = "(\(animal.currentLocation.latitude), \(animal.currentLocation.longitude))"
 
-        // Receipt CoreData에 저장
-        coreDataManager.createReceipt(
-            userId: nil,
+        // 영수증 데이터 RentReceipt 생성
+        let receipt = RentReceipt(
+            id: UUID(),
+            userId: UUID(),                 // 로그인 붙이면 유저 UUID 넣기
             animalId: animal.id,
+            amount: Int64(state.totalAmount),
             location: locationText,
+            rentPaymentTime: Date(),
             rentStartTime: state.startDate,
             rentEndTime: state.endDate,
-            amount: state.totalAmount,
-            rentState: AnimalStatus.rented.rawValue, // "대여중"
-            payState: "결제완료"
+            rentState: .renting,
+            payState: .renting,
+            animal: animal
         )
+
+        // 기존 CoreData 함수 재사용해서 create
+        coreDataManager.createReceiptEntity(receipt: receipt)
 
         state.didPay = true
     }
