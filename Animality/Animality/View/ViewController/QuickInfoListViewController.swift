@@ -12,12 +12,6 @@ import SnapKit
 /// 영수증 및 등록정보 목록 ViewController
 class QuickInfoListViewController: UIViewController {
     
-    // MARK: - Dependencies
-    private let coreDataManager: CoreDataManager
-
-    // MARK: - Data
-    private var animals: [AnimalEntity] = []
-    
     //MARK: - ViewModel
      let vm: MyPageViewModel
     
@@ -42,16 +36,6 @@ class QuickInfoListViewController: UIViewController {
         $0.textAlignment = .center
         $0.isHidden = true
     }
-
-    // MARK: - Init
-    init(coreDataManager: CoreDataManager = CoreDataManager()) {
-        self.coreDataManager = coreDataManager
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder: NSCoder) { fatalError() }
-
-
     
     //MARK: - Init
     override func viewDidLoad() {
@@ -63,21 +47,16 @@ class QuickInfoListViewController: UIViewController {
             title = "등록 내역"
         }
         configureUI()
-        loadData()
     }
     
     /// 상세뷰 Detail에서 삭제하고 돌아오면 리스트를 다시 갱신
     override func viewWillAppear(_ animated: Bool) {
+        vm.action(.fetchReceipt)
+        vm.action(.fetchRegistAnimal)
         super.viewWillAppear(animated)
-        loadData()
     }
     
-    private func loadData() {
-        animals = coreDataManager.fetchAllAnimalEntities()
-        emptyLabel.isHidden = !animals.isEmpty
-        collectionView?.isHidden = animals.isEmpty
-        collectionView?.reloadData()
-    }
+
     
     init(cellType: CellType, vm: MyPageViewModel) {
         self.cellType = cellType
@@ -91,8 +70,26 @@ class QuickInfoListViewController: UIViewController {
     }
 }
 
+//MARK: - METHOD: Binding VM Action
+extension QuickInfoListViewController {
+    // VM state 클로저 바인딩 메소드
+    private func bindingData() {
+        vm.stateChanged = { [weak self] state in
+            guard let self,
+            let collectionView = collectionView else { return }
+            
+            switch state {
+            case .none:
+                break
+            case .updateUI:
+                collectionView.reloadData()
+            }
+        }
+    }
+}
+
+
 // MARK: - METHOD: CollectionView
-// TODO: 커스텀 셀 삽입 예정
 extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -134,16 +131,20 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let entity = animals[indexPath.item]          // CoreData에서 가져온 배열
-        guard let id = entity.id else { return }      // 클릭한 데이터의 UUID 추출
-
-        // 같은 CoreDataManager를 Detail VM에 주입해줌
-        let vm = DetailViewModel(coreDataManager: coreDataManager)
-        let detailVC = DetailViewController(viewModel: vm)
-        detailVC.animalID = id
-
-        // 네비게이션 push
-        navigationController?.pushViewController(detailVC, animated: true)
+        guard let animal = vm.userModel.registAnimal?[indexPath.item] else { return }
+        // 클릭한 데이터의 UUID 추출
+        
+        switch cellType {
+        case .regist:
+            // 같은 CoreDataManager를 Detail VM에 주입해줌
+            let vm = DetailViewModel(coreDataManager: vm.coreDataManager)
+            let detailVC = DetailViewController(viewModel: vm)
+            detailVC.animalID = animal.id
+            // 네비게이션 push
+            navigationController?.pushViewController(detailVC, animated: true)
+        case .receipt:
+            break
+        }
     }
     
 }

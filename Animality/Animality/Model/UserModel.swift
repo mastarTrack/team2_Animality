@@ -10,16 +10,15 @@ import Foundation
 /// 사용자 모델
 struct UserModel {
     let uid: UUID
-    let id: String
-    let name: String
-    let email: String
+    var id: String
+    var name: String
+    var email: String
     let registDate: Date
-    let rentalCount: Int
+    var rentalCount: Int
     
     //TODO: 한주헌 - 등록개체 모델 구현시 추가예정
-    let registAnimal: [Animal]?
-    
-    let rentReceipt: [RentReceipt]?
+    var registAnimal: [Animal]?
+    var rentReceipt: [RentReceipt]?
 }
 
 
