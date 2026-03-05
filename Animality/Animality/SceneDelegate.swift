@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let vm = MyPageViewModel(modelManager: model)
         let vc = MyPageInfoViewController(vm: vm)
         
-        window.rootViewController = UINavigationController(rootViewController: vc)
+        window.rootViewController = UINavigationController(rootViewController: MainViewController(user: UserModel.sample))
         window.makeKeyAndVisible()
         
         self.window = window        

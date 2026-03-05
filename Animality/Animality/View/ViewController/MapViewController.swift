@@ -346,8 +346,11 @@ extension MapViewController {
             sheet.prefersScrollingExpandsWhenScrolledToEdge = true // 시트 확장 가능 여부
             sheet.prefersGrabberVisible = true // grabber 표시 여부
         }
-        
-        self.present(vc, animated: true)
+
+        self.navigationController?.modalPresentationStyle = .formSheet
+        self.navigationController?.pushViewController(vc, animated: true)
+
+//        self.present(vc, animated: true)
     }
 }
 
