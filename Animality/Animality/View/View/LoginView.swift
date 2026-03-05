@@ -49,6 +49,9 @@ final class LoginView: UIView {
         $0.layer.borderWidth = 2
     }
     
+    //MARK: Binding Closures
+    var registerButtonPushed: (() -> Void)?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         backgroundColor = .white
@@ -121,5 +124,13 @@ extension LoginView {
     func setDelegate(vc: UITextFieldDelegate) {
         idTextField.delegate = vc
         passwordTextField.delegate = vc
+    }
+    
+    private func setButtonAction() {
+        let navToRegister = UIAction { [weak self] _ in
+            self?.registerButtonPushed?()
+        }
+        
+        loginView.registerButton.addAction(navToRegister, for: .touchUpInside)
     }
 }
