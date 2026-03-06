@@ -62,10 +62,6 @@ final class PaymentViewController: UIViewController {
             if state.didPay {
                 let alert = UIAlertController(title: "결제 완료", message: "결제가 완료되었습니다.", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "확인", style: .default) { _ in
-                    //TODO: 통합모델메니저에서 변경된 영수증화면 출력 (주석 해제해주시면 됩니다.)
-                    //let receiptVC = ReceiptDetailViewController(type: .endPay, receipt: receipt)
-                    //self.navigationController?.pushViewController(receiptVC, animated: true)
-                    
                     self.dismiss(animated: true) {
                         self.updateSheet?()
                     }

@@ -94,18 +94,19 @@ class ReceiptDetailViewController: UIViewController {
         ConfigureUI(type: type)
         ConfigureMapView()
         
-        guard let animal = receipt.animal else { return }
-        
         updateUI(rentState: receipt.rentState
                  , amount: receipt.amount
-                 , name: animal.name
+                 , name: receipt.animal?.name ?? "알수 없음"
                  , locationName: receipt.location ?? ""
-                 , location: animal.currentLocation
+                 , location: receipt.animal?.currentLocation ?? nil
                  , rentpaymentTime: receipt.rentPaymentTime
                  , rentStartTime: receipt.rentStartTime
                  , rentEndTime: receipt.rentEndTime
                  , paystate: receipt.payState
         )
+        
+        guard let animal = receipt.animal else { return }
+
         Task {
             await makeMarker(animalData: animal)
         }
@@ -129,7 +130,7 @@ extension ReceiptDetailViewController {
                   amount: Int64,
                   name: String,
                   locationName: String,
-                  location: Coordinate,
+                  location: Coordinate?,
                   rentpaymentTime: Date,
                   rentStartTime: Date,
                   rentEndTime: Date,
@@ -137,6 +138,7 @@ extension ReceiptDetailViewController {
     ) {
         stateLabel.updateUIForReceipt(state: rentState,payState: false, nil)
         totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
+        rentLocationLabel.text = location?.formatted ?? "알수없음"
         nameLabel.text = name
         rentLocationLabel.text = locationName
         rentpaymentTimeLabel.text = rentpaymentTime.formatted()
