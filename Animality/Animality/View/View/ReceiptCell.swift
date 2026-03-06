@@ -11,12 +11,8 @@ import UIKit
 
 class ReceiptCell: UICollectionViewCell {
 
-    enum rentStates {
-        case completed
-        case renting
-        case cancel
-    }
-
+    static let identifier = "ReceiptCell"
+    
     //MARK: - Components
     /// 대여 동물 이름 라벨
     private let nameLabel = UILabel().then {
@@ -24,15 +20,9 @@ class ReceiptCell: UICollectionViewCell {
         $0.textColor = .text
     }
 
-    /// 대여상태 라벨
-    private let stateLabel = UILabel().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 10
-        $0.layer.masksToBounds = true
-        $0.textAlignment = .center
-        
-    }
-
+    /// 대여 상태 라벨
+    private let stateLabel = StateUILabel()
+    
     /// 대여장소 라벨
     private let locationLabel = UILabel().then {
         $0.font = .systemFont(ofSize: 14)
@@ -56,6 +46,18 @@ class ReceiptCell: UICollectionViewCell {
         $0.font = .systemFont(ofSize: 18)
         $0.textColor = .accentBlue
     }
+    
+    private let startTimeTitleLabel = UILabel().then {
+        $0.text = "Start"
+        $0.textColor = .secondaryText
+        $0.font = .systemFont(ofSize: 16)
+    }
+    
+    private let endTimeStack = UIStackView().then {
+        $0.axis = .vertical
+        $0.distribution = .fillEqually
+        $0.spacing = 5
+    }
 
     //MARK: - Init
     override init(frame: CGRect) {
@@ -71,10 +73,22 @@ class ReceiptCell: UICollectionViewCell {
 
 //MARK: - METHOD: Update UI
 extension ReceiptCell {
-    /// UI 텍스트 업데이트 메소드
-    func updateUI(
+    /// 셀타입에 따른 UI 업데이트 메소드
+    func updateUIForType(type: QuickInfoListViewController.CellType) {
+        switch type {
+        case .receipt:
+            return
+        case .regist:
+            endTimeStack.isHidden = true
+            startTimeTitleLabel.text = "등록일자"
+        }
+    }
+    
+    
+    /// 영수증 UI 텍스트 업데이트 메소드
+    func updateUIForReceipt(
         name: String,
-        state: rentStates,
+        state: StateUILabel.RentState,
         location: String,
         startTime: Date,
         endTime: Date,
@@ -85,22 +99,21 @@ extension ReceiptCell {
         rentStartTimeLabel.text = startTime.formatted()
         rentEndTimeLabel.text = endTime.formatted()
         totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
-        
-        switch state {
-        case .completed:
-            stateLabel.backgroundColor = UIColor(hexCode: "#DCFCE7")
-            stateLabel.textColor = UIColor(hexCode: "#008236")
-            stateLabel.text = "Completed"
-        case .renting:
-            stateLabel.backgroundColor = UIColor(hexCode: "#DBEAFE")
-            stateLabel.textColor = UIColor(hexCode: "#1D4ED8")
-            stateLabel.text = "Renting"
-
-        case .cancel:
-            stateLabel.backgroundColor = UIColor(hexCode: "#FEE2E2")
-            stateLabel.textColor = UIColor(hexCode: "#DC2626")
-            stateLabel.text = "Cancel"
-        }
+        stateLabel.updateUIForReceipt(state: state,payState: false, nil)
+    } 
+    
+    func updateUIForRegist(
+        name: String,
+        state: AnimalStatus,
+        startTime: Date,
+        amount: Int
+    ) {
+        nameLabel.text = name
+        locationLabel.text = ""
+        rentStartTimeLabel.text = startTime.formatted()
+        rentEndTimeLabel.text = ""
+        totalAmountLabel.text = NumberFormatter.localizedString(from: amount as NSNumber, number: .currency)
+        stateLabel.updateUIForRegist(state: state, nil)
     }
 }
 
@@ -136,21 +149,9 @@ extension ReceiptCell {
             $0.spacing = 5
         }
 
-        let endTimeStack = UIStackView().then {
-            $0.axis = .vertical
-            $0.distribution = .fillEqually
-            $0.spacing = 5
-        }
-
         let amountStack = UIStackView().then {
             $0.axis = .horizontal
             $0.alignment = .center
-        }
-
-        let startTimeTitleLabel = UILabel().then {
-            $0.text = "Start"
-            $0.textColor = .secondaryText
-            $0.font = .systemFont(ofSize: 16)
         }
 
         let endTimeTitleLabel = UILabel().then {
@@ -224,22 +225,11 @@ extension ReceiptCell {
             $0.height.equalTo(24)
             $0.width.equalTo(87)
         }
-        
- 
     }
 }
 
 @available(iOS 17.0, *)
 #Preview {
     let cell = ReceiptCell()
-    cell.frame = CGRect(x: 0, y: 0, width: 300, height: 150)
-    cell.updateUI(
-        name: "황금 유니콘",
-        state: .completed,
-        location: "강남",
-        startTime: Date(),
-        endTime: Date(),
-        amount: 120000
-    )
     return cell
 }

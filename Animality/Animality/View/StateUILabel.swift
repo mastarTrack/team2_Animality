@@ -9,12 +9,14 @@ import UIKit
 
 /// 상태 UILabel
 class StateUILabel: UILabel {
+    private let padding = UIEdgeInsets(top: 5, left: 5, bottom: 5, right: 5)
     
-    enum state {
+    enum RentState: String {
         case completed
         case renting
         case cancel
     }
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -28,26 +30,83 @@ class StateUILabel: UILabel {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func updateUI(state: state, _ inputFont: UIFont?) {
+    func updateUIForReceipt(state: RentState, payState: Bool, _ inputFont: UIFont?) {
         switch state {
         case .completed:
             backgroundColor = UIColor(hexCode: "#DCFCE7")
             textColor = UIColor(hexCode: "#008236")
-            text = "Completed"
+            text = payState ? "결제완료" : "랜트 완료"
         case .renting:
             backgroundColor = UIColor(hexCode: "#DBEAFE")
             textColor = UIColor(hexCode: "#1D4ED8")
-            text = "Renting"
-            
+            text = payState ? "결제 대기" : "렌트 중"
         case .cancel:
             backgroundColor = UIColor(hexCode: "#FEE2E2")
             textColor = UIColor(hexCode: "#DC2626")
-            text = "Cancel"
+            text = payState ? "결제 취소" : "랜트 취소"
         }
         guard let inputFont = inputFont else {
             return
         }
         font = inputFont
+    }
+    
+    func updateUIForRegist(state: AnimalStatus, _ inputFont: UIFont?) {
+        switch state {
+        case .normal:
+            backgroundColor = UIColor(hexCode: "#DCFCE7")
+            textColor = UIColor(hexCode: "#008236")
+            text = "한가해요"
+        case .resting:
+            backgroundColor = UIColor(hexCode: "#DCFCE7")
+            textColor = UIColor(hexCode: "#008236")
+            text = "바빠요"
+        case .rented:
+            backgroundColor = UIColor(hexCode: "#DBEAFE")
+            textColor = UIColor(hexCode: "#1D4ED8")
+            text = "쉬어요"
+        case .sick:
+            backgroundColor = UIColor(hexCode: "#FEE2E2")
+            textColor = UIColor(hexCode: "#DC2626")
+            text = "아파요"
+        }
+        guard let inputFont = inputFont else {
+            return
+        }
+        font = inputFont
+    }
+}
+
+extension StateUILabel {
+    override func drawText(in rect: CGRect) {
+        super.drawText(in: rect.inset(by: padding))
+    }
+    
+    override var intrinsicContentSize: CGSize {
+        var contentSize = super.intrinsicContentSize
+        contentSize.height += padding.top + padding.bottom
+        contentSize.width += padding.left + padding.right
+        return contentSize
+    }
+}
+
+extension StateUILabel {
+    func updateUIForSheet(status: AnimalStatus) {
+        backgroundColor = UIColor(hexCode: "#E5E7EB")
+        textColor = UIColor(hexCode: "#4A5565")
+        
+        switch status {
+        case .normal:
+            backgroundColor = UIColor(hexCode: "#DCFCE7")
+            textColor = UIColor(hexCode: "#008236")
+            text = "한가해요"
+        case .rented:
+            text = "바빠요"
+        case .resting:
+            text = "쉬어요"
+        case .sick:
+            text = "아파요"
+        }
     }
 }
 

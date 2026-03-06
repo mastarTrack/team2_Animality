@@ -2,7 +2,7 @@
 //  AnimalEntity+CoreDataProperties.swift
 //  Animality
 //
-//  Created by 김주희 on 2/27/26.
+//  Created by Hanjuheon on 3/4/26.
 //
 //
 
@@ -18,15 +18,19 @@ extension AnimalEntity {
         return NSFetchRequest<AnimalEntity>(entityName: "AnimalEntity")
     }
 
-    @NSManaged public var id: UUID?
-    @NSManaged public var name: String?
     @NSManaged public var category: String?
-    @NSManaged public var type: String?
-    @NSManaged public var latitude: Double // 위도
-    @NSManaged public var longitude: Double // 경도
-    @NSManaged public var size: String?
+    @NSManaged public var flightCapability: String?
+    @NSManaged public var id: UUID?
+    @NSManaged public var userId: UUID?
+    @NSManaged public var latitude: Double
+    @NSManaged public var longitude: Double
+    @NSManaged public var name: String?
     @NSManaged public var pricePerHour: Int32
-    @NSManaged public var status: String
+    @NSManaged public var size: String?
+    @NSManaged public var status: String?
+    @NSManaged public var type: String?
+    @NSManaged public var registDate: Date?
+
 }
 
 extension AnimalEntity : Identifiable {

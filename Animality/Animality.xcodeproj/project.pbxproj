@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		160564E12F581AB10085657A /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 160564E02F581AB10085657A /* Kingfisher */; };
 		1656D4962F51449A00404B65 /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 1656D4952F51449A00404B65 /* NMapsMap */; };
 		16BF3D722F50511900F24E09 /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 16BF3D712F50511900F24E09 /* SnapKit */; };
 		16BF3D752F50582600F24E09 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = 16BF3D742F50582600F24E09 /* Alamofire */; };
@@ -47,6 +48,7 @@
 				1656D4962F51449A00404B65 /* NMapsMap in Frameworks */,
 				16BF3D752F50582600F24E09 /* Alamofire in Frameworks */,
 				16BF3D7A2F5058B800F24E09 /* Then in Frameworks */,
+				160564E12F581AB10085657A /* Kingfisher in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,6 +95,7 @@
 				16BF3D742F50582600F24E09 /* Alamofire */,
 				16BF3D792F5058B800F24E09 /* Then */,
 				1656D4952F51449A00404B65 /* NMapsMap */,
+				160564E02F581AB10085657A /* Kingfisher */,
 			);
 			productName = Animality;
 			productReference = 16BF3D552F5050D300F24E09 /* Animality.app */;
@@ -127,6 +130,7 @@
 				16BF3D732F50582600F24E09 /* XCRemoteSwiftPackageReference "Alamofire" */,
 				16BF3D782F5058B800F24E09 /* XCRemoteSwiftPackageReference "Then" */,
 				1656D4942F51449A00404B65 /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */,
+				160564DF2F581AB10085657A /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 16BF3D562F5050D300F24E09 /* Products */;
@@ -168,6 +172,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animality/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "주변 대여 가능 대상을 찾기 위해 현재 위치 정보가 필요합니다. 현재 위치 사용을 허용하시겠습니까?";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -203,6 +210,9 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Animality/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "";
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "주변 대여 가능 대상을 찾기 위해 현재 위치 정보가 필요합니다. 현재 위치 사용을 허용하시겠습니까?";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -372,6 +382,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		160564DF2F581AB10085657A /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.7.0;
+			};
+		};
 		1656D4942F51449A00404B65 /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/navermaps/SPM-NMapsMap";
@@ -407,6 +425,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		160564E02F581AB10085657A /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 160564DF2F581AB10085657A /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		1656D4952F51449A00404B65 /* NMapsMap */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1656D4942F51449A00404B65 /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */;

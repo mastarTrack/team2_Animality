@@ -19,12 +19,55 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         let window = UIWindow(windowScene: windowScene)
 
-        window.rootViewController = MainViewController()
+        self.window = window
+        setupUID()
+        showLogin()
         window.makeKeyAndVisible()
-        
-        self.window = window        
     }
+    
+    /// 로그인화면 출력 메소드
+    func showLogin() {
+        let loginVC = LoginViewController()
+        loginVC.successLoginClosure = { [weak self] user in
+            self?.showMain(user: user)
+        }
+        window?.rootViewController = UINavigationController(rootViewController: loginVC)
+    }
+    
+    /// 메인화면(지도)로 이동하기 위한 메소드
+    func showMain(user: UserModel) {
+        let main = MainViewController(userModel: user)
+        window?.rootViewController = main
+        window?.makeKeyAndVisible()
+    }
+    
+    /// 동일한 UUID값으로 설정하기위한 메소드
+    func setupUID(){
+        if UserDefaults.standard.string(forKey: UserDefaultsKey.uid.rawValue) == nil {
+            let newUID = UUID().uuidString
+            UserDefaults.standard.set(newUID, forKey: UserDefaultsKey.uid.rawValue)
+        }
+    }
+    
+    /// 로그인화면으로 전환 메소드
+    func switchToLogin() {
+        let loginVC = LoginViewController()
+        loginVC.successLoginClosure = { [weak self] user in
+            self?.showMain(user: user)
+        }
+        let nav = UINavigationController(rootViewController: loginVC)
 
+        window?.rootViewController = nav
+        window?.makeKeyAndVisible()
+
+        UIView.transition(with: window!,
+                          duration: 0.25,
+                          options: .transitionCrossDissolve,
+                          animations: nil,
+                          completion: nil)
+    }
+    
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
