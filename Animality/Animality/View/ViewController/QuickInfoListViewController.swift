@@ -95,12 +95,17 @@ extension QuickInfoListViewController {
 extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        var count = 0
         switch cellType {
         case .receipt:
-            return vm.modelManager.user.rentReceipt?.count ?? 0
+            count = vm.modelManager.user.rentReceipt?.count ?? 0
         case .regist:
-            return vm.modelManager.user.registAnimal?.count ?? 0
+            count = vm.modelManager.user.registAnimal?.count ?? 0
         }
+        if count == 0 {
+            emptyLabel.isHidden = false
+        }
+        return count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -114,7 +119,7 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
             }
             cell.updateUIForReceipt(name: receipt.animal?.name ?? ""
                                     , state: receipt.rentState
-                                    , location: receipt.location ?? ""
+                                    , location: receipt.formatLocation(receipt.location ?? "")
                                     , startTime: receipt.rentStartTime
                                     , endTime: receipt.rentEndTime
                                     , amount: Int(receipt.amount))

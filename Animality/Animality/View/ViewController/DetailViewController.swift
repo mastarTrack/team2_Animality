@@ -72,6 +72,9 @@ final class DetailViewController: UIViewController {
     private func bindActions() {
         detailView.onDeleteTapped = { [weak self] in
             self?.updateClosure?()
+            guard let nav = self?.tabBarController?.viewControllers?.first as? UINavigationController else { return }
+            guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
+            mapVC.deleteRegistration()
             self?.viewModel.action(.deleteTapped)
             
             guard let nav = self?.tabBarController?.viewControllers?.first as? UINavigationController else { return }

@@ -160,7 +160,14 @@ extension PinSheetView: UICollectionViewDelegate {
         guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
         let vc = PaymentViewController(animalID: data.id, modelManager: viewModel.modelManager) { [weak self] in
             guard let coordinate = self?.coordinate else { return }
+            print(coordinate)
             self?.viewModel.action(.fetchAnimalOf(coordinate))
+            
+            self?.navigationController?.popViewController(animated: true)
+            guard let nav = self?.tabBarController?.viewControllers?.last as? UINavigationController else { return }
+            guard let myVC = nav.viewControllers.first as? MyPageViewController else { return }
+            myVC.vm.action(.fetchReceipt)
+
         }
         
         modalPresentationStyle = .fullScreen

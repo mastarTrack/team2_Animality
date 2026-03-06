@@ -32,6 +32,24 @@ struct RentReceipt {
     let payState: StateUILabel.RentState
     /// 동물 모델
     let animal: Animal?
+    
+    func formatLocation(_ location: String?) -> String {
+        guard let location else { return "" }
+        
+        let trimmed = location
+            .replacingOccurrences(of: "(", with: "")
+            .replacingOccurrences(of: ")", with: "")
+        
+        let components = trimmed.split(separator: ",")
+        
+        guard components.count == 2,
+              let lat = Double(components[0]),
+              let lon = Double(components[1]) else {
+            return location
+        }
+        
+        return String(format: "(%.3f, %.3f)", lat, lon)
+    }
 }
 
 /// 샘플 데이터

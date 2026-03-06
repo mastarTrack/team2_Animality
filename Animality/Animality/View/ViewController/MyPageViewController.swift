@@ -16,7 +16,7 @@ class MyPageViewController: UIViewController {
     private var currentIndex: Int = 0
 
     //MARK: - ViewModel
-    private let vm: MyPageViewModel
+    let vm: MyPageViewModel
     
     //MARK: - Components
     /// 이용내역 VC
