@@ -124,6 +124,11 @@ extension LoginView {
         passwordTextField.delegate = vc
     }
     
+    func setLoginInfo(id: String?, pw: String?) {
+        idTextField.text = id ?? ""
+        passwordTextField.text = pw ?? ""
+    }
+    
     func getloginInfo() -> (id: String,pw: String) {
         return ( idTextField.text ?? "" , passwordTextField.text ?? "")
     }

@@ -21,6 +21,7 @@ final class LoginViewController: UIViewController {
         super.viewDidLoad()
         setButtonAction()
         viewModelActionBinding()
+        viewModel.action(.Init)
     }
     
 }
@@ -49,6 +50,8 @@ extension LoginViewController {
                     return
                 }
                 successLoginClosure?(result)
+            case .Init(let id, let pw):
+                loginView.setLoginInfo(id: id, pw: pw)
             }
         }
     }

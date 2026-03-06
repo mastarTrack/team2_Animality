@@ -41,6 +41,8 @@ final class UserRegisterViewController: UIViewController {
         
         viewModel.stateChanged = { [weak self] state in
             switch state {
+            case .Init(_, _):
+                return
             case .none:
                 return
             case .resultLogin(_):

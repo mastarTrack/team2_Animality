@@ -188,7 +188,7 @@ extension UserRegisterView {
     }
     
     private func enableButton() {
-        registerButton.backgroundColor = .deepRose
+        registerButton.backgroundColor = .coralText
         registerButton.setTitleColor(.text, for: .normal)
         registerButton.isEnabled = true
     }

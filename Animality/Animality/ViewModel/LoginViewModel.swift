@@ -10,6 +10,7 @@ final class LoginViewModel: ViewModelProtocol {
     enum Action {
         case register(String, String, String, String?)
         case checkLogin(String, String)
+        case Init
     }
     
     enum State {
@@ -17,6 +18,7 @@ final class LoginViewModel: ViewModelProtocol {
         case success
         case failed(String)
         case resultLogin(UserModel?)
+        case Init(String?, String?)
     }
     
     var state: State = .none {
@@ -39,12 +41,22 @@ final class LoginViewModel: ViewModelProtocol {
         case let .checkLogin(id, pw):
             let result = checkLogin(id: id, pw: pw)
             self.state = .resultLogin(result)
+            
+        case let .Init:
+            let userInfo = configureLogin()
+            self.state = .Init(userInfo.id,userInfo.pw)
         }
     }
 }
 
 // MARK: - METHOD: Login
 extension LoginViewModel {
+    private func configureLogin()->(id:String?,pw: String?){
+        let checkId = UserDefaults.standard.string(forKey: UserDefaultsKey.id.rawValue)
+        let checkPw = UserDefaults.standard.string(forKey: UserDefaultsKey.password.rawValue)
+        return (checkId, checkPw)
+    }
+    
     private func checkLogin(id: String, pw: String) -> UserModel? {
         let checkId = UserDefaults.standard.string(forKey: UserDefaultsKey.id.rawValue)
         let checkPw = UserDefaults.standard.string(forKey: UserDefaultsKey.password.rawValue)
