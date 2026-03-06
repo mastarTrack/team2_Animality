@@ -71,7 +71,7 @@ class RegisterViewController: UIViewController {
         }
         
         registerView.onRegisterTapped = { [weak self] in
-            self?.registerViewModel.action(.registerTapped)
+            self?.askRegister()
         }
         
         // ViewModel → View
@@ -105,12 +105,34 @@ class RegisterViewController: UIViewController {
             guard let nav = self.tabBarController?.viewControllers?.first as? UINavigationController else { return }
             guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
             mapVC.newRegister()
-
             
-            registerView.showSuccess()
+            // 등록 뷰 리셋
+            registerView.resetSelection()
+            notifySuccess()
             self.navigationController?.popViewController(animated: true) // 저장 성공시 이전 화면으로 이동학
 
         }
+    }
+    
+    private func askRegister() {
+        let askRegister = UIAlertController(title: "등록 진행", message: "새로운 동물을 등록할까요?", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            self?.registerViewModel.action(.registerTapped)
+        }
+        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
+        
+        askRegister.addAction(confirm)
+        askRegister.addAction(cancel)
+        
+        self.present(askRegister, animated: true)
+    }
+    
+    private func notifySuccess() {
+        let success = UIAlertController(title: "등록 성공", message: "동물 등록에 성공했습니다.", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default)
+        
+        success.addAction(confirm)
+        self.present(success, animated: true)
     }
 }
 

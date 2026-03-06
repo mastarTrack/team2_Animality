@@ -133,6 +133,20 @@ class RegisterViewModel: ViewModelProtocol {
         // 저장 완료 상태 저장
         modelManager.createAnimal(payload: payload)
         state = .registerSuccess
+        
+        // 리셋
+        reset()
+    }
+    
+    private func reset() {
+        name = nil
+        type = nil
+        size = nil
+        pricePerHour = nil
+        flightCapability = nil
+        latitude = nil
+        longitude = nil
+        
     }
 }
 

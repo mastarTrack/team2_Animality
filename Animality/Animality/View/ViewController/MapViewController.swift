@@ -91,6 +91,10 @@ class MapViewController: UIViewController {
                     await self.updateSearchResult([])
                 }
                 
+            case .noSearchResult:
+                Task {
+                    self.notifyNoResult()
+                }
             default:
                 break
             }
@@ -436,6 +440,14 @@ extension MapViewController {
     private func updateSearchResult(_ data: [LocationInfo]) async {
         listView.isHidden = data.isEmpty
         setSnapshot(with: data)
+    }
+    
+    @MainActor
+    private func notifyNoResult() {
+        let alert = UIAlertController(title: "검색 결과 없음", message: "검색 결과가 없습니다.", preferredStyle: .alert)
+        let confirm = UIAlertAction(title: "확인", style: .default)
+        alert.addAction(confirm)
+        self.present(alert, animated: true)
     }
 }
 
