@@ -30,6 +30,7 @@ class LocationViewModel: ViewModelProtocol {
         case searched(result: [LocationInfo])
         case cancelledSearch
         case updateSheetAnimal([Animal])
+        case noSearchResult
     }
     
     var state: State = .none {
@@ -65,7 +66,11 @@ class LocationViewModel: ViewModelProtocol {
                 do {
                     let result = try await fetchSearchResult(text: text)
                     searchResults = result
-                    self.state = .searched(result: result)
+                    if searchResults.isEmpty {
+                        self.state = .noSearchResult
+                    } else {
+                        self.state = .searched(result: result)
+                    }
                 } catch {
                     print("검색 결과를 가져오지 못했습니다.")
                     //                    state = 에러로
