@@ -150,18 +150,7 @@ NAVER Map API를 활용하여 지도 위에 동물의 위치를 표시하고
 
 ### 지도 핀 표시 로직
 지도 위에는 동물의 위치를 나타내는 **핀(Pin)**이 표시됩니다.
-핀의 색상은 해당 위치에 있는 동물들의 상태에 따라 변경됩니다.
-
-| 상태 | 핀 색상 |
-|---|---|
-| 정상 상태 동물 존재 | 초록색 |
-| 모든 동물이 대여중 | 회색 |
-
 이를 통해 사용자는 **대여 가능한 위치를 직관적으로 확인**할 수 있습니다.
-
-### 주변 동물 표시
-지도에서는 **사용자 위치 반경 내에 있는 동물들만 표시**하여  
-현재 위치 기준으로 대여 가능한 동물을 탐색할 수 있도록 구현했습니다.
 
 ### Bottom Sheet 리스트
 핀을 선택하면 하단에서 **Bottom Sheet 형태의 리스트**가 표시됩니다.
@@ -216,7 +205,7 @@ NAVER Map API를 활용하여 지도 위에 동물의 위치를 표시하고
 <br>
 
 # 🛠 Troubleshooting
-
+[버튼의 isHighlighted가 해제되지 않는 현상]("https://velog.io/@bambu113/%EB%82%B4%EC%9D%BC%EB%B0%B0%EC%9B%80%EC%BA%A0%ED%94%84-260303-TIL")
 
 
 <br>
@@ -224,7 +213,7 @@ NAVER Map API를 활용하여 지도 위에 동물의 위치를 표시하고
 # 🎨 UI 설계
 
 Figma 기반으로 화면을 설계했습니다.
-https://www.figma.com/design/2z5UV7xKjDDrS8SRcsE4qr/Animality
+[Figma - 와이어 프레임]("https://www.figma.com/design/2z5UV7xKjDDrS8SRcsE4qr/Animality")
 
 주요 화면
 - 로그인
