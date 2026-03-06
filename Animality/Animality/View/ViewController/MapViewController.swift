@@ -48,7 +48,7 @@ class MapViewController: UIViewController {
         setLayout()
     }
     
-    private func bindingData() {
+     func bindingData() {
         viewModel.stateChanged = { [weak self] state in
             guard let self else { return }
             
