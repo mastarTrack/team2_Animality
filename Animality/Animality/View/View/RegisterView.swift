@@ -526,7 +526,7 @@ final class RegisterView: UIView {
     }
     
     private func selectFlight(_ capability: FlightCapability) {
-        
+
         canFlyButton.setSelected(capability == .canFly)
         cannotFlyButton.setSelected(capability == .cannotFly)
         
@@ -538,7 +538,7 @@ final class RegisterView: UIView {
     }
     
     @objc private func registerTapped() {
-        onRegisterTapped?()
+        self.onRegisterTapped?()
     }
     
     
@@ -602,9 +602,25 @@ extension RegisterView {
         registerButton.backgroundColor = isEnabled ? .systemPink : .systemGray4
     }
     
-    // 성공 알림
-    func showSuccess() {
-        print("저장에 성공했습니다.")
+    // 선택 초기화
+    func resetSelection() {
+        nameTextField.text = nil
+        priceTextField.text = nil
+        
+        [rideButton, petButton, smallButton, mediumButton, largeButton, canFlyButton, cannotFlyButton].forEach {
+            $0.setSelected(false)
+        }
+        
+        typeStackView.arrangedSubviews.forEach {
+            if let button = $0 as? CategoryButton {
+                button.setSelected(false)
+            }
+        }
+        
+        registerButton.isEnabled = false
+        registerButton.backgroundColor = .systemGray4
+        
+        locationManager.requestLocation()
     }
 }
 
