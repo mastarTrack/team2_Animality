@@ -52,9 +52,13 @@ class QuickInfoListViewController: UIViewController {
     
     /// 상세뷰 Detail에서 삭제하고 돌아오면 리스트를 다시 갱신
     override func viewWillAppear(_ animated: Bool) {
-        vm.action(.fetchReceipt)
-        vm.action(.fetchRegistAnimal)
         super.viewWillAppear(animated)
+        switch cellType {
+        case .receipt:
+            vm.action(.fetchReceipt)
+        case .regist:
+            vm.action(.fetchRegistAnimal)
+        }
     }
     
 
@@ -102,9 +106,8 @@ extension QuickInfoListViewController: UICollectionViewDelegate, UICollectionVie
         case .regist:
             count = vm.modelManager.user.registAnimal?.count ?? 0
         }
-        if count == 0 {
-            emptyLabel.isHidden = false
-        }
+        emptyLabel.isHidden = count != 0
+        collectionView.isHidden = count == 0
         return count
     }
     

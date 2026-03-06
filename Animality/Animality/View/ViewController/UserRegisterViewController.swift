@@ -22,6 +22,11 @@ final class UserRegisterViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        viewModel.stateChanged = nil
+    }
+    
     //MARK: VC LifeCycle
     override func loadView() {
         view = userRegisterView

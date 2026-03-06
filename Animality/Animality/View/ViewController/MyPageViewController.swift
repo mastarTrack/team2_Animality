@@ -67,9 +67,13 @@ class MyPageViewController: UIViewController {
     }
     
     init(modelManager: AnimalityModelManager) {
-        self.vm = MyPageViewModel(modelManager: modelManager)
-        quickListVC = QuickInfoListViewController(cellType: .receipt, vm: vm)
-        myPageInfoVC = MyPageInfoViewController(vm: vm)
+        let parentVM = MyPageViewModel(modelManager: modelManager)
+        let receiptVM = MyPageViewModel(modelManager: modelManager)
+        let infoVM = MyPageViewModel(modelManager: modelManager)
+
+        self.vm = parentVM
+        self.quickListVC = QuickInfoListViewController(cellType: .receipt, vm: receiptVM)
+        self.myPageInfoVC = MyPageInfoViewController(vm: infoVM)
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -77,6 +81,7 @@ class MyPageViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
 }
 
 //MARK: - METHOD: Logout

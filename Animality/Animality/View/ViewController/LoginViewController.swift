@@ -24,6 +24,10 @@ final class LoginViewController: UIViewController {
         viewModel.action(.Init)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModelActionBinding()
+    }
 }
 
 //MARK: - METHOD Viewmodel binding
