@@ -205,7 +205,7 @@ NAVER Map API를 활용하여 지도 위에 동물의 위치를 표시하고
 <br>
 
 # 🛠 Troubleshooting
-[버튼의 isHighlighted가 해제되지 않는 현상]("https://velog.io/@bambu113/%EB%82%B4%EC%9D%BC%EB%B0%B0%EC%9B%80%EC%BA%A0%ED%94%84-260303-TIL")
+[버튼의 isHighlighted가 해제되지 않는 현상](https://velog.io/@bambu113/%EB%82%B4%EC%9D%BC%EB%B0%B0%EC%9B%80%EC%BA%A0%ED%94%84-260303-TIL)
 
 
 <br>
@@ -213,7 +213,7 @@ NAVER Map API를 활용하여 지도 위에 동물의 위치를 표시하고
 # 🎨 UI 설계
 
 Figma 기반으로 화면을 설계했습니다.
-[Figma - 와이어 프레임]("https://www.figma.com/design/2z5UV7xKjDDrS8SRcsE4qr/Animality")
+[Figma - 와이어 프레임](https://www.figma.com/design/2z5UV7xKjDDrS8SRcsE4qr/Animality)
 
 주요 화면
 - 로그인
