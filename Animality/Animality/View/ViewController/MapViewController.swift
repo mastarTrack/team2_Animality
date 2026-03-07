@@ -75,8 +75,10 @@ class MapViewController: UIViewController {
                 }
             case let .deleteRegistration(data):
                 let delete = compareDeleteMarkers(data) // 마커 제거 대상 찾기
-                print(delete)
-                self.deleteMarkers(delete) // 마커 제거
+
+                Task {
+                    self.deleteMarkers(delete) // 마커 제거
+                }
                 displayedMarkers.removeAll { $0.mapView == nil } // 현재 마커 배열 갱신
 
             case let .searched(result):
@@ -268,10 +270,12 @@ extension MapViewController {
     
     func newRegister() {
         viewModel.action(.newRegister)
+        print("새로운 등록")
     }
     
     func deleteRegistration() {
         viewModel.action(.deleteRegistration)
+        print("삭제")
     }
     
     // 마커 삭제
@@ -296,9 +300,10 @@ extension MapViewController {
         return displayedMarkers.reduce(into: [NMFMarker]()) {
             // 현재 비교 중인 기존 마커의 좌표
             let coordinate = Coordinate(latitude: $1.position.lat, longitude: $1.position.lng)
+            
             // 업데이트된 마커 리스트에 해당 좌표가 없는 경우 삭제 대상에 추가
             data[coordinate] == nil ? $0.append($1) : ()
-        }
+            }
     }
 }
 

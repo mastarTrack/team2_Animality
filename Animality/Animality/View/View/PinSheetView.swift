@@ -33,16 +33,16 @@ class PinSheetView: UIViewController {
         animalCollectionView.delegate = self
     }
     
-//    override func viewWillDisappear(_ animated: Bool) {
-//        super.viewWillDisappear(animated)
-//
-//        guard let tabBar = presentingViewController as? UITabBarController,
-//              let nav = tabBar.selectedViewController as? UINavigationController,
-//              let mapVC = nav.topViewController as? MapViewController
-//        else { return }
-//
-//        mapVC.bindingData()
-//    }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        guard let tabBar = presentingViewController as? UITabBarController,
+              let nav = tabBar.selectedViewController as? UINavigationController,
+              let mapVC = nav.topViewController as? MapViewController
+        else { return }
+
+        mapVC.bindingData()
+    }
 }
 
 extension PinSheetView {
