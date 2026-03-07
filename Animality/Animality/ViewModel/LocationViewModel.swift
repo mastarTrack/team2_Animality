@@ -17,7 +17,6 @@ class LocationViewModel: ViewModelProtocol {
         case deleteRegistration
         case search(text: String)
         case cancelSearch
-        case fetchAnimalOf(Coordinate)
     }
     
     // 상태 열거형
@@ -29,7 +28,6 @@ class LocationViewModel: ViewModelProtocol {
         case newRegister(data: [Coordinate: AnimalType])
         case searched(result: [LocationInfo])
         case cancelledSearch
-        case updateSheetAnimal([Animal])
         case noSearchResult
     }
     
@@ -50,7 +48,7 @@ class LocationViewModel: ViewModelProtocol {
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
-         
+            
         case .deleteRegistration:
             coordinates = categorizeAnimalByCoordinate()
             let data = fetchMarkerData(of: coordinates)
@@ -79,11 +77,6 @@ class LocationViewModel: ViewModelProtocol {
             
         case .cancelSearch:
             self.state = .cancelledSearch
-            
-        case let .fetchAnimalOf(coordinate):
-            print("fetchAnimalOf")
-            let animals = fetchAnimals(of: coordinate)
-            self.state = .updateSheetAnimal(animals)
         }
         
     }
