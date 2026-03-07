@@ -14,7 +14,7 @@ final class PaymentViewController: UIViewController {
     private let viewModel: PaymentViewModel
     private let animalID: UUID
 
-    private var updateSheet: (() -> Void)?
+    private var updateSheet: (() -> Void)? // 시트뷰 동물 목록 업데이트
     
     // MARK: -- 초기화
     // 의존성 주입

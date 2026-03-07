@@ -8,17 +8,15 @@ import UIKit
 import SnapKit
 
 class PinSheetView: UIViewController {
-    private let viewModel: LocationViewModel
-    private var animals: [Animal]
-    private let coordinate: Coordinate
+    private let viewModel: SheetViewModel
+//    private var animals: [Animal]
+//    private let coordinate: Coordinate
     
     private lazy var animalCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
     private lazy var dataSource = makeCollectionViewDiffableDataSource(animalCollectionView)
     
-    init(viewModel: LocationViewModel, coordinate: Coordinate) {
+    init(viewModel: SheetViewModel) {
         self.viewModel = viewModel
-        self.animals = viewModel.coordinates[coordinate] ?? []
-        self.coordinate = coordinate
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -31,7 +29,7 @@ class PinSheetView: UIViewController {
         view.backgroundColor = .white
         setLayout()
         bindingData()
-        viewModel.action(.fetchAnimalOf(coordinate))
+//        viewModel.action(.fetchAnimalOf(coordinate))
         animalCollectionView.delegate = self
     }
     
@@ -59,16 +57,17 @@ extension PinSheetView {
     }
     
     private func bindingData() {
-        viewModel.stateChanged = {[weak self] state in
-            switch state {
-            case let .updateSheetAnimal(result):
-                print("updatE)")
-                self?.animals = result
-                self?.setSnapshot()
-                
-            default:
-                break
-            }
+        viewModel.stateChanged = { [weak self] state in
+            self?.render(state)
+        }
+    }
+    
+    private func render(_ state: SheetViewModel.State) {
+        switch state {
+        case let .refreshed(animals):
+            setSnapshot(with: animals)
+        default:
+            break
         }
     }
 }
@@ -147,10 +146,10 @@ extension PinSheetView {
     }
     
     // 스냅샷 설정
-    private func setSnapshot() {
+    private func setSnapshot(with data: [Animal]) {
         var snapShot = NSDiffableDataSourceSnapshot<Int, Animal>()
         snapShot.appendSections([0])
-        snapShot.appendItems(animals, toSection: 0)
+        snapShot.appendItems(data, toSection: 0)
         self.dataSource.apply(snapShot)
     }
 }
@@ -159,26 +158,27 @@ extension PinSheetView: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         let data = dataSource.itemIdentifier(for: indexPath)
         
-        switch data?.status {
+        switch data?.status { // 동물의 상태
         case .normal:
-            return true
+            return true // 정상(대여 가능)일 경우: 셀 선택 가능
         default:
-            return false
+            return false // 이외의 경우: 셀 선택 불가
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
+        
         let vc = PaymentViewController(animalID: data.id, modelManager: viewModel.modelManager) { [weak self] in
-            guard let coordinate = self?.coordinate else { return }
-            print(coordinate)
-            self?.viewModel.action(.fetchAnimalOf(coordinate))
+            guard let coordinate = self?.viewModel.coordinate else { return }
             
+            self?.viewModel.action(.rented) // 동물 업데이트
+            
+            // 마이페이지 업데이트
             self?.navigationController?.popViewController(animated: true)
             guard let nav = self?.tabBarController?.viewControllers?.last as? UINavigationController else { return }
             guard let myVC = nav.viewControllers.first as? MyPageViewController else { return }
             myVC.vm.action(.fetchReceipt)
-
         }
         
         modalPresentationStyle = .fullScreen

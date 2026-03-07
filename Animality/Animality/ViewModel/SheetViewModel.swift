@@ -12,6 +12,7 @@ final class SheetViewModel: ViewModelProtocol {
     
     enum State {
         case none
+        case refreshed([Animal])
     }
     
     var stateChanged: ((State) -> Void)? // 상태가 변할 때마다 실행할 동작
@@ -24,7 +25,8 @@ final class SheetViewModel: ViewModelProtocol {
     func action(_ action: Action) {
         switch action {
         case .rented:
-            
+            animals = refreshAnimals() // 동물 업데이트
+            state = .refreshed(animals) // 상태 변경
         }
     }
     
@@ -32,12 +34,13 @@ final class SheetViewModel: ViewModelProtocol {
     init(modelManager: AnimalityModelManager, coordinate: Coordinate) {
         self.modelManager = modelManager
         self.coordinate = coordinate
+        self.animals = refreshAnimals() // 초기 동물 세팅
     }
     
     // 프로퍼티 선언
     let modelManager: AnimalityModelManager
     let coordinate: Coordinate
-    let animals: [Animal] = []
+    private var animals: [Animal] = []
     
     private func refreshAnimals() -> [Animal] {
         modelManager.refreshAnimals()
