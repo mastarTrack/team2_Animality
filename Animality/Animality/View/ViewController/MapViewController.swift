@@ -359,7 +359,7 @@ extension MapViewController: CLLocationManagerDelegate {
 extension MapViewController {
     private func showSheet(with coordinate: Coordinate) {
         let sheetVM = SheetViewModel(modelManager: viewModel.modelManager, coordinate: coordinate)
-        let sheet = PinSheetView(viewModel: sheetVM)
+        let sheet = PinSheetViewController(viewModel: sheetVM)
         
         if let sheet = sheet.sheetPresentationController {
             sheet.detents = [.medium(), .large()] // 시트 크기

@@ -7,11 +7,13 @@
 
 final class SheetViewModel: ViewModelProtocol {
     enum Action {
+        case initialized
         case rented
     }
     
     enum State {
         case none
+        case initialized([Animal])
         case refreshed([Animal])
     }
     
@@ -24,6 +26,8 @@ final class SheetViewModel: ViewModelProtocol {
     
     func action(_ action: Action) {
         switch action {
+        case .initialized:
+            state = .initialized(animals)
         case .rented:
             animals = refreshAnimals() // 동물 업데이트
             state = .refreshed(animals) // 상태 변경

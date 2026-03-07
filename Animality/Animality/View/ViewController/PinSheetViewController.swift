@@ -1,17 +1,17 @@
 //
-//  PinSheetView.swift
+//  PinSheetViewController.swift
 //  Animality
 //
-//  Created by t2025-m0143 on 3/5/26.
+//  Created by t2025-m0143 on 3/7/26.
 //
 import UIKit
 import SnapKit
 
-class PinSheetView: UIViewController {
+class PinSheetViewController: UIViewController {
     private let viewModel: SheetViewModel
     
-    private lazy var animalCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
-    private lazy var dataSource = makeCollectionViewDiffableDataSource(animalCollectionView)
+    private let collectionView = SheetAnimalCollectionView()
+    private lazy var dataSource = makeCollectionViewDiffableDataSource(collectionView)
     
     init(viewModel: SheetViewModel) {
         self.viewModel = viewModel
@@ -24,20 +24,22 @@ class PinSheetView: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.backgroundColor = .white
         setLayout()
+        
         bindingData()
-        animalCollectionView.delegate = self
+        collectionView.delegate = self
+        
+        viewModel.action(.initialized)
     }
 }
 
-extension PinSheetView {
+extension PinSheetViewController {
     private func setLayout() {
-        animalCollectionView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0, leading: 20, bottom: 0, trailing: 20) // 양옆 마진만 줌
-        animalCollectionView.contentInset = .init(top: 40, left: 0, bottom: 0, right: 0)
-        view.addSubview(animalCollectionView)
+        view.addSubview(collectionView)
         
-        animalCollectionView.snp.makeConstraints {
+        collectionView.snp.makeConstraints {
             $0.directionalEdges.equalTo(view.safeAreaLayoutGuide)
         }
     }
@@ -50,6 +52,8 @@ extension PinSheetView {
     
     private func render(_ state: SheetViewModel.State) {
         switch state {
+        case let .initialized(animals):
+            setSnapshot(with: animals)
         case let .refreshed(animals):
             setSnapshot(with: animals)
         default:
@@ -59,57 +63,7 @@ extension PinSheetView {
 }
 
 //MARK: set CollectionView
-extension PinSheetView {
-    // 레이아웃 설정
-    private func makeCollectionViewLayout() -> UICollectionViewLayout {
-        let configuration = UICollectionViewCompositionalLayoutConfiguration()
-        configuration.contentInsetsReference = .layoutMargins // 여백
-        
-      return UICollectionViewCompositionalLayout(sectionProvider: { sectionIndex, environment in
-          let headerItem = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: NSCollectionLayoutSize(
-                widthDimension: .fractionalWidth(1),
-                heightDimension: .absolute(28)
-            ),
-            elementKind: "HeaderKind",
-            alignment: .top
-          )
-          
-          // 여백 설정
-          let spacing: CGFloat = 12
-          
-          // CollectionView 사이즈
-          let containerSize = environment.container.effectiveContentSize
-          
-          // Item 설정
-          let itemSize = containerSize.width
-          let item = NSCollectionLayoutItem(
-            layoutSize: NSCollectionLayoutSize(
-                widthDimension: .absolute(itemSize),
-                heightDimension: .absolute(itemSize * 0.3)
-            )
-          )
-          
-          // Group 설정
-          let group = NSCollectionLayoutGroup.vertical(
-            layoutSize: NSCollectionLayoutSize(
-                widthDimension: .absolute(itemSize),
-                heightDimension: .fractionalHeight(1)
-            ),
-            subitems: [item]
-          )
-          
-          group.interItemSpacing = .fixed(spacing)
-          
-          // Section 설정
-          let section = NSCollectionLayoutSection(group: group)
-          section.boundarySupplementaryItems = [headerItem]
-          section.contentInsets = .init(top: 10, leading: 0, bottom: 0, trailing: 0) // 헤더 - 컨텐츠 간 여백 설정
-          
-          return section
-      }, configuration: configuration)
-    }
-    
+extension PinSheetViewController {
     // DiffableDataSource 설정
     private func makeCollectionViewDiffableDataSource(_ collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Int, Animal> {
         let cellRegistration = UICollectionView.CellRegistration<SheetAnimalCell, Animal> { (cell, indexPath, item) in
@@ -120,7 +74,7 @@ extension PinSheetView {
             supplementaryView.label.text = "한가한 동물들"
         }
         
-        let dataSource = UICollectionViewDiffableDataSource<Int, Animal>(collectionView: animalCollectionView) { collectionView, indexPath, itemIdentifier in
+        let dataSource = UICollectionViewDiffableDataSource<Int, Animal>(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
             return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
         }
         
@@ -140,7 +94,7 @@ extension PinSheetView {
     }
 }
 
-extension PinSheetView: UICollectionViewDelegate {
+extension PinSheetViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, shouldSelectItemAt indexPath: IndexPath) -> Bool {
         let data = dataSource.itemIdentifier(for: indexPath)
         
