@@ -75,10 +75,8 @@ class MapViewController: UIViewController {
                 }
             case let .deleteRegistration(data):
                 let delete = compareDeleteMarkers(data) // 마커 제거 대상 찾기
-
-                Task {
-                    self.deleteMarkers(delete) // 마커 제거
-                }
+                
+                self.deleteMarkers(delete) // 마커 제거
                 displayedMarkers.removeAll { $0.mapView == nil } // 현재 마커 배열 갱신
 
             case let .searched(result):
@@ -359,7 +357,7 @@ extension MapViewController: CLLocationManagerDelegate {
 
 //MARK: SheetView
 extension MapViewController {
-    func showSheet(with coordinate: Coordinate) {
+    private func showSheet(with coordinate: Coordinate) {
         let sheetVM = SheetViewModel(modelManager: viewModel.modelManager, coordinate: coordinate)
         let sheet = PinSheetView(viewModel: sheetVM)
         

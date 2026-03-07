@@ -13,11 +13,12 @@ class LocationViewModel: ViewModelProtocol {
     enum Action {
         case initialized(lat: Double, lng: Double)
         case didUpdateLocations(lat: Double, lng: Double)
+        
         case newRegister
         case deleteRegistration
+        
         case search(text: String)
         case cancelSearch
-        case fetchAnimalOf(Coordinate)
     }
     
     // 상태 열거형
@@ -25,11 +26,12 @@ class LocationViewModel: ViewModelProtocol {
         case none
         case initialized(lat: Double, lng: Double, data: [Coordinate: AnimalType]) // (현재 위도, 현재 경도, 마커)
         case locationChanged(lat: Double, lng: Double)
+        
         case deleteRegistration(data: [Coordinate: AnimalType])
         case newRegister(data: [Coordinate: AnimalType])
+        
         case searched(result: [LocationInfo])
         case cancelledSearch
-        case updateSheetAnimal([Animal])
         case noSearchResult
     }
     
@@ -50,7 +52,7 @@ class LocationViewModel: ViewModelProtocol {
             
         case let .didUpdateLocations(lat, lng):
             self.state = .locationChanged(lat: lat, lng: lng)
-         
+            
         case .deleteRegistration:
             coordinates = categorizeAnimalByCoordinate()
             let data = fetchMarkerData(of: coordinates)
@@ -79,11 +81,6 @@ class LocationViewModel: ViewModelProtocol {
             
         case .cancelSearch:
             self.state = .cancelledSearch
-            
-        case let .fetchAnimalOf(coordinate):
-            print("fetchAnimalOf")
-            let animals = fetchAnimals(of: coordinate)
-            self.state = .updateSheetAnimal(animals)
         }
         
     }
@@ -173,16 +170,5 @@ class LocationViewModel: ViewModelProtocol {
                                    mapY: mapY,
                                    image: image))
         }
-    }
-    
-    private func fetchAnimals(of coordinate: Coordinate) -> [Animal] {
-        coordinates = categorizeAnimalByCoordinate()// 갱신
-        return coordinates[coordinate]?.sorted {
-            if $0.status == .normal && $1.status != .normal {
-                return true
-            } else {
-                return false
-            }
-        } ?? []
     }
 }

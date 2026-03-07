@@ -9,8 +9,6 @@ import SnapKit
 
 class PinSheetView: UIViewController {
     private let viewModel: SheetViewModel
-//    private var animals: [Animal]
-//    private let coordinate: Coordinate
     
     private lazy var animalCollectionView = UICollectionView(frame: .zero, collectionViewLayout: makeCollectionViewLayout())
     private lazy var dataSource = makeCollectionViewDiffableDataSource(animalCollectionView)
@@ -29,19 +27,7 @@ class PinSheetView: UIViewController {
         view.backgroundColor = .white
         setLayout()
         bindingData()
-//        viewModel.action(.fetchAnimalOf(coordinate))
         animalCollectionView.delegate = self
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-
-        guard let tabBar = presentingViewController as? UITabBarController,
-              let nav = tabBar.selectedViewController as? UINavigationController,
-              let mapVC = nav.topViewController as? MapViewController
-        else { return }
-
-        mapVC.bindingData()
     }
 }
 
@@ -170,8 +156,6 @@ extension PinSheetView: UICollectionViewDelegate {
         guard let data = dataSource.itemIdentifier(for: indexPath) else { return }
         
         let vc = PaymentViewController(animalID: data.id, modelManager: viewModel.modelManager) { [weak self] in
-            guard let coordinate = self?.viewModel.coordinate else { return }
-            
             self?.viewModel.action(.rented) // 동물 업데이트
             
             // 마이페이지 업데이트
