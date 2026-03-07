@@ -11,7 +11,7 @@ import CoreLocation
 class LocationViewModel: ViewModelProtocol {
     // 액션 열거형
     enum Action {
-        case initialized(lat: Double, lng: Double)
+        case initialized
         case didUpdateLocations(lat: Double, lng: Double)
         
         case newRegister
@@ -24,8 +24,8 @@ class LocationViewModel: ViewModelProtocol {
     // 상태 열거형
     enum State {
         case none
-        case initialized(lat: Double, lng: Double, data: [Coordinate: AnimalType]) // (현재 위도, 현재 경도, 마커)
-        case locationChanged(lat: Double, lng: Double)
+        case initialized(data: [Coordinate: AnimalType]) // (data: 생성할 마커데이터 [좌표: 동물 타입])
+        case locationChanged(lat: Double, lng: Double, animate: Bool)
         
         case deleteRegistration(data: [Coordinate: AnimalType])
         case newRegister(data: [Coordinate: AnimalType])
@@ -44,14 +44,16 @@ class LocationViewModel: ViewModelProtocol {
     
     func action(_ action: Action) {
         switch action {
-        case let .initialized(lat, lng):
+        case .initialized:
             coordinates = categorizeAnimalByCoordinate() // 좌표 별로 동물 객체를 분류
             
             let data = fetchMarkerData(of: coordinates) // 생성할 마커 배열
-            self.state = .initialized(lat: lat, lng: lng, data: data)
+            self.state = .initialized(data: data)
             
         case let .didUpdateLocations(lat, lng):
-            self.state = .locationChanged(lat: lat, lng: lng)
+            let animate = initialLocation ? false : true
+            self.state = .locationChanged(lat: lat, lng: lng, animate: animate)
+            if initialLocation { initialLocation = false } // 초기화 여부 변경
             
         case .deleteRegistration:
             coordinates = categorizeAnimalByCoordinate()
@@ -82,7 +84,6 @@ class LocationViewModel: ViewModelProtocol {
         case .cancelSearch:
             self.state = .cancelledSearch
         }
-        
     }
     
     // init
@@ -94,7 +95,9 @@ class LocationViewModel: ViewModelProtocol {
     // 프로퍼티 선언
     let modelManager: AnimalityModelManager
     let networkManager: NetworkManager
-
+    
+    private(set) var initialLocation: Bool = true // 초기화 여부
+    
     private(set) var coordinates = [Coordinate: [Animal]]() // 좌표별 동물 딕셔너리 [좌표: [동물]]
     private(set) var searchResults: [LocationInfo] = []
     
