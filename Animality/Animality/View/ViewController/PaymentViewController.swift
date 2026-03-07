@@ -34,6 +34,7 @@ final class PaymentViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "결제 하기"
+        self.navigationController?.navigationBar.isHidden = false
         self.navigationController?.navigationBar.prefersLargeTitles = true
 
         bind() // VM -> View
@@ -41,6 +42,17 @@ final class PaymentViewController: UIViewController {
 
         // 동물 id로 데이터 불러오괴
         viewModel.action(.viewDidLoad(id: animalID))
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        guard let nav = self.navigationController else { return }
+        
+        // 시트 크기 재설정
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [.medium(), .large()] // 시트 크기
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = true // 시트 확장 가능 여부
+            sheet.prefersGrabberVisible = true // grabber 표시 여부
+        }
     }
 
     

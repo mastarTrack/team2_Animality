@@ -43,12 +43,18 @@ final class SheetViewModel: ViewModelProtocol {
     
     // 프로퍼티 선언
     let modelManager: AnimalityModelManager
-    let coordinate: Coordinate
+    private let coordinate: Coordinate
     private var animals: [Animal] = []
     
     private func refreshAnimals() -> [Animal] {
         modelManager.refreshAnimals()
         let animals = modelManager.allAnimals
-        return animals.filter { $0.currentLocation == coordinate }
+        return animals.filter { $0.currentLocation == coordinate }.sorted {
+            if $0.status == .normal && $1.status != .normal {
+                return true
+            } else {
+                return false
+            }
+        }
     }
 }

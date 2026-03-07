@@ -25,6 +25,7 @@ class PinSheetViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationController?.navigationBar.isHidden = true
         view.backgroundColor = .white
         setLayout()
         
@@ -118,8 +119,15 @@ extension PinSheetViewController: UICollectionViewDelegate {
             guard let myVC = nav.viewControllers.first as? MyPageViewController else { return }
             myVC.vm.action(.fetchReceipt)
         }
+
+        guard let nav = self.navigationController else { return }
         
-        modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
+        // 시트 재설정
+        if let sheet = nav.sheetPresentationController {
+            sheet.detents = [.large()] // 시트 크기
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false // 시트 확장 가능 여부
+            sheet.prefersGrabberVisible = false // grabber 표시 여부
+        }
+        self.navigationController?.pushViewController(vc, animated: true)
     }
 }
