@@ -12,40 +12,41 @@ class RegisterViewController: UIViewController {
     // MARK: - View, VM 인스턴스 생성
     private let registerView = RegisterView()
     private let registerViewModel: RegisterViewModel
-
+    
     
     // modelManager를 받아서 ViewModel 생성
     init(modelManager: AnimalityModelManager) {
         self.registerViewModel = RegisterViewModel(modelManager: modelManager)
         super.init(nibName: nil, bundle: nil)
     }
-
-    @available(*, unavailable)
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     
-    // MARK: - View 세팅
+    required init?(coder: NSCoder) { fatalError() }
+    
+    
+    // MARK: - LifeCycle
     override func loadView() {
         self.view = registerView
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        bindingData()
         
         // 네비게이션바 타이틀 설정
         self.title = "등록하기"
         self.navigationController?.navigationBar.prefersLargeTitles = true
-    }
-    
-    
-    // MARK: - Binding
-    
-    private func bindingData() {
         
-        // View → ViewModel
+        bindView()
+        bindViewModel()
+    }
+}
+
+
+    // MARK: - Binding
+extension RegisterViewController {
+    
+    // View → ViewModel
+    private func bindView() {
+        
         registerView.onNameEntered = { [weak self] text in
             self?.registerViewModel.action(.enterName(text ?? ""))
         }
@@ -58,12 +59,12 @@ class RegisterViewController: UIViewController {
             self?.registerViewModel.action(.sizeSelected(size))
         }
         
-        registerView.onPriceEntered = { [weak self] price in
-            self?.registerViewModel.action(.pricePerHour(price ?? ""))
-        }
-        
         registerView.onFlightSelected = { [weak self] flight in
             self?.registerViewModel.action(.flightCapabilitySelected(flight))
+        }
+        
+        registerView.onPriceEntered = { [weak self] price in
+            self?.registerViewModel.action(.pricePerHour(price ?? ""))
         }
         
         registerView.onPickedCoordinate = { [weak self] Coordinate in
@@ -73,17 +74,20 @@ class RegisterViewController: UIViewController {
         registerView.onRegisterTapped = { [weak self] in
             self?.askRegister()
         }
-        
-        // ViewModel → View
+    }
+    
+    // ViewModel → View
+    private func bindViewModel() {
         registerViewModel.stateChanged = { [weak self] state in
             DispatchQueue.main.async {
                 self?.render(state)
             }
         }
-        
-        
     }
-    // MARK: -- 상태에 따른 View 렌더링
+}
+    
+// MARK: -- 상태에 따른 View 렌더링
+extension RegisterViewController {
     
     private func render(_ state: RegisterViewModel.State) {
         
@@ -96,44 +100,50 @@ class RegisterViewController: UIViewController {
             registerView.updateRegisterButton(isEnabled)
             
         case .showAlert(let message):
-            let alert = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "확인", style: .default))
-            present(alert, animated: true)
+            showAlert(message)
             
         case .registerSuccess:
-            //mapVC 호출 - 마커 refresh
-            guard let nav = self.tabBarController?.viewControllers?.first as? UINavigationController else { return }
-            guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
-            mapVC.newRegister()
-            
-            // 등록 뷰 리셋
-            registerView.resetSelection()
-            notifySuccess()
-            self.navigationController?.popViewController(animated: true) // 저장 성공시 이전 화면으로 이동학
-
+            handelRegisterSuccess()
         }
     }
+}
+
+extension RegisterViewController {
     
     private func askRegister() {
-        let askRegister = UIAlertController(title: "등록 진행", message: "새로운 동물을 등록할까요?", preferredStyle: .alert)
-        let confirm = UIAlertAction(title: "확인", style: .default) { [weak self] _ in
-            self?.registerViewModel.action(.registerTapped)
-        }
-        let cancel = UIAlertAction(title: "취소", style: .cancel, handler: nil)
         
-        askRegister.addAction(confirm)
-        askRegister.addAction(cancel)
+        let askRegister = UIAlertController(title: "등록 진행", message: "새로운 동물을 등록할까요?", preferredStyle: .alert)
+        
+        askRegister.addAction(UIAlertAction(title: "확인", style: .default) { [weak self] _ in
+            self?.registerViewModel.action(.registerTapped)
+        })
+        askRegister.addAction(UIAlertAction(title: "취소", style: .cancel))
+        
         
         self.present(askRegister, animated: true)
     }
     
-    private func notifySuccess() {
-        let success = UIAlertController(title: "등록 성공", message: "동물 등록에 성공했습니다.", preferredStyle: .alert)
-        let confirm = UIAlertAction(title: "확인", style: .default)
+    private func handelRegisterSuccess() {
+        refreshMap() // Map reset
         
-        success.addAction(confirm)
-        self.present(success, animated: true)
+        // 등록 뷰 리셋
+        registerView.resetSelection()
+        showAlert("동물 등록에 성공했습니다.")
+        self.navigationController?.popViewController(animated: true) // 저장 성공시 이전 화면으로 이동하기
+        
+    }
+
+    
+    private func showAlert(_ message: String) {
+        let alert = UIAlertController(title: "알림", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "확인", style: .default))
+        present(alert, animated: true)
+    }
+    
+    private func refreshMap() {
+        //mapVC 호출 - 마커 refresh
+        guard let nav = self.tabBarController?.viewControllers?.first as? UINavigationController else { return }
+        guard let mapVC = nav.viewControllers.first as? MapViewController else { return }
+        mapVC.newRegister()
     }
 }
-
-
