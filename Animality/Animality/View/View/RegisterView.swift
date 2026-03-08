@@ -19,17 +19,16 @@ final class RegisterView: UIView {
     private var isPinLifted = false
     
     // MARK: - View → VC 클로저
-    
     var onNameEntered: ((String?) -> Void)?
     var onCategorySelected: ((String) -> Void)?
+    var onTypeSelected: ((AnimalType) -> Void)?
     var onSizeSelected: ((AnimalSize) -> Void)?
     var onFlightSelected: ((FlightCapability) -> Void)?
-    var onLocationTapped: (() -> Void)?
-    var onRegisterTapped: (() -> Void)?
     var onPriceEntered: ((String?) -> Void)?
-    var onTypeSelected: ((AnimalType) -> Void)?
-    var showAlert: ((UIError) -> Void)?
+    var onLocationTapped: (() -> Void)?
     var onPickedCoordinate: ((Coordinate)->Void)?
+    var onRegisterTapped: (() -> Void)?
+    var showAlert: ((UIError) -> Void)?
     
     // MARK: -- UI components
     
@@ -46,7 +45,7 @@ final class RegisterView: UIView {
     private let gradientLayer = CAGradientLayer()
     
     // 아이콘 이미지
-    private let iconImageView = UIImageView().then {
+    private let iconImageView = UIImageView(image: UIImage(systemName: "questionmark")).then {
         $0.contentMode = .scaleAspectFit
         $0.tintColor = .systemBlue
         $0.alpha = 0.5
@@ -142,20 +141,7 @@ final class RegisterView: UIView {
     }
     
     private let locationCardView = UIView().then {
-        $0.backgroundColor = UIColor.systemBlue.withAlphaComponent(0.1)
         $0.layer.cornerRadius = 14
-    }
-    
-    private let locationIcon = UIImageView().then {
-        $0.image = UIImage(systemName: "map")
-        $0.tintColor = .systemBlue
-        $0.contentMode = .scaleAspectFit
-    }
-    
-    private let locationLabel = UILabel().then {
-        $0.text = "등록할 위치를 지정해주세요."
-        $0.textColor = .darkGray
-        $0.font = .systemFont(ofSize: 15)
     }
     
     /// 맵뷰
@@ -209,11 +195,9 @@ final class RegisterView: UIView {
         headerView.addSubview(iconImageView)
         
         [nameTitleLabel, nameTextField, categoryTitleLabel, rideButton, petButton, locationTitleLabel,
-         //locationCardView,
          mapView,
          registerButton, sizeTitleLabel, smallButton, mediumButton, largeButton, flightTitleLabel, canFlyButton, cannotFlyButton, priceTitleLabel, priceTextField, typeTitleLabel, typeStackView].forEach { contentView.addSubview($0) }
         
-        //[locationIcon, locationLabel].forEach { locationCardView.addSubview($0) }
         mapView.addSubview(centerMarkerView)
     }
     
@@ -295,11 +279,11 @@ final class RegisterView: UIView {
         typeStackView.snp.makeConstraints {
             $0.top.equalTo(typeTitleLabel.snp.bottom).offset(8)
             $0.horizontalEdges.equalToSuperview().inset(25)
-            $0.height.equalTo(50)
         }
         
         // 크기
         sizeTitleLabel.snp.makeConstraints {
+            $0.top.greaterThanOrEqualTo(rideButton.snp.bottom).offset(24)
             $0.top.equalTo(typeStackView.snp.bottom).offset(24)
             $0.leading.equalToSuperview().offset(30)
         }
@@ -363,23 +347,6 @@ final class RegisterView: UIView {
             $0.leading.equalToSuperview().offset(30)
         }
         
-//        locationCardView.snp.makeConstraints {
-//            $0.top.equalTo(locationTitleLabel.snp.bottom).offset(20)
-//            $0.horizontalEdges.equalToSuperview().inset(20)
-//            $0.height.equalTo(180)
-//        }
-//        
-//        locationIcon.snp.makeConstraints {
-//            $0.centerX.equalToSuperview()
-//            $0.top.equalToSuperview().offset(60)
-//            $0.size.equalTo(40)
-//        }
-//        
-//        locationLabel.snp.makeConstraints {
-//            $0.top.equalTo(locationIcon.snp.bottom).offset(20)
-//            $0.centerX.equalToSuperview()
-//        }
-        
         mapView.snp.makeConstraints {
             $0.top.equalTo(locationTitleLabel.snp.bottom).offset(20)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -393,7 +360,6 @@ final class RegisterView: UIView {
             $0.height.equalTo(44)
         }
         
-        // registerButton 위치 수정
         registerButton.snp.remakeConstraints {
             $0.top.equalTo(mapView.snp.bottom).offset(30)
             $0.horizontalEdges.equalToSuperview().inset(20)
@@ -465,6 +431,7 @@ final class RegisterView: UIView {
             }), for: .touchUpInside)
             
             typeStackView.addArrangedSubview(button)
+            button.snp.makeConstraints { $0.height.equalTo(50) }
         }
     }
     
@@ -534,7 +501,7 @@ final class RegisterView: UIView {
     }
     
     @objc private func locationTapped() {
-        onPickedCoordinate!(currentCenterCoordinate())
+        onPickedCoordinate?(currentCenterCoordinate())
     }
     
     @objc private func registerTapped() {
