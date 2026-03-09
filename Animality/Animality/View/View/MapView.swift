@@ -32,6 +32,15 @@ class AnimalityMapView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    // 지도 다크모드 설정
+    override traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+            super.traitCollectionDidChange(previousTraitCollection)
+            if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+                mapView.isNightModeEnabled = traitCollection.userInterfaceStyle == .dark
+            }
+        }
+    }
 }
 
 //MARK: Set Layout & Attributes
@@ -118,7 +127,6 @@ extension AnimalityMapView {
     // 맵뷰 설정
     private func setMapView() {
         mapView.mapType = .basic // 지도 유형 설정
-        mapView.isNightModeEnabled = UITraitCollection.current.userInterfaceStyle == .dark // 다크모드 설정
         mapView.allowsTilting = false // 기울임 설정
 
         // 현 위치 표시
