@@ -247,7 +247,7 @@ extension AnimalityMapView {
             let coordinate = Coordinate(latitude: $0.position.lat, longitude: $0.position.lng)
             
             // 업데이트된 마커 리스트에 해당 좌표가 없는 경우 삭제 대상
-            data[coordinate] == nil
+            return data[coordinate] == nil
         }
     }
 }
