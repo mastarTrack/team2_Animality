@@ -242,13 +242,13 @@ extension AnimalityMapView {
     
     // 삭제 대상 비교
     private func compareDeleteMarkers(_ data: [Coordinate: AnimalType]) -> [NMFMarker] {
-        return currentMarkers.reduce(into: [NMFMarker]()) {
+        return currentMarkers.filter {
             // 현재 비교 중인 기존 마커의 좌표
-            let coordinate = Coordinate(latitude: $1.position.lat, longitude: $1.position.lng)
+            let coordinate = Coordinate(latitude: $0.position.lat, longitude: $0.position.lng)
             
-            // 업데이트된 마커 리스트에 해당 좌표가 없는 경우 삭제 대상에 추가
-            data[coordinate] == nil ? $0.append($1) : ()
-            }
+            // 업데이트된 마커 리스트에 해당 좌표가 없는 경우 삭제 대상
+            data[coordinate] == nil
+        }
     }
 }
 
