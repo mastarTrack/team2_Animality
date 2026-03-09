@@ -34,14 +34,14 @@ class AnimalityMapView: UIView {
     }
     
     // 지도 다크모드 설정
-    override traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-            super.traitCollectionDidChange(previousTraitCollection)
-            if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-                mapView.isNightModeEnabled = traitCollection.userInterfaceStyle == .dark
-            }
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        if traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
+            mapView.isNightModeEnabled = traitCollection.userInterfaceStyle == .dark
         }
     }
 }
+
 
 //MARK: Set Layout & Attributes
 extension AnimalityMapView {
